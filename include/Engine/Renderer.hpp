@@ -1,5 +1,5 @@
-#ifndef SIMX_RENDERER_HPP
-#define SIMX_RENDERER_HPP
+#ifndef GATES_RENDERER_HPP
+#define GATES_RENDERER_HPP
 
 #include "pch.hpp"
 #include "Engine/OrthographicCamera.hpp"

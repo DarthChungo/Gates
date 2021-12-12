@@ -1,5 +1,5 @@
-#ifndef SIMX_SHADER_HPP
-#define SIMX_SHADER_HPP
+#ifndef GATES_SHADER_HPP
+#define GATES_SHADER_HPP
 
 #include "pch.hpp"
 

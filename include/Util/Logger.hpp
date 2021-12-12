@@ -1,5 +1,5 @@
-#ifndef SIMX_LOGGER_HPP
-#define SIMX_LOGGER_HPP
+#ifndef GATES_LOGGER_HPP
+#define GATES_LOGGER_HPP
 
 #include "pch.hpp"
 

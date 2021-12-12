@@ -1,5 +1,5 @@
-#ifndef SIMX_DATASERIALIZER_H
-#define SIMX_DATASERIALIZER_H
+#ifndef GATES_DATASERIALIZER_H
+#define GATES_DATASERIALIZER_H
 
 #include "pch.hpp"
 

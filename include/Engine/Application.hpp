@@ -1,5 +1,5 @@
-#ifndef SIMX_APPLICATION_HPP
-#define SIMX_APPLICATION_HPP
+#ifndef GATES_APPLICATION_HPP
+#define GATES_APPLICATION_HPP
 
 #include "pch.hpp"
 
