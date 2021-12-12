@@ -10,3 +10,6 @@
 [submodule "lib/glm"]
 	path = lib/glm
 	url = git@github.com:g-truc/glm.git
+[submodule "lib/stb-image"]
+	path = lib/stb-image
+	url = git@github.com:DarthChungo/stb-image-cmake.git

@@ -25,6 +25,12 @@ namespace Gates {
     uint32_t  line_vertex_count          = 0;
     uint32_t  line_index_count           = 0;
 
+    uint32_t texture_slots[Renderer::pMaxTextures] = {};
+    uint32_t texture_slot_index                    = 1;
+
+    GLuint   white_texture       = 0;
+    uint32_t white_texture_index = 0;
+
     Renderer::Stats stats = {};
 
     std::unique_ptr<ShaderProgram> shader_program;
@@ -34,15 +40,25 @@ namespace Gates {
   } data;
 
   void Renderer::Init() {
+    // Shaders
     data.shader_program = std::make_unique<ShaderProgram>("shaders/shader.vert", "shaders/shader.frag");
     data.shader_program->Use();
 
+    int samplers[pMaxTextures];
+    for (uint32_t i = 0; i < pMaxTextures; i++) {
+      samplers[i] = i;
+    }
+
+    glUniform1iv(glGetUniformLocation(data.shader_program->getProgram(), "u_textures"), pMaxTextures, samplers);
+
+    // Dynamic arrays
     data.tri_vertex_buffer = new Vertex[pMaxVertexCount];
     data.tri_index_buffer  = new uint32_t[pMaxIndexCount];
 
     data.line_vertex_buffer = new Vertex[pMaxVertexCount];
     data.line_index_buffer  = new uint32_t[pMaxIndexCount];
 
+    // Tris
     glCreateVertexArrays(1, &data.gl_tri_vertex_array);
     glBindVertexArray(data.gl_tri_vertex_array);
 
@@ -60,6 +76,13 @@ namespace Gates {
     glEnableVertexArrayAttrib(data.gl_tri_vertex_array, 1);
     glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, color));
 
+    glEnableVertexArrayAttrib(data.gl_tri_vertex_array, 2);
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, tex_coord));
+
+    glEnableVertexArrayAttrib(data.gl_tri_vertex_array, 3);
+    glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, tex_id));
+
+    // Lines
     glCreateVertexArrays(1, &data.gl_line_vertex_array);
     glBindVertexArray(data.gl_line_vertex_array);
 
@@ -76,6 +99,25 @@ namespace Gates {
 
     glEnableVertexArrayAttrib(data.gl_line_vertex_array, 1);
     glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, color));
+
+    glEnableVertexArrayAttrib(data.gl_line_vertex_array, 2);
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, tex_coord));
+
+    glEnableVertexArrayAttrib(data.gl_line_vertex_array, 3);
+    glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, tex_id));
+
+    // Textures
+    glCreateTextures(GL_TEXTURE_2D, 1, &data.white_texture);
+    glBindTexture(GL_TEXTURE_2D, data.white_texture);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    uint32_t pixel = 0xFFFFFFFF;
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 1, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, &pixel);
+
+    memset(data.texture_slots, 0, pMaxTextures);
+    data.texture_slots[0] = data.white_texture;
   }
 
   void Renderer::Delete() {
@@ -87,6 +129,8 @@ namespace Gates {
 
     glDeleteBuffers(1, &data.gl_line_vertex_buffer);
     glDeleteBuffers(1, &data.gl_line_index_buffer);
+
+    glDeleteTextures(1, &data.white_texture);
 
     delete[] data.tri_vertex_buffer;
     delete[] data.tri_index_buffer;
@@ -140,6 +184,10 @@ namespace Gates {
   }
 
   void FlushTriBatch() {
+    for (uint32_t i = 0; i < data.texture_slot_index; i++) {
+      glBindTextureUnit(i, data.texture_slots[i]);
+    }
+
     glBindVertexArray(data.gl_tri_vertex_array);
 
     glBindBuffer(GL_ARRAY_BUFFER, data.gl_tri_vertex_buffer);
@@ -149,8 +197,9 @@ namespace Gates {
     data.stats.tri_index_count += data.tri_index_count;
     data.stats.tri_vertex_count += data.tri_vertex_count;
 
-    data.tri_index_count  = 0;
-    data.tri_vertex_count = 0;
+    data.tri_index_count    = 0;
+    data.tri_vertex_count   = 0;
+    data.texture_slot_index = 1;
 
     data.stats.draw_calls++;
   }
@@ -186,27 +235,55 @@ namespace Gates {
     FlushLineBatch();
   }
 
-  void Renderer::DrawQuad(const glm::vec2& position, const glm::vec2& size, const glm::vec4& color) {
-    if ((data.tri_index_count + 6) >= pMaxIndexCount || (data.tri_vertex_count + 4) >= pMaxVertexCount) {
+  void Renderer::DrawQuad(const glm::vec2& position,
+                          const glm::vec2& size,
+                          const glm::vec4& color,
+                          const float&     tex_id) {
+    if ((data.tri_index_count + 6) >= pMaxIndexCount || (data.tri_vertex_count + 4) >= pMaxVertexCount ||
+        data.texture_slot_index > (pMaxTextures - 1)) {
       EndTriBatch();
       FlushTriBatch();
       BeginTriBatch();
     }
 
-    data.tri_vertex_buffer_current->position = {position.x, position.y, .0f};
-    data.tri_vertex_buffer_current->color    = color;
+    float tex_index = 0.f;
+
+    if (tex_id != 0.f) {
+      for (uint32_t i = 0; i < data.texture_slot_index; i++) {
+        if (data.texture_slots[i] == tex_id) {
+          tex_index = (float)i;
+        }
+      }
+
+      if (tex_index == 0.f) {
+        tex_index                                   = (float)data.texture_slot_index;
+        data.texture_slots[data.texture_slot_index] = tex_id;
+        data.texture_slot_index++;
+      }
+    }
+
+    data.tri_vertex_buffer_current->position  = {position.x, position.y, .0f};
+    data.tri_vertex_buffer_current->color     = color;
+    data.tri_vertex_buffer_current->tex_coord = {0.f, 0.f};
+    data.tri_vertex_buffer_current->tex_id    = tex_index;
     data.tri_vertex_buffer_current++;
 
-    data.tri_vertex_buffer_current->position = {position.x + size.x, position.y, .0f};
-    data.tri_vertex_buffer_current->color    = color;
+    data.tri_vertex_buffer_current->position  = {position.x + size.x, position.y, .0f};
+    data.tri_vertex_buffer_current->color     = color;
+    data.tri_vertex_buffer_current->tex_coord = {1.f, 0.f};
+    data.tri_vertex_buffer_current->tex_id    = tex_index;
     data.tri_vertex_buffer_current++;
 
-    data.tri_vertex_buffer_current->position = {position.x + size.x, position.y + size.y, .0f};
-    data.tri_vertex_buffer_current->color    = color;
+    data.tri_vertex_buffer_current->position  = {position.x + size.x, position.y + size.y, .0f};
+    data.tri_vertex_buffer_current->color     = color;
+    data.tri_vertex_buffer_current->tex_coord = {1.f, 1.f};
+    data.tri_vertex_buffer_current->tex_id    = tex_index;
     data.tri_vertex_buffer_current++;
 
-    data.tri_vertex_buffer_current->position = {position.x, position.y + size.y, .0f};
-    data.tri_vertex_buffer_current->color    = color;
+    data.tri_vertex_buffer_current->position  = {position.x, position.y + size.y, .0f};
+    data.tri_vertex_buffer_current->color     = color;
+    data.tri_vertex_buffer_current->tex_coord = {0.f, 1.f};
+    data.tri_vertex_buffer_current->tex_id    = tex_index;
     data.tri_vertex_buffer_current++;
 
     data.tri_index_buffer[data.tri_index_count + 0] = 0 + data.tri_vertex_count;
@@ -223,23 +300,29 @@ namespace Gates {
     data.stats.quads_drawn++;
   }
 
-  void Renderer::DrawTri(const glm::vec2& v1, const glm::vec2& v2, const glm::vec2& v3, const glm::vec4 color) {
+  void Renderer::DrawTri(const glm::vec2& v1, const glm::vec2& v2, const glm::vec2& v3, const glm::vec4& color) {
     if ((data.tri_index_count + 3) >= pMaxIndexCount || (data.tri_vertex_count + 3) >= pMaxVertexCount) {
       EndTriBatch();
       FlushTriBatch();
       BeginTriBatch();
     }
 
-    data.tri_vertex_buffer_current->position = {v1.x, v1.y, .0f};
-    data.tri_vertex_buffer_current->color    = color;
+    data.tri_vertex_buffer_current->position  = {v1.x, v1.y, .0f};
+    data.tri_vertex_buffer_current->color     = color;
+    data.tri_vertex_buffer_current->tex_coord = {0.f, 0.f};
+    data.tri_vertex_buffer_current->tex_id    = 0;
     data.tri_vertex_buffer_current++;
 
-    data.tri_vertex_buffer_current->position = {v2.x, v2.y, .0f};
-    data.tri_vertex_buffer_current->color    = color;
+    data.tri_vertex_buffer_current->position  = {v2.x, v2.y, .0f};
+    data.tri_vertex_buffer_current->color     = color;
+    data.tri_vertex_buffer_current->tex_coord = {0.f, 0.f};
+    data.tri_vertex_buffer_current->tex_id    = 0;
     data.tri_vertex_buffer_current++;
 
-    data.tri_vertex_buffer_current->position = {v3.x, v3.y, .0f};
-    data.tri_vertex_buffer_current->color    = color;
+    data.tri_vertex_buffer_current->position  = {v3.x, v3.y, .0f};
+    data.tri_vertex_buffer_current->color     = color;
+    data.tri_vertex_buffer_current->tex_coord = {0.f, 0.f};
+    data.tri_vertex_buffer_current->tex_id    = 0;
     data.tri_vertex_buffer_current++;
 
     data.tri_index_buffer[data.tri_index_count + 0] = 0 + data.tri_vertex_count;
@@ -265,14 +348,18 @@ namespace Gates {
 
     float inc = glm::two_pi<float>() / segments;
 
-    data.tri_vertex_buffer_current->position = {position.x, position.y, .0f};
-    data.tri_vertex_buffer_current->color    = color;
+    data.tri_vertex_buffer_current->position  = {position.x, position.y, .0f};
+    data.tri_vertex_buffer_current->color     = color;
+    data.tri_vertex_buffer_current->tex_coord = {0.f, 0.f};
+    data.tri_vertex_buffer_current->tex_id    = 0;
     data.tri_vertex_buffer_current++;
 
     for (uint32_t current = 0; current < segments; current++) {
       data.tri_vertex_buffer_current->position = {
           glm::cos(current * inc) * radius + position.x, glm::sin(current * inc) * radius + position.y, .0f};
-      data.tri_vertex_buffer_current->color = color;
+      data.tri_vertex_buffer_current->color     = color;
+      data.tri_vertex_buffer_current->tex_coord = {0.f, 0.f};
+      data.tri_vertex_buffer_current->tex_id    = 0;
       data.tri_vertex_buffer_current++;
 
       data.tri_index_buffer[data.tri_index_count + 0] = data.tri_vertex_count;
@@ -295,10 +382,14 @@ namespace Gates {
 
     data.line_vertex_buffer_current->position = {pos1.x, pos1.y, .0f};
     data.line_vertex_buffer_current->color    = color;
+    data.tri_vertex_buffer_current->tex_coord = {0.f, 0.f};
+    data.tri_vertex_buffer_current->tex_id    = 0;
     data.line_vertex_buffer_current++;
 
     data.line_vertex_buffer_current->position = {pos2.x, pos2.y, .0f};
     data.line_vertex_buffer_current->color    = color;
+    data.tri_vertex_buffer_current->tex_coord = {0.f, 0.f};
+    data.tri_vertex_buffer_current->tex_id    = 0;
     data.line_vertex_buffer_current++;
 
     data.line_index_buffer[data.line_index_count + 0] = 0 + data.line_vertex_count;

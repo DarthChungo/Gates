@@ -108,7 +108,7 @@ namespace Gates {
     if (show_statistics) {
       ImGui::Begin("Estadísticas");
 
-      if (ImGui::CollapsingHeader("Estadísticas de renderizado")) {
+      if (ImGui::CollapsingHeader("Renderizado:")) {
         ImGui::Indent();
         ImGui::Text("Cuadrados: %d", Renderer::GetStats().quads_drawn);
         ImGui::Text("Triángulos: %d", Renderer::GetStats().tris_drawn);
@@ -161,7 +161,10 @@ namespace Gates {
 
   rcode GatesApplication::pOnLaunch() {
     Renderer::Init();
-    // LOAD ENGINE
+
+    glActiveTexture(GL_TEXTURE1);
+    test_texture.Load("assets/test.png");
+    // test_texture.Load(glm::vec4 {1.f, 1.f, 1.f, 1.f});
 
     return rcode::ok;
   }
@@ -170,7 +173,8 @@ namespace Gates {
     Renderer::UseCamera(camera);
     Renderer::BeginBatch();
 
-    // RENDER
+    // Renderer::DrawQuad({0.f, 0.f}, {30.f, 30.f}, {1.f, 1.f, 1.f, 1.f});
+    Renderer::DrawQuad({0.f, 0.f}, {30.f, 30.f}, {1.f, 1.f, 1.f, 1.f}, test_texture.getId());
 
     Renderer::EndBatch();
     Renderer::FlushBatch();
@@ -180,6 +184,7 @@ namespace Gates {
 
   rcode GatesApplication::pOnClose() {
     Renderer::Delete();
+    test_texture.Release();
     return rcode::ok;
   }
 

@@ -4,6 +4,7 @@
 #include "pch.hpp"
 #include "Engine/Application.hpp"
 #include "Engine/OrthographicCamera.hpp"
+#include "Engine/Texture.hpp"
 
 namespace Gates {
   class GatesApplication : public Application {
@@ -30,6 +31,8 @@ namespace Gates {
     OrthographicCamera camera {view_distance, 1.f};
 
     bool show_statistics = false;
+
+    Texture test_texture;
   };
 }
 

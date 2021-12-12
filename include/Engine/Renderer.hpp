@@ -6,8 +6,10 @@
 
 namespace Gates {
   struct Vertex {
-    glm::vec3 position;
-    glm::vec4 color;
+    glm::vec3 position {};
+    glm::vec4 color {};
+    glm::vec2 tex_coord {};
+    float     tex_id = 0.f;
   };
 
   class Renderer {
@@ -21,12 +23,13 @@ namespace Gates {
 
     static void DrawQuad(const glm::vec2& position,
                          const glm::vec2& size,
-                         const glm::vec4& color = {1.f, 1.f, 1.f, 1.f});
+                         const glm::vec4& color  = {1.f, 1.f, 1.f, 1.f},
+                         const float&     tex_id = 0.f);
 
     static void DrawTri(const glm::vec2& v1,
                         const glm::vec2& v2,
                         const glm::vec2& v3,
-                        const glm::vec4  color = {1.f, 1.f, 1.f, 1.f});
+                        const glm::vec4& color = {1.f, 1.f, 1.f, 1.f});
 
     static void DrawCircle(const glm::vec2& position,
                            const float&     radius,
@@ -57,6 +60,7 @@ namespace Gates {
    public:
     static constexpr uint32_t pMaxVertexCount = 20000;
     static constexpr uint32_t pMaxIndexCount  = 30000;
+    static constexpr uint32_t pMaxTextures    = 8;  // TODO: query current device being used
   };
 }
 

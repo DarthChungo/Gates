@@ -41,6 +41,12 @@ add_custom_command(
   COMMENT "Copying shaders" VERBATIM
   )
 
+add_custom_command(
+  TARGET Gates POST_BUILD
+  COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/assets $<TARGET_FILE_DIR:Gates>/assets
+  COMMENT "Copying assets" VERBATIM
+  )
+
 # Libraries
 
 add_subdirectory(lib/glfw EXCLUDE_FROM_ALL)
@@ -55,3 +61,7 @@ target_link_libraries(Gates PRIVATE imgui)
 
 add_subdirectory(lib/glm EXCLUDE_FROM_ALL)
 target_link_libraries(Gates PRIVATE glm)
+
+add_subdirectory(lib/stb-image EXCLUDE_FROM_ALL)
+target_link_libraries(Gates PRIVATE stb-image)
+
