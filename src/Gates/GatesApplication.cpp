@@ -1,8 +1,8 @@
 #include "Engine/Renderer.hpp"
-#include "SimX/SimXApplication.hpp"
+#include "Gates/GatesApplication.hpp"
 
-namespace SimX {
-  rcode SimXApplication::pOnUpdate() {
+namespace Gates {
+  rcode GatesApplication::pOnUpdate() {
     if (Key(Key::KEY_CAPS_LOCK).pressed) Close();
 
     if (Mouse(Mouse::BUTTON_1).pressed) {
@@ -25,17 +25,17 @@ namespace SimX {
 
     if (Key(Key::KEY_R).pressed) {
       running = false;
-      physics_engine.Load();
+      // RESET ENGINE
     }
 
     if (Key(Key::KEY_SPACE).pressed) running = !running;
 
-    if (running) physics_engine.PhysicsCalculations(et());
+    // if (running) // PERFORME UPDATES
 
     return rcode::ok;
   }
 
-  rcode SimXApplication::pOnImGuiRender() {
+  rcode GatesApplication::pOnImGuiRender() {
     static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_PassthruCentralNode;
 
     ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoTitleBar |
@@ -85,7 +85,7 @@ namespace SimX {
         static char filename[120] = {};
 
         if (ImGui::BeginMenu("Guardar como...")) {
-          ImGui::InputText(".simx", filename, 120);
+          ImGui::InputText(".gates", filename, 120);
           ImGui::SameLine();
 
           if (ImGui::Button("Guardar")) {
@@ -99,9 +99,6 @@ namespace SimX {
 
       if (ImGui::BeginMenu("Ver")) {
         ImGui::Checkbox("Estadísticas", &show_statistics);
-        ImGui::Checkbox("Cuerpos", &show_bodies);
-        ImGui::Checkbox("Velocidad", &show_vel);
-        ImGui::Checkbox("Aceleración", &show_acc);
         ImGui::EndMenu();
       }
 
@@ -147,19 +144,10 @@ namespace SimX {
         ImGui::Unindent();
       }
 
-      ImGui::End();
-    }
-
-    if (show_bodies) {
-      ImGui::Begin("Cuerpos");
-
-      for (uint32_t n = 0; auto& p : physics_engine.particles) {
-        ImGui::Text("Cuerpo %d:", ++n);
-
+      if (ImGui::CollapsingHeader("Cámara:")) {
         ImGui::Indent();
-        ImGui::Text("Pos: %s", std::to_string(p.pos).c_str());
-        ImGui::Text("Vel: %s", std::to_string(p.vel).c_str());
-        ImGui::Text("Acx: %s", std::to_string(p.acc).c_str());
+        ImGui::Text("Posición: %s", std::to_string(glm::vec2 {camera.getPosition().x, camera.getPosition().y}).c_str());
+        ImGui::Text("Distancia de visión: %f", view_distance);
         ImGui::Unindent();
       }
 
@@ -171,23 +159,18 @@ namespace SimX {
     return rcode::ok;
   }
 
-  rcode SimXApplication::pOnLaunch() {
+  rcode GatesApplication::pOnLaunch() {
     Renderer::Init();
-    physics_engine.Load();
+    // LOAD ENGINE
 
     return rcode::ok;
   }
 
-  rcode SimXApplication::pOnRender() {
+  rcode GatesApplication::pOnRender() {
     Renderer::UseCamera(camera);
     Renderer::BeginBatch();
 
-    for (auto& p : physics_engine.particles) {
-      Renderer::DrawCircle(p.pos, p.dens * p.mass, 30, glm::vec4(1.f, 1.f, 1.f, 1.f));
-
-      if (show_vel) Renderer::DrawLine(p.pos, p.pos + p.vel, {1.f, 0.f, 0.f, 1.f});
-      if (show_acc) Renderer::DrawLine(p.pos, p.pos + p.acc, {0.f, 0.f, 1.f, 1.f});
-    }
+    // RENDER
 
     Renderer::EndBatch();
     Renderer::FlushBatch();
@@ -195,10 +178,10 @@ namespace SimX {
     return rcode::ok;
   }
 
-  rcode SimXApplication::pOnClose() {
+  rcode GatesApplication::pOnClose() {
     Renderer::Delete();
     return rcode::ok;
   }
 
-  glm::vec2 SimXApplication::MousePosWorld() { return camera.ScreenToWorld(MousePos(), view_distance, AspectRatio()); }
+  glm::vec2 GatesApplication::MousePosWorld() { return camera.ScreenToWorld(MousePos(), view_distance, AspectRatio()); }
 }

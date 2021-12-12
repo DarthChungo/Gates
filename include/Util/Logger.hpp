@@ -3,7 +3,7 @@
 
 #include "pch.hpp"
 
-namespace SimX {
+namespace Gates {
   class Logger {
    public:
     static void Info(const std::string_view message);

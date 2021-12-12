@@ -2,7 +2,7 @@
 #include "Engine/Renderer.hpp"
 #include "Engine/Shader.hpp"
 
-namespace SimX {
+namespace Gates {
   static struct {
     GLuint gl_tri_vertex_array  = 0;
     GLuint gl_line_vertex_array = 0;

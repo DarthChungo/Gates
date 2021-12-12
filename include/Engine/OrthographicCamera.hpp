@@ -3,7 +3,7 @@
 
 #include "pch.hpp"
 
-namespace SimX {
+namespace Gates {
   class OrthographicCamera {
    public:
     OrthographicCamera(float left, float top, float right, float bottom);

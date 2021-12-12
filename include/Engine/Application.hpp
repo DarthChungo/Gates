@@ -10,7 +10,7 @@ namespace std {
   }
 }
 
-namespace SimX {
+namespace Gates {
   enum class rcode : uint8_t {
     ok    = 0,
     quit  = 1,
@@ -199,8 +199,8 @@ namespace SimX {
     void             ResetMouseWheel();
     bool             MouseFocus() const;
 
-    const Button& Mouse(SimX::Mouse button) const;
-    const Button& Key(SimX::Key key) const;
+    const Button& Mouse(Gates::Mouse button) const;
+    const Button& Key(Gates::Key key) const;
 
     float    et() const;
     uint32_t fps() const;

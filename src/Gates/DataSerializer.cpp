@@ -1,6 +1,6 @@
-#include "SimX/DataSerializer.hpp"
+#include "Gates/DataSerializer.hpp"
 
-namespace SimX {
+namespace Gates {
   std::unordered_map<std::string, std::string> DataSerializer::ParseConfigFile(const std::string& filepath) {
     std::unordered_map<std::string, std::string> config_data;
 

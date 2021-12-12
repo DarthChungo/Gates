@@ -3,7 +3,7 @@
 
 #include "pch.hpp"
 
-namespace SimX {
+namespace Gates {
   class ShaderProgram {
    public:
     ShaderProgram(const char* vertex_path, const char* fragment_path);

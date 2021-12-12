@@ -1,6 +1,6 @@
 #include "Engine/OrthographicCamera.hpp"
 
-namespace SimX {
+namespace Gates {
   OrthographicCamera::OrthographicCamera(float left, float top, float right, float bottom)
       : pProjectionMatrix(glm::ortho(left, right, bottom, top, -1.f, 1.f)), pViewMatrix(1.f) {
     pViewProjectionMatrix = pProjectionMatrix * pViewMatrix;

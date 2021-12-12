@@ -2,7 +2,7 @@
 #include "Engine/Application.hpp"
 #include "Util/Logger.hpp"
 
-namespace SimX {
+namespace Gates {
   static void glfw_error_callback(int error, const char* description) {
     Logger::Die("GLFW error code " + std::to_string(error) + ": " + std::string(description));
   }
@@ -50,8 +50,8 @@ namespace SimX {
   void      Application::ResetMouseWheel() { pMouseWheel = {.0f, .0f}; }
   bool      Application::MouseFocus() const { return pHasMouseFocus; }
 
-  const Button& Application::Mouse(SimX::Mouse button) const { return pMouseButtons[(uint8_t)button]; }
-  const Button& Application::Key(SimX::Key key) const { return pKeyboardKeys[(uint16_t)key]; }
+  const Button& Application::Mouse(Gates::Mouse button) const { return pMouseButtons[(uint8_t)button]; }
+  const Button& Application::Key(Gates::Key key) const { return pKeyboardKeys[(uint16_t)key]; }
 
   float    Application::et() const { return pElapsedTime; }
   uint32_t Application::fps() const { return pFrameRate; }
@@ -142,7 +142,7 @@ namespace SimX {
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 
-    pWindow = glfwCreateWindow(pWindowSize.x, pWindowSize.y, "SimX", NULL, NULL);
+    pWindow = glfwCreateWindow(pWindowSize.x, pWindowSize.y, "Gates", NULL, NULL);
     if (!pWindow) Logger::Die("GLFW window creation failed");
 
     glfwSetFramebufferSizeCallback(pWindow, pHandleFrameBufferResize);

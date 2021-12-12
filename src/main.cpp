@@ -1,8 +1,8 @@
 #include "pch.hpp"
-#include "SimX/SimXApplication.hpp"
+#include "Gates/GatesApplication.hpp"
 
 int main(int, char**) {
-  SimX::SimXApplication app;
+  Gates::GatesApplication app;
 
   app.Construct({1000, 1000}, {0, 0}, "Gates");
   app.Launch();

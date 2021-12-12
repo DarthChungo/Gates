@@ -3,7 +3,7 @@
 
 #include "pch.hpp"
 
-namespace SimX {
+namespace Gates {
   class DataSerializer {
    public:
     static std::unordered_map<std::string, std::string> ParseConfigFile(const std::string& filepath);

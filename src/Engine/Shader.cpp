@@ -2,7 +2,7 @@
 #include "Engine/Shader.hpp"
 #include "Util/Logger.hpp"
 
-namespace SimX {
+namespace Gates {
   ShaderProgram::ShaderProgram(const char* vertex_path, const char* fragment_path) {
     std::string       vertex_code, fragment_code;
     std::ifstream     vertex_file, fragment_file;

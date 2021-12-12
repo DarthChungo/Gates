@@ -1,6 +1,6 @@
 #include "Util/Logger.hpp"
 
-namespace SimX {
+namespace Gates {
   void Logger::Info(const std::string_view message) { std::cout << "[INFO] " << message << "\n"; }
 
   void Logger::Die(const std::string_view message, int exit_code) {

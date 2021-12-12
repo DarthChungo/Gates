@@ -4,10 +4,9 @@
 #include "pch.hpp"
 #include "Engine/Application.hpp"
 #include "Engine/OrthographicCamera.hpp"
-#include "SimX/PhysicsEngine.hpp"
 
-namespace SimX {
-  class SimXApplication : public Application {
+namespace Gates {
+  class GatesApplication : public Application {
    public:
     friend class PhysicsEngine;
 
@@ -31,12 +30,6 @@ namespace SimX {
     OrthographicCamera camera {view_distance, 1.f};
 
     bool show_statistics = false;
-    bool show_bodies     = false;
-
-    bool show_acc = true;
-    bool show_vel = true;
-
-    PhysicsEngine physics_engine {this};
   };
 }
 

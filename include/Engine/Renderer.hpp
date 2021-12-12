@@ -4,7 +4,7 @@
 #include "pch.hpp"
 #include "Engine/OrthographicCamera.hpp"
 
-namespace SimX {
+namespace Gates {
   struct Vertex {
     glm::vec3 position;
     glm::vec4 color;
