@@ -215,15 +215,14 @@ namespace Gates {
     // test
     test_texture.Load("assets/test.png");
 
-    circuit.gates.push_back(std::make_shared<InputGate>());
-    circuit.gates.push_back(std::make_shared<NotGate>());
-    circuit.gates.push_back(std::make_shared<OutputGate>());
+    auto in1   = circuit.AddGate<InputGate>();
+    auto gate1 = circuit.AddGate<NotGate>();
+    auto out1  = circuit.AddGate<OutputGate>();
 
-    circuit.gates[0]->state = State::OFF;
-    circuit.gates[0]->outputs.push_back(circuit.gates[1]);
-    circuit.gates[1]->inputs.push_back(circuit.gates[0]);
-    circuit.gates[1]->outputs.push_back(circuit.gates[2]);
-    circuit.gates[2]->inputs.push_back(circuit.gates[1]);
+    circuit.AddOutput(in1, gate1);
+    circuit.AddOutput(gate1, out1);
+
+    circuit.SetInput(in1, State::OFF);
 
     return rcode::ok;
   }

@@ -4,14 +4,7 @@
 
 namespace Gates {
   void LogicCircuit::UpdateState() {
-    std::set<std::shared_ptr<LogicGate>> gates_update_pending;
     std::set<std::shared_ptr<LogicGate>> gates_updating;
-
-    for (auto&& gate : gates) {  // FIXME: hack
-      if (instanceof <InputGate>(gate.get())) {
-        gates_update_pending.insert(gate);
-      }
-    }
 
     while (!gates_update_pending.empty()) {
       gates_updating = gates_update_pending;
@@ -21,12 +14,28 @@ namespace Gates {
         State previous_state = gate->state;
         gate->UpdateState();
 
-        if (gate->state != previous_state || /*FIXME: hack*/ instanceof <InputGate>(gate.get())) {
+        if (auto it = gates_update_forced.find(gate); it != gates_update_forced.end()) {
+          for (auto&& child : gate->outputs) {
+            gates_update_pending.insert(child);
+            gates_update_forced.erase(it);
+          }
+        } else if (gate->state != previous_state) {
           for (auto&& child : gate->outputs) {
             gates_update_pending.insert(child);
           }
         }
       }
     }
+  }
+
+  void LogicCircuit::SetInput(const std::shared_ptr<LogicGate>& input, State val) {
+    input->state = val;
+    gates_update_pending.insert(input);
+    gates_update_forced.insert(input);
+  }
+
+  void LogicCircuit::AddOutput(const std::shared_ptr<LogicGate>& who, const std::shared_ptr<LogicGate>& output) {
+    who->outputs.insert(output);
+    output->inputs.insert(who);
   }
 }

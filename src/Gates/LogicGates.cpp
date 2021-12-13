@@ -2,10 +2,10 @@
 
 namespace Gates {
   void NotGate::UpdateState() {
-    if (inputs.size() != 1 || inputs.at(0)->state == State::ERROR) {
+    if (inputs.size() != 1 || inputs.begin()->get()->state == State::ERROR) {
       state = State::ERROR;
 
-    } else if (inputs.at(0)->state == State::OFF) {
+    } else if (inputs.begin()->get()->state == State::OFF) {
       state = State::ON;
 
     } else {
@@ -103,7 +103,7 @@ namespace Gates {
     if (inputs.size() != 1) {
       state = State::ERROR;
     } else {
-      state = inputs.at(0)->state;
+      state = inputs.begin()->get()->state;
     }
   }
 
