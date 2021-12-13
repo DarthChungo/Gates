@@ -1,5 +1,6 @@
 #include "Engine/Renderer.hpp"
 #include "Gates/GatesApplication.hpp"
+#include "Gates/LogicGates.hpp"
 
 namespace Gates {
   rcode GatesApplication::pOnUpdate() {
@@ -71,7 +72,7 @@ namespace Gates {
           "Estadísticas", ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Right, .25f, nullptr, &dockspace_id));
 
       ImGui::DockBuilderDockWindow(
-          "Cuerpos", ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Left, .25f, nullptr, &dockspace_id));
+          "Controles", ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Left, .4f, nullptr, &dockspace_id));
 
       ImGui::DockBuilderFinish(dockspace_id);
     }
@@ -99,6 +100,7 @@ namespace Gates {
 
       if (ImGui::BeginMenu("Ver")) {
         ImGui::Checkbox("Estadísticas", &show_statistics);
+        ImGui::Checkbox("Debug", &show_controls);
         ImGui::EndMenu();
       }
 
@@ -154,6 +156,54 @@ namespace Gates {
       ImGui::End();
     }
 
+    if (show_controls) {
+      ImGui::Begin("Controles");
+
+      if (ImGui::CollapsingHeader("Simulación")) {
+        ImGui::Indent();
+
+        if (ImGui::Button("Actualizar")) circuit.UpdateState();
+
+        ImGui::Unindent();
+      }
+
+      if (ImGui::CollapsingHeader("Puertas:")) {
+        ImGui::Indent();
+
+        for (auto&& gate : circuit.gates) {
+          ImGui::Text("Puerta %s", gate->getName());
+
+          ImGui::Indent();
+
+          ImGui::Text("ID: %lu", (uint64_t)gate->id);
+          ImGui::Text("Estado: %s", StateNames[gate->state]);
+
+          ImGui::Text("Ins:");
+          ImGui::Indent();
+
+          for (auto&& in : gate->inputs) {
+            ImGui::Text("ID: %lu", (uint64_t)in->id);
+          }
+
+          ImGui::Unindent();
+
+          ImGui::Text("Outs:");
+          ImGui::Indent();
+
+          for (auto&& out : gate->outputs) {
+            ImGui::Text("ID: %lu", (uint64_t)out->id);
+          }
+
+          ImGui::Unindent();
+          ImGui::Unindent();
+        }
+
+        ImGui::Unindent();
+      }
+
+      ImGui::End();
+    }
+
     Renderer::ResetStats();
 
     return rcode::ok;
@@ -162,9 +212,18 @@ namespace Gates {
   rcode GatesApplication::pOnLaunch() {
     Renderer::Init();
 
-    glActiveTexture(GL_TEXTURE1);
+    // test
     test_texture.Load("assets/test.png");
-    // test_texture.Load(glm::vec4 {1.f, 1.f, 1.f, 1.f});
+
+    circuit.gates.push_back(std::make_shared<InputGate>());
+    circuit.gates.push_back(std::make_shared<NotGate>());
+    circuit.gates.push_back(std::make_shared<OutputGate>());
+
+    circuit.gates[0]->state = State::OFF;
+    circuit.gates[0]->outputs.push_back(circuit.gates[1]);
+    circuit.gates[1]->inputs.push_back(circuit.gates[0]);
+    circuit.gates[1]->outputs.push_back(circuit.gates[2]);
+    circuit.gates[2]->inputs.push_back(circuit.gates[1]);
 
     return rcode::ok;
   }
@@ -173,7 +232,6 @@ namespace Gates {
     Renderer::UseCamera(camera);
     Renderer::BeginBatch();
 
-    // Renderer::DrawQuad({0.f, 0.f}, {30.f, 30.f}, {1.f, 1.f, 1.f, 1.f});
     Renderer::DrawQuad({0.f, 0.f}, {30.f, 30.f}, {1.f, 1.f, 1.f, 1.f}, test_texture.getId());
 
     Renderer::EndBatch();

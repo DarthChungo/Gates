@@ -5,34 +5,40 @@
 #include "Gates/LogicGate.hpp"
 
 namespace Gates {
-  class NotGate : private LogicGate {
-    void UpdateState();
-    void DrawGate();
+  class NotGate : public LogicGate {
+    void        UpdateState();
+    void        DrawGate();
+    const char* getName() { return "not"; }
   };
 
-  class AndGate : private LogicGate {
-    void UpdateState();
-    void DrawGate();
+  class AndGate : public LogicGate {
+    void        UpdateState();
+    void        DrawGate();
+    const char* getName() { return "and"; }
   };
 
-  class OrGate : private LogicGate {
-    void UpdateState();
-    void DrawGate();
+  class OrGate : public LogicGate {
+    void        UpdateState();
+    void        DrawGate();
+    const char* getName() { return "or"; }
   };
 
-  class XorGate : private LogicGate {
-    void UpdateState();
-    void DrawGate();
+  class XorGate : public LogicGate {
+    void        UpdateState();
+    void        DrawGate();
+    const char* getName() { return "xor"; }
   };
 
-  class InputGate : private LogicGate {
-    void UpdateState();
-    void DrawGate();
+  class InputGate : public LogicGate {
+    void        UpdateState();
+    void        DrawGate();
+    const char* getName() { return "input"; }
   };
 
-  class OutputGate : private LogicGate {
-    void UpdateState();
-    void DrawGate();
+  class OutputGate : public LogicGate {
+    void        UpdateState();
+    void        DrawGate();
+    const char* getName() { return "output"; }
   };
 }
 

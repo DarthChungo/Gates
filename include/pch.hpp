@@ -10,7 +10,11 @@
 #include <vector>
 #include <cstddef>
 #include <cstdint>
+#include <map>
 #include <unordered_map>
+#include <set>
+#include <unordered_set>
+#include <random>
 
 #define GLM_FORCE_RADIANS
 #include <glm/glm.hpp>

@@ -1,6 +1,7 @@
 #ifndef GATES_GATESAPPLICATION_HPP
 #define GATES_GATESAPPLICATION_HPP
 
+#include "Gates/LogicCircuit.hpp"
 #include "pch.hpp"
 #include "Engine/Application.hpp"
 #include "Engine/OrthographicCamera.hpp"
@@ -31,8 +32,11 @@ namespace Gates {
     OrthographicCamera camera {view_distance, 1.f};
 
     bool show_statistics = false;
+    bool show_controls   = false;
 
     Texture test_texture;
+
+    LogicCircuit circuit;
   };
 }
 

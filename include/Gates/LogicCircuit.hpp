@@ -7,10 +7,12 @@
 namespace Gates {
   class LogicCircuit {
    public:
+    friend class GatesApplication;
+
     void UpdateState();
 
    private:
-    std::vector<LogicGate> gates;
+    std::vector<std::shared_ptr<LogicGate>> gates;
   };
 }
 
