@@ -3,6 +3,7 @@
 
 #include "pch.hpp"
 #include "Engine/OrthographicCamera.hpp"
+#include "Engine/Texture.hpp"
 
 namespace Gates {
   struct Vertex {
@@ -23,8 +24,8 @@ namespace Gates {
 
     static void DrawQuad(const glm::vec2& position,
                          const glm::vec2& size,
-                         const glm::vec4& color  = {1.f, 1.f, 1.f, 1.f},
-                         const float&     tex_id = 0.f);
+                         const glm::vec4& color   = {1.f, 1.f, 1.f, 1.f},
+                         const Texture&   texture = white_texture);
 
     static void DrawTri(const glm::vec2& v1,
                         const glm::vec2& v2,
@@ -61,6 +62,9 @@ namespace Gates {
     static constexpr uint32_t pMaxVertexCount = 20000;
     static constexpr uint32_t pMaxIndexCount  = 30000;
     static constexpr uint32_t pMaxTextures    = 8;  // TODO: query current device being used
+
+   public:
+    static Texture white_texture;
   };
 }
 

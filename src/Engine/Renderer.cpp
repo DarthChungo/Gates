@@ -1,3 +1,4 @@
+#include "Engine/Texture.hpp"
 #include "pch.hpp"
 #include "Engine/Renderer.hpp"
 #include "Engine/Shader.hpp"
@@ -26,10 +27,7 @@ namespace Gates {
     uint32_t  line_index_count           = 0;
 
     uint32_t texture_slots[Renderer::pMaxTextures] = {};
-    uint32_t texture_slot_index                    = 1;
-
-    GLuint   white_texture       = 0;
-    uint32_t white_texture_index = 0;
+    uint32_t texture_slot_index                    = 0;
 
     Renderer::Stats stats = {};
 
@@ -38,6 +36,8 @@ namespace Gates {
     glm::mat4 view_projection = glm::mat4(1.f);
     glm::mat4 transform       = glm::mat4(1.f);
   } data;
+
+  Texture Renderer::white_texture = Texture();
 
   void Renderer::Init() {
     // Shaders
@@ -106,18 +106,8 @@ namespace Gates {
     glEnableVertexArrayAttrib(data.gl_line_vertex_array, 3);
     glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)offsetof(Vertex, tex_id));
 
-    // Textures
-    glCreateTextures(GL_TEXTURE_2D, 1, &data.white_texture);
-    glBindTexture(GL_TEXTURE_2D, data.white_texture);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    uint32_t pixel = 0xFFFFFFFF;
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 1, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, &pixel);
-
+    white_texture.Load(glm::vec4 {1.f, 1.f, 1.f, 1.f});
     memset(data.texture_slots, 0, pMaxTextures);
-    data.texture_slots[0] = data.white_texture;
   }
 
   void Renderer::Delete() {
@@ -130,7 +120,7 @@ namespace Gates {
     glDeleteBuffers(1, &data.gl_line_vertex_buffer);
     glDeleteBuffers(1, &data.gl_line_index_buffer);
 
-    glDeleteTextures(1, &data.white_texture);
+    white_texture.Release();
 
     delete[] data.tri_vertex_buffer;
     delete[] data.tri_index_buffer;
@@ -199,7 +189,7 @@ namespace Gates {
 
     data.tri_index_count    = 0;
     data.tri_vertex_count   = 0;
-    data.texture_slot_index = 1;
+    data.texture_slot_index = 0;
 
     data.stats.draw_calls++;
   }
@@ -238,7 +228,7 @@ namespace Gates {
   void Renderer::DrawQuad(const glm::vec2& position,
                           const glm::vec2& size,
                           const glm::vec4& color,
-                          const float&     tex_id) {
+                          const Texture&   texture) {
     if ((data.tri_index_count + 6) >= pMaxIndexCount || (data.tri_vertex_count + 4) >= pMaxVertexCount ||
         data.texture_slot_index > (pMaxTextures - 1)) {
       EndTriBatch();
@@ -248,18 +238,16 @@ namespace Gates {
 
     float tex_index = 0.f;
 
-    if (tex_id != 0.f) {
-      for (uint32_t i = 0; i < data.texture_slot_index; i++) {
-        if (data.texture_slots[i] == tex_id) {
-          tex_index = (float)i;
-        }
+    for (uint32_t i = 0; i < data.texture_slot_index; i++) {
+      if (data.texture_slots[i] == texture.getId()) {
+        tex_index = (float)i;
       }
+    }
 
-      if (tex_index == 0.f) {
-        tex_index                                   = (float)data.texture_slot_index;
-        data.texture_slots[data.texture_slot_index] = tex_id;
-        data.texture_slot_index++;
-      }
+    if (tex_index == 0.f) {
+      tex_index                                   = (float)data.texture_slot_index;
+      data.texture_slots[data.texture_slot_index] = texture.getId();
+      data.texture_slot_index++;
     }
 
     data.tri_vertex_buffer_current->position  = {position.x, position.y, .0f};

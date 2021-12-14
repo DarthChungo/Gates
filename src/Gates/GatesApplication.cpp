@@ -231,7 +231,16 @@ namespace Gates {
     Renderer::UseCamera(camera);
     Renderer::BeginBatch();
 
-    Renderer::DrawQuad({0.f, 0.f}, {30.f, 30.f}, {1.f, 1.f, 1.f, 1.f}, test_texture.getId());
+    Renderer::DrawQuad({0.f, 0.f}, {30.f, 30.f}, {1.f, 1.f, 1.f, 1.f}, test_texture);
+    Renderer::DrawQuad({-40.f, -40.f}, {30.f, 30.f}, {1.f, 1.f, 1.f, 1.f}, test_texture);
+    Renderer::DrawQuad({40.f, 40.f}, {30.f, 30.f}, {1.f, 1.f, 1.f, 1.f}, test_texture);
+    Renderer::DrawQuad({40.f, -40.f}, {30.f, 30.f}, {1.f, 1.f, 1.f, 1.f}, test_texture);
+    Renderer::DrawQuad({-40.f, 40.f}, {30.f, 30.f}, {1.f, 1.f, 1.f, 1.f}, test_texture);
+
+    Renderer::DrawQuad({40.f, 0.f}, {30.f, 30.f});
+    Renderer::DrawQuad({-40.f, 0.f}, {30.f, 30.f});
+    Renderer::DrawQuad({0.f, 40.f}, {30.f, 30.f});
+    Renderer::DrawQuad({0.f, -40.f}, {30.f, 30.f});
 
     Renderer::EndBatch();
     Renderer::FlushBatch();
