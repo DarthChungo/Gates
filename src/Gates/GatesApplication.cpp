@@ -100,7 +100,7 @@ namespace Gates {
 
       if (ImGui::BeginMenu("Ver")) {
         ImGui::Checkbox("Estadísticas", &show_statistics);
-        ImGui::Checkbox("Debug", &show_controls);
+        ImGui::Checkbox("Controles", &show_controls);
         ImGui::EndMenu();
       }
 

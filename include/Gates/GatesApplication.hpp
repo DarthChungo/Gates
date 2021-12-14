@@ -32,7 +32,7 @@ namespace Gates {
     OrthographicCamera camera {view_distance, 1.f};
 
     bool show_statistics = false;
-    bool show_controls   = false;
+    bool show_controls   = true;
 
     Texture test_texture;
 
