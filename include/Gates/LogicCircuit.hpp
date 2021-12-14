@@ -7,8 +7,12 @@
 #include "Util/UUID.hpp"
 
 namespace Gates {
+  class GatesApplication;
+
   class LogicCircuit {
    public:
+    LogicCircuit(GatesApplication* application) : app(application) {}
+
     template <class GateType>
     std::shared_ptr<LogicGate> AddGate() requires std::derived_from<GateType, LogicGate> {
       auto new_gate = std::make_shared<GateType>();
@@ -18,7 +22,7 @@ namespace Gates {
     }
 
     void UpdateState();
-    void DrawGates(const glm::vec2& mouse_pos, const Button& left_click);
+    void DrawGates(const Mouse& mouse);
 
     void SetInput(const std::shared_ptr<LogicGate>& input, State val);
     void AddOutput(const std::shared_ptr<LogicGate>& who, const std::shared_ptr<LogicGate>& output);
@@ -27,6 +31,12 @@ namespace Gates {
     std::set<std::shared_ptr<LogicGate>> gates;
     std::set<std::shared_ptr<LogicGate>> gates_update_pending;
     std::set<std::shared_ptr<LogicGate>> gates_update_forced;
+
+    std::shared_ptr<LogicGate> dragging_gate;
+    glm::vec2                  dragging_pos = {};
+    bool                       dragging     = false;
+
+    GatesApplication* const app;
   };
 }
 

@@ -1,4 +1,5 @@
 #include "Engine/Renderer.hpp"
+#include "Gates/GatesApplication.hpp"
 #include "Gates/LogicCircuit.hpp"
 #include "Gates/LogicGates.hpp"
 #include "Util/Misc.hpp"
@@ -29,8 +30,24 @@ namespace Gates {
     }
   }
 
-  void LogicCircuit::DrawGates(const glm::vec2& mouse_pos, const Button& left_click) {
+  bool operator>(const glm::vec2& left, const glm::vec2& right) { return (left.x > right.x) && (left.y > right.y); }
+  bool operator<(const glm::vec2& left, const glm::vec2& right) { return (left.x < right.x) && (left.y < right.y); }
+
+  void LogicCircuit::DrawGates(const Mouse& mouse) {
     for (auto&& gate : gates) {
+      if (gate->pos > (app->MousePosWorld() - glm::vec2 {10.f, 10.f}) && gate->pos < app->MousePosWorld() &&
+          mouse.state[(uint8_t)MouseButton::BUTTON_1].pressed) {
+        dragging_gate = gate;
+        dragging_pos  = mouse.pos;
+        dragging      = true;
+      }
+
+      if (mouse.state[(uint8_t)MouseButton::BUTTON_1].released) dragging = false;
+
+      if (dragging) {
+        gate->pos = dragging_pos;
+      }
+
       switch (gate->state) {
         case State::ERROR:
           Renderer::DrawQuad(gate->pos, {10.f, 10.f}, {1.f, 0.f, 0.f, 1.f});

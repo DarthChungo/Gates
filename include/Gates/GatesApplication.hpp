@@ -10,7 +10,7 @@
 namespace Gates {
   class GatesApplication : public Application {
    public:
-    friend class PhysicsEngine;
+    friend class LogicCircuit;
 
    private:
     rcode pOnUpdate() override;
@@ -36,7 +36,7 @@ namespace Gates {
 
     Texture test_texture;
 
-    LogicCircuit circuit;
+    LogicCircuit circuit {this};
   };
 }
 

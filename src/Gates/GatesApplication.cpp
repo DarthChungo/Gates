@@ -232,7 +232,7 @@ namespace Gates {
     Renderer::UseCamera(camera);
     Renderer::BeginBatch();
 
-    circuit.DrawGates(MousePos(), MouseButton(MouseButton::BUTTON_1));
+    circuit.DrawGates(MouseState());
 
     Renderer::EndBatch();
     Renderer::FlushBatch();
