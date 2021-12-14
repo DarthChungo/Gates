@@ -4,14 +4,14 @@
 
 namespace Gates {
   rcode GatesApplication::pOnUpdate() {
-    if (Key(Key::KEY_CAPS_LOCK).pressed) Close();
+    if (KeyboardKey(KeyboardKey::KEY_CAPS_LOCK).pressed) Close();
 
-    if (Mouse(Mouse::BUTTON_1).pressed) {
+    if (MouseButton(MouseButton::BUTTON_1).pressed && KeyboardKey(KeyboardKey::KEY_LEFT_CONTROL).held) {
       dragging = true;
       offset   = MousePosWorld();
     }
 
-    if (Mouse(Mouse::BUTTON_1).released) dragging = false;
+    if (MouseButton(MouseButton::BUTTON_1).released) dragging = false;
 
     if (dragging) {
       camera.offsetPosition(glm::vec3 {offset - MousePosWorld(), 0.f});
@@ -24,14 +24,11 @@ namespace Gates {
     camera.setProjection(view_distance, AspectRatio());
     camera.setRotation(view_rotation);
 
-    if (Key(Key::KEY_R).pressed) {
+    if (KeyboardKey(KeyboardKey::KEY_R).pressed) {
       running = false;
-      // RESET ENGINE
     }
 
-    if (Key(Key::KEY_SPACE).pressed) running = !running;
-
-    // if (running) // PERFORME UPDATES
+    if (KeyboardKey(KeyboardKey::KEY_SPACE).pressed) running = !running;
 
     return rcode::ok;
   }
@@ -224,6 +221,10 @@ namespace Gates {
 
     circuit.SetInput(in1, State::OFF);
 
+    in1->pos   = {0.f, 0.f};
+    gate1->pos = {10.f, 0.f};
+    out1->pos  = {20.f, 0.f};
+
     return rcode::ok;
   }
 
@@ -231,16 +232,7 @@ namespace Gates {
     Renderer::UseCamera(camera);
     Renderer::BeginBatch();
 
-    Renderer::DrawQuad({0.f, 0.f}, {30.f, 30.f}, {1.f, 1.f, 1.f, 1.f}, test_texture);
-    Renderer::DrawQuad({-40.f, -40.f}, {30.f, 30.f}, {1.f, 1.f, 1.f, 1.f}, test_texture);
-    Renderer::DrawQuad({40.f, 40.f}, {30.f, 30.f}, {1.f, 1.f, 1.f, 1.f}, test_texture);
-    Renderer::DrawQuad({40.f, -40.f}, {30.f, 30.f}, {1.f, 1.f, 1.f, 1.f}, test_texture);
-    Renderer::DrawQuad({-40.f, 40.f}, {30.f, 30.f}, {1.f, 1.f, 1.f, 1.f}, test_texture);
-
-    Renderer::DrawQuad({40.f, 0.f}, {30.f, 30.f});
-    Renderer::DrawQuad({-40.f, 0.f}, {30.f, 30.f});
-    Renderer::DrawQuad({0.f, 40.f}, {30.f, 30.f});
-    Renderer::DrawQuad({0.f, -40.f}, {30.f, 30.f});
+    circuit.DrawGates(MousePos(), MouseButton(MouseButton::BUTTON_1));
 
     Renderer::EndBatch();
     Renderer::FlushBatch();

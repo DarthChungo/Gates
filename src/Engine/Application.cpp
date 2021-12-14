@@ -43,15 +43,18 @@ namespace Gates {
 
   const glm::uvec2& Application::WindowSize() const { return pWindowSize; }
   const glm::uvec2& Application::WindowPos() const { return pWindowPos; }
-  const glm::vec2&  Application::MousePos() const { return pMousePos; }
+  const glm::vec2&  Application::MousePos() const { return pMouse.pos; }
   const float       Application::AspectRatio() const { return (float)pWindowSize.x / (float)pWindowSize.y; }
 
-  glm::vec2 Application::MouseWheel() const { return pMouseWheel; }
-  void      Application::ResetMouseWheel() { pMouseWheel = {.0f, .0f}; }
+  glm::vec2 Application::MouseWheel() const { return pMouse.wheel; }
+  void      Application::ResetMouseWheel() { pMouse.wheel = {.0f, .0f}; }
   bool      Application::MouseFocus() const { return pHasMouseFocus; }
 
-  const Button& Application::Mouse(Gates::Mouse button) const { return pMouseButtons[(uint8_t)button]; }
-  const Button& Application::Key(Gates::Key key) const { return pKeyboardKeys[(uint16_t)key]; }
+  const Button& Application::MouseButton(Gates::MouseButton button) const { return pMouse.state[(uint8_t)button]; }
+  const Button& Application::KeyboardKey(Gates::KeyboardKey key) const { return pKeyboard.state[(uint16_t)key]; }
+
+  const Mouse&    Application::MouseState() const { return pMouse; }
+  const Keyboard& Application::KeyboardState() const { return pKeyboard; }
 
   float    Application::et() const { return pElapsedTime; }
   uint32_t Application::fps() const { return pFrameRate; }
@@ -83,7 +86,7 @@ namespace Gates {
     auto         pos          = glm::vec2(posx, posy);
 
     if (!((pos.x > app_instance->pWindowSize.x) || (pos.y > app_instance->pWindowSize.y))) {
-      app_instance->pMousePos =
+      app_instance->pMouse.pos =
           (pos / (glm::vec2)app_instance->pWindowSize) * glm::vec2(2.f, 2.f) - glm::vec2(1.f, 1.f);
     }
   }
@@ -93,11 +96,11 @@ namespace Gates {
 
     switch (action) {
       case GLFW_RELEASE:
-        app_instance->pMouseButtonsNew[button] = false;
+        app_instance->pMouse.state_new[button] = false;
         break;
 
       case GLFW_PRESS:
-        app_instance->pMouseButtonsNew[button] = true;
+        app_instance->pMouse.state_new[button] = true;
         break;
 
       default:
@@ -107,7 +110,7 @@ namespace Gates {
 
   void Application::pHandleMouseScroll(GLFWwindow* window, double deltax, double deltay) {
     Application* app_instance = reinterpret_cast<Application*>(glfwGetWindowUserPointer(window));
-    app_instance->pMouseWheel += glm::vec2(deltax, deltay);
+    app_instance->pMouse.wheel += glm::vec2(deltax, deltay);
   }
 
   void Application::pHandleMouseEnter(GLFWwindow* window, int enter) {
@@ -121,11 +124,11 @@ namespace Gates {
 
     switch (action) {
       case GLFW_RELEASE:
-        app_instance->pKeyboardKeysNew[key] = false;
+        app_instance->pKeyboard.state_new[key] = false;
         break;
 
       case GLFW_PRESS:
-        app_instance->pKeyboardKeysNew[key] = true;
+        app_instance->pKeyboard.state_new[key] = true;
         break;
 
       default:
@@ -216,39 +219,39 @@ namespace Gates {
         }
 
         for (uint32_t i = 0; i < 8; i++) {
-          pMouseButtons[i].pressed  = false;
-          pMouseButtons[i].released = false;
+          pMouse.state[i].pressed  = false;
+          pMouse.state[i].released = false;
 
-          if (pMouseButtonsNew[i] != pMouseButtonsOld[i]) {
-            if (pMouseButtonsNew[i]) {
-              pMouseButtons[i].pressed = !pMouseButtons[i].held;
-              pMouseButtons[i].held    = true;
+          if (pMouse.state_new[i] != pMouse.state_old[i]) {
+            if (pMouse.state_new[i]) {
+              pMouse.state[i].pressed = !pMouse.state[i].held;
+              pMouse.state[i].held    = true;
 
             } else {
-              pMouseButtons[i].released = true;
-              pMouseButtons[i].held     = false;
+              pMouse.state[i].released = true;
+              pMouse.state[i].held     = false;
             }
           }
 
-          pMouseButtonsOld[i] = pMouseButtonsNew[i];
+          pMouse.state_old[i] = pMouse.state_new[i];
         }
 
         for (uint32_t i = 0; i < 512; i++) {
-          pKeyboardKeys[i].pressed  = false;
-          pKeyboardKeys[i].released = false;
+          pKeyboard.state[i].pressed  = false;
+          pKeyboard.state[i].released = false;
 
-          if (pKeyboardKeysNew[i] != pKeyboardKeysOld[i]) {
-            if (pKeyboardKeysNew[i]) {
-              pKeyboardKeys[i].pressed = !pKeyboardKeys[i].held;
-              pKeyboardKeys[i].held    = true;
+          if (pKeyboard.state_new[i] != pKeyboard.state_old[i]) {
+            if (pKeyboard.state_new[i]) {
+              pKeyboard.state[i].pressed = !pKeyboard.state[i].held;
+              pKeyboard.state[i].held    = true;
 
             } else {
-              pKeyboardKeys[i].released = true;
-              pKeyboardKeys[i].held     = false;
+              pKeyboard.state[i].released = true;
+              pKeyboard.state[i].held     = false;
             }
           }
 
-          pKeyboardKeysOld[i] = pKeyboardKeysNew[i];
+          pKeyboard.state_old[i] = pKeyboard.state_new[i];
         }
 
         glfwPollEvents();

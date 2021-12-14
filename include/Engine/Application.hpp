@@ -23,7 +23,7 @@ namespace Gates {
     bool released = false;
   };
 
-  enum class Key : uint16_t {
+  enum class KeyboardKey : uint16_t {
     KEY_UNKNOWN       = 0,
     KEY_SPACE         = 32,
     KEY_APOSTROPHE    = 39,
@@ -147,7 +147,7 @@ namespace Gates {
     KEY_MENU          = 348
   };
 
-  enum class Mouse : uint8_t {
+  enum class MouseButton : uint8_t {
     BUTTON_1 = 0,
     BUTTON_2 = 1,
     BUTTON_3 = 2,
@@ -156,6 +156,21 @@ namespace Gates {
     BUTTON_6 = 5,
     BUTTON_7 = 6,
     BUTTON_8 = 7
+  };
+
+  struct Mouse {
+    Button state[8]     = {};
+    bool   state_old[8] = {};
+    bool   state_new[8] = {};
+
+    glm::vec2 pos   = {};
+    glm::vec2 wheel = {};
+  };
+
+  struct Keyboard {
+    Button state[512]     = {};
+    bool   state_old[512] = {};
+    bool   state_new[512] = {};
   };
 
   class Application {
@@ -199,8 +214,11 @@ namespace Gates {
     void             ResetMouseWheel();
     bool             MouseFocus() const;
 
-    const Button& Mouse(Gates::Mouse button) const;
-    const Button& Key(Gates::Key key) const;
+    const Button& MouseButton(Gates::MouseButton button) const;
+    const Button& KeyboardKey(Gates::KeyboardKey key) const;
+
+    const Mouse&    MouseState() const;
+    const Keyboard& KeyboardState() const;
 
     float    et() const;
     uint32_t fps() const;
@@ -232,16 +250,8 @@ namespace Gates {
     glm::uvec2 pWindowSize      = {};
     glm::uvec2 pWindowPos       = {};
 
-    glm::vec2 pMousePos   = {};
-    glm::vec2 pMouseWheel = {};
-
-    Button pMouseButtons[8]    = {};
-    bool   pMouseButtonsOld[8] = {};
-    bool   pMouseButtonsNew[8] = {};
-
-    Button pKeyboardKeys[512]    = {};
-    bool   pKeyboardKeysOld[512] = {};
-    bool   pKeyboardKeysNew[512] = {};
+    Mouse    pMouse    = {};
+    Keyboard pKeyboard = {};
 
     bool pHasMouseFocus = false;
   };

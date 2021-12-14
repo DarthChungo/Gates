@@ -15,7 +15,6 @@ namespace Gates {
     LogicGate();
 
     virtual void        UpdateState() = 0;
-    virtual void        DrawGate()    = 0;
     virtual const char* getName()     = 0;
 
    public:
@@ -24,6 +23,8 @@ namespace Gates {
 
     State state = State::ERROR;
     UUID  id;
+
+    glm::vec2 pos;
   };
 }
 

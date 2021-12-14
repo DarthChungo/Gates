@@ -1,3 +1,4 @@
+#include "Engine/Renderer.hpp"
 #include "Gates/LogicCircuit.hpp"
 #include "Gates/LogicGates.hpp"
 #include "Util/Misc.hpp"
@@ -24,6 +25,24 @@ namespace Gates {
             gates_update_pending.insert(child);
           }
         }
+      }
+    }
+  }
+
+  void LogicCircuit::DrawGates(const glm::vec2& mouse_pos, const Button& left_click) {
+    for (auto&& gate : gates) {
+      switch (gate->state) {
+        case State::ERROR:
+          Renderer::DrawQuad(gate->pos, {10.f, 10.f}, {1.f, 0.f, 0.f, 1.f});
+          break;
+
+        case State::ON:
+          Renderer::DrawQuad(gate->pos, {10.f, 10.f}, {0.f, 1.f, 0.f, 1.f});
+          break;
+
+        case State::OFF:
+          Renderer::DrawQuad(gate->pos, {10.f, 10.f}, {3.f, 3.f, 3.f, 1.f});
+          break;
       }
     }
   }

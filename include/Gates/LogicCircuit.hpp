@@ -2,6 +2,7 @@
 #define GATES_LOGICCIRCUIT_HPP
 
 #include "pch.hpp"
+#include "Engine/Application.hpp"
 #include "Gates/LogicGate.hpp"
 #include "Util/UUID.hpp"
 
@@ -17,6 +18,8 @@ namespace Gates {
     }
 
     void UpdateState();
+    void DrawGates(const glm::vec2& mouse_pos, const Button& left_click);
+
     void SetInput(const std::shared_ptr<LogicGate>& input, State val);
     void AddOutput(const std::shared_ptr<LogicGate>& who, const std::shared_ptr<LogicGate>& output);
 

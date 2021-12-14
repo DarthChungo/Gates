@@ -13,8 +13,6 @@ namespace Gates {
     }
   }
 
-  void NotGate::DrawGate() {}
-
   void AndGate::UpdateState() {
     if (inputs.size() < 2) {
       state = State::ERROR;
@@ -41,8 +39,6 @@ namespace Gates {
     }
   }
 
-  void AndGate::DrawGate() {}
-
   void OrGate::UpdateState() {
     if (inputs.size() < 2) {
       state = State::ERROR;
@@ -65,8 +61,6 @@ namespace Gates {
       }
     }
   }
-
-  void OrGate::DrawGate() {}
 
   void XorGate::UpdateState() {
     if (inputs.size() < 2) {
@@ -93,11 +87,7 @@ namespace Gates {
     }
   }
 
-  void XorGate::DrawGate() {}
-
   void InputGate::UpdateState() {}
-
-  void InputGate::DrawGate() {}
 
   void OutputGate::UpdateState() {
     if (inputs.size() != 1) {
@@ -106,6 +96,4 @@ namespace Gates {
       state = inputs.begin()->get()->state;
     }
   }
-
-  void OutputGate::DrawGate() {}
 }
