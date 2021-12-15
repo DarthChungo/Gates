@@ -17,10 +17,12 @@ namespace Gates {
         gate->UpdateState();
 
         if (auto it = gates_update_forced.find(gate); it != gates_update_forced.end()) {
+          gates_update_forced.erase(it);
+
           for (auto&& child : gate->outputs) {
             gates_update_pending.insert(child);
-            gates_update_forced.erase(it);
           }
+
         } else if (gate->state != previous_state) {
           for (auto&& child : gate->outputs) {
             gates_update_pending.insert(child);
@@ -39,53 +41,39 @@ namespace Gates {
 
   void LogicCircuit::DrawGates(const Mouse& mouse) {
     for (auto&& gate : gates) {
-      if (gate->pos > (app->MousePosWorld() - glm::vec2 {10.f, 10.f}) && gate->pos < app->MousePosWorld() &&
-          mouse.button(MouseButton::BUTTON_1).pressed) {
-        if (app->KeyboardKey(KeyboardKey::KEY_LEFT_ALT).held && ! instanceof <OutputGate>(gate.get())) {
-          outputing_gate = gate;
-          outputing      = true;
+      if (gate->pos > (app->MousePosWorld() - glm::vec2 {10.f, 10.f}) && gate->pos < app->MousePosWorld()) {
+        if (mouse.button(MouseButton::BUTTON_1).pressed) {
+          if (app->KeyboardKey(KeyboardKey::KEY_LEFT_ALT).held && ! instanceof <OutputGate>(gate.get())) {
+            outputing_gate = gate;
+            outputing      = true;
 
-        } else {
-          dragging_offset = app->MousePosWorld() - gate->pos;
-          dragging_gate   = gate;
-          dragging        = true;
-        }
-      }
+          } else if (app->KeyboardKey(KeyboardKey::KEY_LEFT_SHIFT).held && instanceof <InputGate>(gate.get())) {
+            SetInput(gate, (gate->state == State::OFF || gate->state == State::ERROR) ? State::ON : State::OFF);
 
-      if (mouse.button(MouseButton::BUTTON_1).released) {
-        dragging = false;
+          } else {
+            selected_gate = gate;
 
-        if (outputing) {
-          std::shared_ptr<LogicGate> potential_output;
-
-          for (auto&& output : gates) {
-            if (output == gate) continue;
-            if (output->pos > (app->MousePosWorld() - glm::vec2 {10.f, 10.f}) && output->pos < app->MousePosWorld()) {
-              potential_output = output;
-            }
+            dragging_offset = app->MousePosWorld() - gate->pos;
+            dragging_gate   = gate;
+            dragging        = true;
           }
 
-          if (potential_output && ! instanceof <InputGate>(potential_output.get()))
-            MakeConnection(outputing_gate, potential_output);
+        } else if (mouse.button(MouseButton::BUTTON_1).held) {
+          if (outputing) {
+            Renderer::OutlineQuad(gate->pos, {10.f, 10.f});
+          }
+
+        } else if (outputing) {
+          if (gate != outputing_gate && ! instanceof <InputGate>(gate.get())) {
+            ToggleConnection(outputing_gate, gate);
+          }
 
           outputing = false;
           outputing_gate.reset();
         }
-      }
 
-      if (mouse.button(MouseButton::BUTTON_1).pressed && adding) {
-        adding = false;
-        adding_gate.reset();
-      }
-
-      if (dragging && gate == dragging_gate) {
-        gate->pos = app->MousePosWorld() - dragging_offset;
-
-      } else if (adding && gate == adding_gate) {
-        gate->pos = app->MousePosWorld() - glm::vec2 {5.f, 5.f};
-
-      } else if (outputing && gate == outputing_gate) {
-        Renderer::DrawLine(gate->pos + glm::vec2 {10.f, 5.f}, app->MousePosWorld());
+      } else if (mouse.button(MouseButton::BUTTON_1).pressed && (selected_gate == gate)) {
+        selected_gate.reset();
       }
 
       switch (gate->state) {
@@ -121,6 +109,54 @@ namespace Gates {
         }
       }
     }
+
+    if (app->KeyboardKey(KeyboardKey::KEY_DELETE).pressed && selected_gate) {
+      gates.erase(selected_gate);
+      gates_input.erase(selected_gate);
+      gates_output.erase(selected_gate);
+
+      dragging_gate.reset();
+      dragging = false;
+
+      for (auto&& output : selected_gate->outputs) {
+        output->inputs.erase(selected_gate);
+        gates_update_pending.insert(output);
+      }
+
+      selected_gate->outputs.clear();
+
+      for (auto&& input : selected_gate->inputs) {
+        input->outputs.erase(selected_gate);
+        gates_update_pending.insert(input);
+      }
+
+      selected_gate->inputs.clear();
+      selected_gate.reset();
+    }
+
+    if (mouse.button(MouseButton::BUTTON_1).pressed && adding) {
+      adding = false;
+      adding_gate.reset();
+
+    } else if (mouse.button(MouseButton::BUTTON_1).released) {
+      dragging = false;
+
+      outputing = false;
+      outputing_gate.reset();
+    }
+
+    if (dragging) {
+      dragging_gate->pos = app->MousePosWorld() - dragging_offset;
+
+    } else if (adding) {
+      adding_gate->pos = app->MousePosWorld() - glm::vec2 {5.f, 5.f};
+
+    } else if (outputing) {
+      Renderer::DrawLine(outputing_gate->pos + glm::vec2 {10.f, 5.f}, app->MousePosWorld());
+      Renderer::OutlineQuad(outputing_gate->pos, {10.f, 10.f});
+    }
+
+    if (selected_gate) Renderer::OutlineQuad(selected_gate->pos, {10.f, 10.f});
   }
 
   void LogicCircuit::SetInput(const std::shared_ptr<LogicGate>& input, State val) {
@@ -129,9 +165,15 @@ namespace Gates {
     gates_update_forced.insert(input);
   }
 
-  void LogicCircuit::MakeConnection(const std::shared_ptr<LogicGate>& who, const std::shared_ptr<LogicGate>& output) {
-    who->outputs.insert(output);
-    output->inputs.insert(who);
+  void LogicCircuit::ToggleConnection(const std::shared_ptr<LogicGate>& who, const std::shared_ptr<LogicGate>& output) {
+    if (who->outputs.contains(output) || output->inputs.contains(who)) {
+      who->outputs.erase(output);
+      output->inputs.erase(who);
+
+    } else {
+      who->outputs.insert(output);
+      output->inputs.insert(who);
+    }
 
     gates_update_pending.insert(output);
   }

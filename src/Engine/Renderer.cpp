@@ -389,6 +389,55 @@ namespace Gates {
     data.stats.lines_drawn++;
   }
 
+  void Renderer::OutlineQuad(const glm::vec2& position, const glm::vec2& size, const glm::vec4& color) {
+    if ((data.line_index_count + 8) >= pMaxIndexCount || (data.line_vertex_count + 4) >= pMaxVertexCount) {
+      EndLineBatch();
+      FlushLineBatch();
+      BeginLineBatch();
+    }
+
+    data.line_vertex_buffer_current->position = {position.x, position.y, .0f};
+    data.line_vertex_buffer_current->color    = color;
+    data.tri_vertex_buffer_current->tex_coord = {0.f, 0.f};
+    data.tri_vertex_buffer_current->tex_id    = 0;
+    data.line_vertex_buffer_current++;
+
+    data.line_vertex_buffer_current->position = {position.x, position.y + size.y, .0f};
+    data.line_vertex_buffer_current->color    = color;
+    data.tri_vertex_buffer_current->tex_coord = {0.f, 0.f};
+    data.tri_vertex_buffer_current->tex_id    = 0;
+    data.line_vertex_buffer_current++;
+
+    data.line_vertex_buffer_current->position = {position.x + size.x, position.y + size.y, .0f};
+    data.line_vertex_buffer_current->color    = color;
+    data.tri_vertex_buffer_current->tex_coord = {0.f, 0.f};
+    data.tri_vertex_buffer_current->tex_id    = 0;
+    data.line_vertex_buffer_current++;
+
+    data.line_vertex_buffer_current->position = {position.x + size.x, position.y, .0f};
+    data.line_vertex_buffer_current->color    = color;
+    data.tri_vertex_buffer_current->tex_coord = {0.f, 0.f};
+    data.tri_vertex_buffer_current->tex_id    = 0;
+    data.line_vertex_buffer_current++;
+
+    data.line_index_buffer[data.line_index_count + 0] = 0 + data.line_vertex_count;
+    data.line_index_buffer[data.line_index_count + 1] = 1 + data.line_vertex_count;
+
+    data.line_index_buffer[data.line_index_count + 2] = 1 + data.line_vertex_count;
+    data.line_index_buffer[data.line_index_count + 3] = 2 + data.line_vertex_count;
+
+    data.line_index_buffer[data.line_index_count + 4] = 2 + data.line_vertex_count;
+    data.line_index_buffer[data.line_index_count + 5] = 3 + data.line_vertex_count;
+
+    data.line_index_buffer[data.line_index_count + 6] = 3 + data.line_vertex_count;
+    data.line_index_buffer[data.line_index_count + 7] = 0 + data.line_vertex_count;
+
+    data.line_vertex_count += 4;
+    data.line_index_count += 8;
+
+    data.stats.quads_outlined++;
+  }
+
   void Renderer::SetViewProjection(const glm::mat4& view_projection) { data.view_projection = view_projection; }
 
   void Renderer::SetTransform(const glm::vec3& transform) {

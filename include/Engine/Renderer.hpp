@@ -39,6 +39,10 @@ namespace Gates {
 
     static void DrawLine(const glm::vec2& pos1, const glm::vec2& pos2, const glm::vec4& color = {1.f, 1.f, 1.f, 1.f});
 
+    static void OutlineQuad(const glm::vec2& position,
+                            const glm::vec2& size,
+                            const glm::vec4& color = {1.f, 1.f, 1.f, 1.f});
+
     static void SetViewProjection(const glm::mat4& view_projection);
     static void SetTransform(const glm::vec3& transform);
     static void UseCamera(const OrthographicCamera& camera);
@@ -49,6 +53,7 @@ namespace Gates {
       uint32_t tris_drawn        = 0;
       uint32_t lines_drawn       = 0;
       uint32_t circles_drawn     = 0;
+      uint32_t quads_outlined    = 0;
       uint32_t tri_vertex_count  = 0;
       uint32_t tri_index_count   = 0;
       uint32_t line_vertex_count = 0;

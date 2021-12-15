@@ -24,11 +24,7 @@ namespace Gates {
     camera.setProjection(view_distance, AspectRatio());
     camera.setRotation(view_rotation);
 
-    if (KeyboardKey(KeyboardKey::KEY_R).pressed) {
-      running = false;
-    }
-
-    if (KeyboardKey(KeyboardKey::KEY_SPACE).pressed) running = !running;
+    circuit.UpdateState();
 
     return rcode::ok;
   }
@@ -113,6 +109,7 @@ namespace Gates {
         ImGui::Text("Triángulos: %d", Renderer::GetStats().tris_drawn);
         ImGui::Text("Círculos: %d", Renderer::GetStats().circles_drawn);
         ImGui::Text("Líneas: %d", Renderer::GetStats().lines_drawn);
+        ImGui::Text("Cuadrados (resaltados): %d", Renderer::GetStats().quads_outlined);
         ImGui::Text("Presentaciones: %d", Renderer::GetStats().draw_calls);
         ImGui::Text("Vértices (triángulos): %d", Renderer::GetStats().tri_vertex_count);
         ImGui::Text("Índices (triángulos): %d", Renderer::GetStats().tri_index_count);
@@ -156,18 +153,15 @@ namespace Gates {
     if (show_controls) {
       ImGui::Begin("Controles");
 
-      if (ImGui::CollapsingHeader("Simulación")) {
-        ImGui::Indent();
-
-        if (ImGui::Button("Actualizar")) circuit.UpdateState();
-
-        ImGui::Unindent();
-      }
-
       if (ImGui::CollapsingHeader("Añadir")) {
         ImGui::Indent();
 
         if (ImGui::Button("Puerta input")) circuit.AddGate<InputGate>();
+        if (ImGui::Button("Puerta output")) circuit.AddGate<OutputGate>();
+        if (ImGui::Button("Puerta not")) circuit.AddGate<NotGate>();
+        if (ImGui::Button("Puerta or")) circuit.AddGate<OrGate>();
+        if (ImGui::Button("Puerta and")) circuit.AddGate<AndGate>();
+        if (ImGui::Button("Puerta xor")) circuit.AddGate<XorGate>();
 
         ImGui::Unindent();
       }
@@ -221,10 +215,8 @@ namespace Gates {
     auto gate1 = circuit.AddGateDirect<NotGate>({15.f, 0.f});
     auto out1  = circuit.AddGateDirect<OutputGate>({30.f, 0.f});
 
-    circuit.MakeConnection(in1, gate1);
-    circuit.MakeConnection(gate1, out1);
-
-    circuit.SetInput(in1, State::OFF);
+    circuit.ToggleConnection(in1, gate1);
+    circuit.ToggleConnection(gate1, out1);
 
     return rcode::ok;
   }

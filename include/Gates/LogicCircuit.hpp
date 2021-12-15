@@ -24,6 +24,7 @@ namespace Gates {
 
       if constexpr (std::is_same<GateType, InputGate>::value) {
         gates_input.insert(new_gate);
+        new_gate->state = State::OFF;
       } else if constexpr (std::is_same<GateType, OutputGate>::value) {
         gates_output.insert(new_gate);
       }
@@ -39,6 +40,7 @@ namespace Gates {
 
       if constexpr (std::is_same<GateType, InputGate>::value) {
         gates_input.insert(new_gate);
+        new_gate->state = State::OFF;
       } else if constexpr (std::is_same<GateType, OutputGate>::value) {
         gates_output.insert(new_gate);
       }
@@ -50,7 +52,7 @@ namespace Gates {
     void DrawGates(const Mouse& mouse);
 
     void SetInput(const std::shared_ptr<LogicGate>& input, State val);
-    void MakeConnection(const std::shared_ptr<LogicGate>& who, const std::shared_ptr<LogicGate>& output);
+    void ToggleConnection(const std::shared_ptr<LogicGate>& who, const std::shared_ptr<LogicGate>& output);
 
    public:
     std::set<std::shared_ptr<LogicGate>> gates;
@@ -59,6 +61,7 @@ namespace Gates {
     std::set<std::shared_ptr<LogicGate>> gates_input;
     std::set<std::shared_ptr<LogicGate>> gates_output;
 
+    std::shared_ptr<LogicGate> selected_gate;
     std::shared_ptr<LogicGate> dragging_gate;
     glm::vec2                  dragging_offset = {};
     bool                       dragging        = false;

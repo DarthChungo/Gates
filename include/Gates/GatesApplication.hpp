@@ -23,7 +23,6 @@ namespace Gates {
 
    private:
     bool dragging = false;
-    bool running  = false;
 
     glm::vec2 offset = {};
 
