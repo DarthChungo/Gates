@@ -158,16 +158,28 @@ namespace Gates {
     BUTTON_8 = 7
   };
 
-  struct Mouse {
-    Button state[8]     = {};
-    bool   state_old[8] = {};
-    bool   state_new[8] = {};
+  class Mouse {
+   public:
+    friend class Application;
 
     glm::vec2 pos   = {};
     glm::vec2 wheel = {};
+
+    inline const Button& button(const MouseButton& button) const { return state[(uint8_t)button]; }
+
+   private:
+    Button state[8]     = {};
+    bool   state_old[8] = {};
+    bool   state_new[8] = {};
   };
 
-  struct Keyboard {
+  class Keyboard {
+   public:
+    friend class Application;
+
+    inline const Button& key(const KeyboardKey& key) const { return state[(uint8_t)key]; }
+
+   private:
     Button state[512]     = {};
     bool   state_old[512] = {};
     bool   state_new[512] = {};

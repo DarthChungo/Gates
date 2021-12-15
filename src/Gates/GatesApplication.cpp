@@ -164,6 +164,14 @@ namespace Gates {
         ImGui::Unindent();
       }
 
+      if (ImGui::CollapsingHeader("Añadir")) {
+        ImGui::Indent();
+
+        if (ImGui::Button("Puerta input")) circuit.AddGate<InputGate>();
+
+        ImGui::Unindent();
+      }
+
       if (ImGui::CollapsingHeader("Puertas:")) {
         ImGui::Indent();
 
@@ -209,21 +217,14 @@ namespace Gates {
   rcode GatesApplication::pOnLaunch() {
     Renderer::Init();
 
-    // test
-    test_texture.Load("assets/test.png");
+    auto in1   = circuit.AddGateDirect<InputGate>({0.f, 0.f});
+    auto gate1 = circuit.AddGateDirect<NotGate>({15.f, 0.f});
+    auto out1  = circuit.AddGateDirect<OutputGate>({30.f, 0.f});
 
-    auto in1   = circuit.AddGate<InputGate>();
-    auto gate1 = circuit.AddGate<NotGate>();
-    auto out1  = circuit.AddGate<OutputGate>();
-
-    circuit.AddOutput(in1, gate1);
-    circuit.AddOutput(gate1, out1);
+    circuit.MakeConnection(in1, gate1);
+    circuit.MakeConnection(gate1, out1);
 
     circuit.SetInput(in1, State::OFF);
-
-    in1->pos   = {0.f, 0.f};
-    gate1->pos = {10.f, 0.f};
-    out1->pos  = {20.f, 0.f};
 
     return rcode::ok;
   }
@@ -242,7 +243,6 @@ namespace Gates {
 
   rcode GatesApplication::pOnClose() {
     Renderer::Delete();
-    test_texture.Release();
     return rcode::ok;
   }
 

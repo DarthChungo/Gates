@@ -34,8 +34,6 @@ namespace Gates {
     bool show_statistics = false;
     bool show_controls   = true;
 
-    Texture test_texture;
-
     LogicCircuit circuit {this};
   };
 }

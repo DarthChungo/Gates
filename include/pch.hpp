@@ -16,6 +16,7 @@
 #include <unordered_set>
 #include <random>
 #include <concepts>
+#include <type_traits>
 
 #define GLM_FORCE_RADIANS
 #include <glm/glm.hpp>
