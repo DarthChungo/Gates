@@ -48,8 +48,9 @@ namespace Gates {
       return new_gate;
     }
 
-    void UpdateState();
-    void DrawGates(const Mouse& mouse);
+    void UpdateLogicState();
+    void UpdateGraphicsState();
+    void DrawGates();
 
     void SetInput(const std::shared_ptr<LogicGate>& input, State val);
     void ToggleConnection(const std::shared_ptr<LogicGate>& who, const std::shared_ptr<LogicGate>& output);
@@ -61,6 +62,7 @@ namespace Gates {
     std::set<std::shared_ptr<LogicGate>> gates_input;
     std::set<std::shared_ptr<LogicGate>> gates_output;
 
+    std::shared_ptr<LogicGate> hovered_gate;
     std::shared_ptr<LogicGate> selected_gate;
     std::shared_ptr<LogicGate> dragging_gate;
     glm::vec2                  dragging_offset = {};

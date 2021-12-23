@@ -24,7 +24,8 @@ namespace Gates {
     camera.setProjection(view_distance, AspectRatio());
     camera.setRotation(view_rotation);
 
-    circuit.UpdateState();
+    circuit.UpdateGraphicsState();
+    circuit.UpdateLogicState();
 
     return rcode::ok;
   }
@@ -225,7 +226,7 @@ namespace Gates {
     Renderer::UseCamera(camera);
     Renderer::BeginBatch();
 
-    circuit.DrawGates(MouseState());
+    circuit.DrawGates();
 
     Renderer::EndBatch();
     Renderer::FlushBatch();
