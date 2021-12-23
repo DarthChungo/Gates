@@ -165,7 +165,7 @@ namespace Gates {
 
     while (!pHasBeenClosed) {
       if (glfwWindowShouldClose(pWindow)) pWantsToClose = true;
-      std::this_thread::sleep_for(std::chrono::milliseconds(10));
+      glfwWaitEvents();
     }
 
     glfwDestroyWindow(pWindow);
@@ -174,7 +174,7 @@ namespace Gates {
 
   void Application::pGraphicsThread() {
     glfwMakeContextCurrent(pWindow);
-    glfwSwapInterval(false);
+    glfwSwapInterval(true);
 
     glewExperimental = GL_TRUE;
     if (!!glewInit()) Logger::Die("GLEW initialization failed");
@@ -253,8 +253,6 @@ namespace Gates {
 
           pKeyboard.state_old[i] = pKeyboard.state_new[i];
         }
-
-        glfwPollEvents();
 
         if (pOnUpdate() != rcode::ok) pThreadRunning = false;
 
