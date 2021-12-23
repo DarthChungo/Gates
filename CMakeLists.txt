@@ -37,12 +37,6 @@ target_precompile_headers(Gates PRIVATE include/pch.hpp)
 
 add_custom_command(
   TARGET Gates POST_BUILD
-  COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/shaders $<TARGET_FILE_DIR:Gates>/shaders
-  COMMENT "Copying shaders" VERBATIM
-  )
-
-add_custom_command(
-  TARGET Gates POST_BUILD
   COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/assets $<TARGET_FILE_DIR:Gates>/assets
   COMMENT "Copying assets" VERBATIM
   )

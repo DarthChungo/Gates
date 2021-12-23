@@ -41,7 +41,7 @@ namespace Gates {
 
   void Renderer::Init() {
     // Shaders
-    data.shader_program = std::make_unique<ShaderProgram>("shaders/shader.vert", "shaders/shader.frag");
+    data.shader_program = std::make_unique<ShaderProgram>("assets/shaders/shader.vert", "assets/shaders/shader.frag");
     data.shader_program->Use();
 
     int samplers[pMaxTextures];

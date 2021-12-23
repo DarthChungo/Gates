@@ -273,8 +273,6 @@ namespace Gates {
         if (pOnRender() != rcode::ok) pThreadRunning = false;
 
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-        ImGui::GetDrawData();
-
         glfwSwapBuffers(pWindow);
 
         if (pWantsToClose) {

@@ -17,6 +17,7 @@
 #include <random>
 #include <concepts>
 #include <type_traits>
+#include <condition_variable>
 
 #define GLM_FORCE_RADIANS
 #include <glm/glm.hpp>
