@@ -26,7 +26,7 @@ namespace Gates {
 
     glm::vec2 offset = {};
 
-    float              view_distance = 200.f;
+    float              view_distance = 60.f;
     float              view_rotation = 0.f;
     OrthographicCamera camera {view_distance, 1.f};
 

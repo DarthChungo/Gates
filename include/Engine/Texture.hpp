@@ -11,6 +11,7 @@ namespace Gates {
 
     void Release();
 
+    bool   Loaded() const { return pId == 0; }
     GLuint getId() const;
 
    private:

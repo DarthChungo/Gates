@@ -43,7 +43,7 @@ namespace Gates {
     hovered_gate.reset();
 
     for (auto&& gate : gates) {
-      if (gate->pos > (app->MousePosWorld() - glm::vec2 {10.f, 10.f}) && gate->pos < app->MousePosWorld()) {
+      if (gate->pos > (app->MousePosWorld() - gate->size) && gate->pos < app->MousePosWorld()) {
         if (app->MouseButton(MouseButton::BUTTON_1).pressed) {
           if (app->KeyboardKey(KeyboardKey::KEY_LEFT_ALT).held && ! instanceof <OutputGate>(gate.get())) {
             outputing_gate = gate;
@@ -120,47 +120,14 @@ namespace Gates {
 
   void LogicCircuit::DrawGates() {
     for (auto&& gate : gates) {
-      switch (gate->state) {
-        case State::ERROR:
-          Renderer::DrawQuad(gate->pos, {10.f, 10.f}, {1.f, 0.f, 0.f, 1.f});
-          break;
-
-        case State::ON:
-          Renderer::DrawQuad(gate->pos, {10.f, 10.f}, {0.f, 1.f, 0.f, 1.f});
-          break;
-
-        case State::OFF:
-          Renderer::DrawQuad(gate->pos, {10.f, 10.f}, {0.3f, 0.3f, 0.3f, 1.f});
-          break;
-      }
-
-      for (auto&& output : gate->outputs) {
-        switch (gate->state) {
-          case State::ERROR:
-            Renderer::DrawLine(
-                gate->pos + glm::vec2 {10.f, 5.f}, output->pos + glm::vec2 {0.f, 5.f}, {1.f, 0.f, 0.f, 1.f});
-            break;
-
-          case State::ON:
-            Renderer::DrawLine(
-                gate->pos + glm::vec2 {10.f, 5.f}, output->pos + glm::vec2 {0.f, 5.f}, {0.f, 1.f, 0.f, 1.f});
-            break;
-
-          case State::OFF:
-            Renderer::DrawLine(
-                gate->pos + glm::vec2 {10.f, 5.f}, output->pos + glm::vec2 {0.f, 5.f}, {0.3f, 0.3f, 0.3f, 1.f});
-            break;
-        }
-      }
+      gate->Draw(selected_gate == gate);
     }
 
     if (outputing) {
-      Renderer::DrawLine(outputing_gate->pos + glm::vec2 {10.f, 5.f}, app->MousePosWorld());
-      Renderer::OutlineQuad(outputing_gate->pos, {10.f, 10.f});
-      if (hovered_gate) Renderer::OutlineQuad(hovered_gate->pos, {10.f, 10.f});
+      Renderer::DrawLine(outputing_gate->pos + (outputing_gate->size * glm::vec2 {1.f, 0.5f}), app->MousePosWorld());
+      Renderer::OutlineQuad(outputing_gate->pos, outputing_gate->size);
+      if (hovered_gate) Renderer::OutlineQuad(hovered_gate->pos, hovered_gate->size);
     }
-
-    if (selected_gate) Renderer::OutlineQuad(selected_gate->pos, {10.f, 10.f});
   }
 
   void LogicCircuit::SetInput(const std::shared_ptr<LogicGate>& input, State val) {

@@ -195,6 +195,10 @@ namespace Gates {
   }
 
   void FlushLineBatch() {
+    for (uint32_t i = 0; i < data.texture_slot_index; i++) {
+      glBindTextureUnit(i, data.texture_slots[i]);
+    }
+
     glBindVertexArray(data.gl_line_vertex_array);
 
     glBindBuffer(GL_ARRAY_BUFFER, data.gl_line_vertex_buffer);
@@ -211,6 +215,9 @@ namespace Gates {
   }
 
   void Renderer::BeginBatch() {
+    data.texture_slots[0] = white_texture.getId();
+    data.texture_slot_index++;
+
     BeginTriBatch();
     BeginLineBatch();
   }
@@ -236,7 +243,7 @@ namespace Gates {
       BeginTriBatch();
     }
 
-    float tex_index = 0.f;
+    float tex_index = -1.f;
 
     for (uint32_t i = 0; i < data.texture_slot_index; i++) {
       if (data.texture_slots[i] == texture.getId()) {
@@ -244,7 +251,7 @@ namespace Gates {
       }
     }
 
-    if (tex_index == 0.f) {
+    if (tex_index == -1.f) {
       tex_index                                   = (float)data.texture_slot_index;
       data.texture_slots[data.texture_slot_index] = texture.getId();
       data.texture_slot_index++;
