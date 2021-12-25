@@ -110,6 +110,7 @@ namespace Gates {
         ImGui::Text("Triángulos: %d", Renderer::GetStats().tris_drawn);
         ImGui::Text("Círculos: %d", Renderer::GetStats().circles_drawn);
         ImGui::Text("Líneas: %d", Renderer::GetStats().lines_drawn);
+        ImGui::Text("Líneas (con grosor): %d", Renderer::GetStats().wide_lines_drawn);
         ImGui::Text("Cuadrados (resaltados): %d", Renderer::GetStats().quads_outlined);
         ImGui::Text("Presentaciones: %d", Renderer::GetStats().draw_calls);
         ImGui::Text("Vértices (triángulos): %d", Renderer::GetStats().tri_vertex_count);
@@ -226,7 +227,9 @@ namespace Gates {
     Renderer::UseCamera(camera);
     Renderer::BeginBatch();
 
-    circuit.DrawGates();
+    // circuit.DrawGates();
+
+    Renderer::OutlineTri({0.f, 0.f}, {20.f, 0.f}, {10.f, 10.f}, 1.f);
 
     Renderer::EndBatch();
     Renderer::FlushBatch();

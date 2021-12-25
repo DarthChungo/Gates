@@ -257,25 +257,25 @@ namespace Gates {
       data.texture_slot_index++;
     }
 
-    data.tri_vertex_buffer_current->position  = {position.x, position.y, .0f};
+    data.tri_vertex_buffer_current->position  = {position.x, position.y, 0.f};
     data.tri_vertex_buffer_current->color     = color;
     data.tri_vertex_buffer_current->tex_coord = {0.f, 0.f};
     data.tri_vertex_buffer_current->tex_id    = tex_index;
     data.tri_vertex_buffer_current++;
 
-    data.tri_vertex_buffer_current->position  = {position.x + size.x, position.y, .0f};
+    data.tri_vertex_buffer_current->position  = {position.x + size.x, position.y, 0.f};
     data.tri_vertex_buffer_current->color     = color;
     data.tri_vertex_buffer_current->tex_coord = {1.f, 0.f};
     data.tri_vertex_buffer_current->tex_id    = tex_index;
     data.tri_vertex_buffer_current++;
 
-    data.tri_vertex_buffer_current->position  = {position.x + size.x, position.y + size.y, .0f};
+    data.tri_vertex_buffer_current->position  = {position.x + size.x, position.y + size.y, 0.f};
     data.tri_vertex_buffer_current->color     = color;
     data.tri_vertex_buffer_current->tex_coord = {1.f, 1.f};
     data.tri_vertex_buffer_current->tex_id    = tex_index;
     data.tri_vertex_buffer_current++;
 
-    data.tri_vertex_buffer_current->position  = {position.x, position.y + size.y, .0f};
+    data.tri_vertex_buffer_current->position  = {position.x, position.y + size.y, 0.f};
     data.tri_vertex_buffer_current->color     = color;
     data.tri_vertex_buffer_current->tex_coord = {0.f, 1.f};
     data.tri_vertex_buffer_current->tex_id    = tex_index;
@@ -302,19 +302,19 @@ namespace Gates {
       BeginTriBatch();
     }
 
-    data.tri_vertex_buffer_current->position  = {v1.x, v1.y, .0f};
+    data.tri_vertex_buffer_current->position  = {v1.x, v1.y, 0.f};
     data.tri_vertex_buffer_current->color     = color;
     data.tri_vertex_buffer_current->tex_coord = {0.f, 0.f};
     data.tri_vertex_buffer_current->tex_id    = 0;
     data.tri_vertex_buffer_current++;
 
-    data.tri_vertex_buffer_current->position  = {v2.x, v2.y, .0f};
+    data.tri_vertex_buffer_current->position  = {v2.x, v2.y, 0.f};
     data.tri_vertex_buffer_current->color     = color;
     data.tri_vertex_buffer_current->tex_coord = {0.f, 0.f};
     data.tri_vertex_buffer_current->tex_id    = 0;
     data.tri_vertex_buffer_current++;
 
-    data.tri_vertex_buffer_current->position  = {v3.x, v3.y, .0f};
+    data.tri_vertex_buffer_current->position  = {v3.x, v3.y, 0.f};
     data.tri_vertex_buffer_current->color     = color;
     data.tri_vertex_buffer_current->tex_coord = {0.f, 0.f};
     data.tri_vertex_buffer_current->tex_id    = 0;
@@ -343,7 +343,7 @@ namespace Gates {
 
     float inc = glm::two_pi<float>() / segments;
 
-    data.tri_vertex_buffer_current->position  = {position.x, position.y, .0f};
+    data.tri_vertex_buffer_current->position  = {position.x, position.y, 0.f};
     data.tri_vertex_buffer_current->color     = color;
     data.tri_vertex_buffer_current->tex_coord = {0.f, 0.f};
     data.tri_vertex_buffer_current->tex_id    = 0;
@@ -351,7 +351,7 @@ namespace Gates {
 
     for (uint32_t current = 0; current < segments; current++) {
       data.tri_vertex_buffer_current->position = {
-          glm::cos(current * inc) * radius + position.x, glm::sin(current * inc) * radius + position.y, .0f};
+          glm::cos(current * inc) * radius + position.x, glm::sin(current * inc) * radius + position.y, 0.f};
       data.tri_vertex_buffer_current->color     = color;
       data.tri_vertex_buffer_current->tex_coord = {0.f, 0.f};
       data.tri_vertex_buffer_current->tex_id    = 0;
@@ -375,13 +375,13 @@ namespace Gates {
       BeginLineBatch();
     }
 
-    data.line_vertex_buffer_current->position = {pos1.x, pos1.y, .0f};
+    data.line_vertex_buffer_current->position = {pos1.x, pos1.y, 0.f};
     data.line_vertex_buffer_current->color    = color;
     data.tri_vertex_buffer_current->tex_coord = {0.f, 0.f};
     data.tri_vertex_buffer_current->tex_id    = 0;
     data.line_vertex_buffer_current++;
 
-    data.line_vertex_buffer_current->position = {pos2.x, pos2.y, .0f};
+    data.line_vertex_buffer_current->position = {pos2.x, pos2.y, 0.f};
     data.line_vertex_buffer_current->color    = color;
     data.tri_vertex_buffer_current->tex_coord = {0.f, 0.f};
     data.tri_vertex_buffer_current->tex_id    = 0;
@@ -396,6 +396,55 @@ namespace Gates {
     data.stats.lines_drawn++;
   }
 
+  void Renderer::DrawLine(const glm::vec2& pos1, const glm::vec2& pos2, const float& width, const glm::vec4& color) {
+    if ((data.tri_index_count + 6) >= pMaxIndexCount || (data.tri_vertex_count + 4) >= pMaxVertexCount ||
+        data.texture_slot_index > (pMaxTextures - 1)) {
+      EndTriBatch();
+      FlushTriBatch();
+      BeginTriBatch();
+    }
+
+    const glm::vec2 diff   = pos2 - pos1;
+    const glm::vec2 offset = (width * diff) / (glm::length(diff) * 2);
+
+    data.tri_vertex_buffer_current->position  = {pos1.x + offset.y, pos1.y - offset.x, 0.f};
+    data.tri_vertex_buffer_current->color     = color;
+    data.tri_vertex_buffer_current->tex_coord = {0.f, 0.f};
+    data.tri_vertex_buffer_current->tex_id    = 0;
+    data.tri_vertex_buffer_current++;
+
+    data.tri_vertex_buffer_current->position  = {pos1.x - offset.y, pos1.y + offset.x, 0.f};
+    data.tri_vertex_buffer_current->color     = color;
+    data.tri_vertex_buffer_current->tex_coord = {1.f, 0.f};
+    data.tri_vertex_buffer_current->tex_id    = 0;
+    data.tri_vertex_buffer_current++;
+
+    data.tri_vertex_buffer_current->position  = {pos2.x - offset.y, pos2.y + offset.x, 0.f};
+    data.tri_vertex_buffer_current->color     = color;
+    data.tri_vertex_buffer_current->tex_coord = {1.f, 1.f};
+    data.tri_vertex_buffer_current->tex_id    = 0;
+    data.tri_vertex_buffer_current++;
+
+    data.tri_vertex_buffer_current->position  = {pos2.x + offset.y, pos2.y - offset.x, 0.f};
+    data.tri_vertex_buffer_current->color     = color;
+    data.tri_vertex_buffer_current->tex_coord = {0.f, 1.f};
+    data.tri_vertex_buffer_current->tex_id    = 0;
+    data.tri_vertex_buffer_current++;
+
+    data.tri_index_buffer[data.tri_index_count + 0] = 0 + data.tri_vertex_count;
+    data.tri_index_buffer[data.tri_index_count + 1] = 1 + data.tri_vertex_count;
+    data.tri_index_buffer[data.tri_index_count + 2] = 2 + data.tri_vertex_count;
+
+    data.tri_index_buffer[data.tri_index_count + 3] = 2 + data.tri_vertex_count;
+    data.tri_index_buffer[data.tri_index_count + 4] = 3 + data.tri_vertex_count;
+    data.tri_index_buffer[data.tri_index_count + 5] = 0 + data.tri_vertex_count;
+
+    data.tri_vertex_count += 4;
+    data.tri_index_count += 6;
+
+    data.stats.wide_lines_drawn++;
+  }
+
   void Renderer::OutlineQuad(const glm::vec2& position, const glm::vec2& size, const glm::vec4& color) {
     if ((data.line_index_count + 8) >= pMaxIndexCount || (data.line_vertex_count + 4) >= pMaxVertexCount) {
       EndLineBatch();
@@ -403,25 +452,25 @@ namespace Gates {
       BeginLineBatch();
     }
 
-    data.line_vertex_buffer_current->position = {position.x, position.y, .0f};
+    data.line_vertex_buffer_current->position = {position.x, position.y, 0.f};
     data.line_vertex_buffer_current->color    = color;
     data.tri_vertex_buffer_current->tex_coord = {0.f, 0.f};
     data.tri_vertex_buffer_current->tex_id    = 0;
     data.line_vertex_buffer_current++;
 
-    data.line_vertex_buffer_current->position = {position.x, position.y + size.y, .0f};
+    data.line_vertex_buffer_current->position = {position.x, position.y + size.y, 0.f};
     data.line_vertex_buffer_current->color    = color;
     data.tri_vertex_buffer_current->tex_coord = {0.f, 0.f};
     data.tri_vertex_buffer_current->tex_id    = 0;
     data.line_vertex_buffer_current++;
 
-    data.line_vertex_buffer_current->position = {position.x + size.x, position.y + size.y, .0f};
+    data.line_vertex_buffer_current->position = {position.x + size.x, position.y + size.y, 0.f};
     data.line_vertex_buffer_current->color    = color;
     data.tri_vertex_buffer_current->tex_coord = {0.f, 0.f};
     data.tri_vertex_buffer_current->tex_id    = 0;
     data.line_vertex_buffer_current++;
 
-    data.line_vertex_buffer_current->position = {position.x + size.x, position.y, .0f};
+    data.line_vertex_buffer_current->position = {position.x + size.x, position.y, 0.f};
     data.line_vertex_buffer_current->color    = color;
     data.tri_vertex_buffer_current->tex_coord = {0.f, 0.f};
     data.tri_vertex_buffer_current->tex_id    = 0;
@@ -443,6 +492,93 @@ namespace Gates {
     data.line_index_count += 8;
 
     data.stats.quads_outlined++;
+  }
+
+  void Renderer::OutlineTri(const glm::vec2& v1,
+                            const glm::vec2& v2,
+                            const glm::vec2& v3,
+                            const float&     width,
+                            const glm::vec4& color) {
+    // DrawCircle(v1, 1.f, 3, {1.f, 0.f, 1.f, 1.f});
+    // DrawCircle(v2, 1.f, 3, {1.f, 0.f, 1.f, 1.f});
+    // DrawCircle(v3, 1.f, 3, {1.f, 0.f, 1.f, 1.f});
+
+    const glm::vec2 center = (v1 + v2 + v3) / 3.f;
+
+    // DrawCircle(center, 1.f, 3, {0.f, 1.f, 1.f, 1.f});
+
+    glm::vec2 v1_offset = width * (center - v1) / glm::length(center - v1);
+    glm::vec2 v2_offset = width * (center - v2) / glm::length(center - v2);
+    glm::vec2 v3_offset = width * (center - v3) / glm::length(center - v3);
+
+    // Renderer::DrawCircle(v1 + offset_v1, 1.f, 3, {1.f, 1.f, 0.f, 1.f});
+    // Renderer::DrawCircle(v2 + offset_v2, 1.f, 3, {1.f, 1.f, 0.f, 1.f});
+    // Renderer::DrawCircle(v3 + offset_v3, 1.f, 3, {1.f, 1.f, 0.f, 1.f});
+
+    data.tri_vertex_buffer_current->position  = {v1.x, v1.y, 0.f};
+    data.tri_vertex_buffer_current->color     = color;
+    data.tri_vertex_buffer_current->tex_coord = {0.f, 0.f};
+    data.tri_vertex_buffer_current->tex_id    = 0;
+    data.tri_vertex_buffer_current++;
+
+    data.tri_vertex_buffer_current->position  = {v2.x, v2.y, 0.f};
+    data.tri_vertex_buffer_current->color     = color;
+    data.tri_vertex_buffer_current->tex_coord = {0.f, 0.f};
+    data.tri_vertex_buffer_current->tex_id    = 0;
+    data.tri_vertex_buffer_current++;
+
+    data.tri_vertex_buffer_current->position  = {v3.x, v3.y, 0.f};
+    data.tri_vertex_buffer_current->color     = color;
+    data.tri_vertex_buffer_current->tex_coord = {0.f, 0.f};
+    data.tri_vertex_buffer_current->tex_id    = 0;
+    data.tri_vertex_buffer_current++;
+
+    data.tri_vertex_buffer_current->position  = {v1.x + v1_offset.x, v1.y + v1_offset.y, 0.f};
+    data.tri_vertex_buffer_current->color     = color;
+    data.tri_vertex_buffer_current->tex_coord = {0.f, 0.f};
+    data.tri_vertex_buffer_current->tex_id    = 0;
+    data.tri_vertex_buffer_current++;
+
+    data.tri_vertex_buffer_current->position  = {v2.x + v2_offset.x, v2.y + v2_offset.y, 0.f};
+    data.tri_vertex_buffer_current->color     = color;
+    data.tri_vertex_buffer_current->tex_coord = {0.f, 0.f};
+    data.tri_vertex_buffer_current->tex_id    = 0;
+    data.tri_vertex_buffer_current++;
+
+    data.tri_vertex_buffer_current->position  = {v3.x + v3_offset.x, v3.y + v3_offset.y, 0.f};
+    data.tri_vertex_buffer_current->color     = color;
+    data.tri_vertex_buffer_current->tex_coord = {0.f, 0.f};
+    data.tri_vertex_buffer_current->tex_id    = 0;
+    data.tri_vertex_buffer_current++;
+
+    data.tri_index_buffer[data.tri_index_count + 0] = 0 + data.tri_vertex_count;
+    data.tri_index_buffer[data.tri_index_count + 1] = 1 + data.tri_vertex_count;
+    data.tri_index_buffer[data.tri_index_count + 2] = 4 + data.tri_vertex_count;
+
+    data.tri_index_buffer[data.tri_index_count + 3] = 0 + data.tri_vertex_count;
+    data.tri_index_buffer[data.tri_index_count + 4] = 3 + data.tri_vertex_count;
+    data.tri_index_buffer[data.tri_index_count + 5] = 4 + data.tri_vertex_count;
+
+    data.tri_index_buffer[data.tri_index_count + 6] = 1 + data.tri_vertex_count;
+    data.tri_index_buffer[data.tri_index_count + 7] = 4 + data.tri_vertex_count;
+    data.tri_index_buffer[data.tri_index_count + 8] = 5 + data.tri_vertex_count;
+
+    data.tri_index_buffer[data.tri_index_count + 9]  = 1 + data.tri_vertex_count;
+    data.tri_index_buffer[data.tri_index_count + 10] = 2 + data.tri_vertex_count;
+    data.tri_index_buffer[data.tri_index_count + 11] = 5 + data.tri_vertex_count;
+
+    data.tri_index_buffer[data.tri_index_count + 12] = 2 + data.tri_vertex_count;
+    data.tri_index_buffer[data.tri_index_count + 13] = 5 + data.tri_vertex_count;
+    data.tri_index_buffer[data.tri_index_count + 14] = 3 + data.tri_vertex_count;
+
+    data.tri_index_buffer[data.tri_index_count + 15] = 2 + data.tri_vertex_count;
+    data.tri_index_buffer[data.tri_index_count + 16] = 0 + data.tri_vertex_count;
+    data.tri_index_buffer[data.tri_index_count + 17] = 3 + data.tri_vertex_count;
+
+    data.tri_vertex_count += 6;
+    data.tri_index_count += 18;
+
+    data.stats.tris_outlined++;
   }
 
   void Renderer::SetViewProjection(const glm::mat4& view_projection) { data.view_projection = view_projection; }

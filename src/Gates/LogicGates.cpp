@@ -2,7 +2,7 @@
 #include "Engine/Renderer.hpp"
 
 namespace Gates {
-  NotGate::NotGate() : LogicGate() { size = glm::vec2 {10.f, 10.f}; }
+  NotGate::NotGate() : LogicGate() { size = glm::vec2 {8.f, 10.f}; }
 
   void NotGate::UpdateState() {
     if (inputs.size() != 1 || inputs.begin()->get()->state == State::ERROR) {
@@ -16,7 +16,7 @@ namespace Gates {
     }
   }
 
-  void NotGate::Draw(bool sel) {
+  void NotGate::Draw() {
     switch (state) {
       case State::ERROR:
         Renderer::DrawQuad(pos, size, {1.f, 0.f, 0.f, 1.f});
@@ -31,23 +31,26 @@ namespace Gates {
         break;
     }
 
-    if (sel) Renderer::OutlineQuad(pos, size);
-
     for (auto&& output : outputs) {
       switch (state) {
         case State::ERROR:
-          Renderer::DrawLine(
-              pos + (size * glm::vec2 {1.f, 0.5f}), output->pos + (size * glm::vec2 {0.f, 0.5f}), {1.f, 0.f, 0.f, 1.f});
+          Renderer::DrawLine(pos + (size * glm::vec2 {1.f, 0.5f}),
+                             output->pos + (size * glm::vec2 {0.f, 0.5f}),
+                             0.1f,
+                             {1.f, 0.f, 0.f, 1.f});
           break;
 
         case State::ON:
-          Renderer::DrawLine(
-              pos + (size * glm::vec2 {1.f, 0.5f}), output->pos + (size * glm::vec2 {0.f, 0.5f}), {0.f, 1.f, 0.f, 1.f});
+          Renderer::DrawLine(pos + (size * glm::vec2 {1.f, 0.5f}),
+                             output->pos + (size * glm::vec2 {0.f, 0.5f}),
+                             0.1f,
+                             {0.f, 1.f, 0.f, 1.f});
           break;
 
         case State::OFF:
           Renderer::DrawLine(pos + (size * glm::vec2 {1.f, 0.5f}),
                              output->pos + (size * glm::vec2 {0.f, 0.5f}),
+                             0.1f,
                              {0.3f, 0.3f, 0.3f, 1.f});
           break;
       }
@@ -82,7 +85,7 @@ namespace Gates {
     }
   }
 
-  void AndGate::Draw(bool sel) {
+  void AndGate::Draw() {
     switch (state) {
       case State::ERROR:
         Renderer::DrawQuad(pos, size, {1.f, 0.f, 0.f, 1.f});
@@ -97,23 +100,26 @@ namespace Gates {
         break;
     }
 
-    if (sel) Renderer::OutlineQuad(pos, size);
-
     for (auto&& output : outputs) {
       switch (state) {
         case State::ERROR:
-          Renderer::DrawLine(
-              pos + (size * glm::vec2 {1.f, 0.5f}), output->pos + (size * glm::vec2 {0.f, 0.5f}), {1.f, 0.f, 0.f, 1.f});
+          Renderer::DrawLine(pos + (size * glm::vec2 {1.f, 0.5f}),
+                             output->pos + (size * glm::vec2 {0.f, 0.5f}),
+                             0.1f,
+                             {1.f, 0.f, 0.f, 1.f});
           break;
 
         case State::ON:
-          Renderer::DrawLine(
-              pos + (size * glm::vec2 {1.f, 0.5f}), output->pos + (size * glm::vec2 {0.f, 0.5f}), {0.f, 1.f, 0.f, 1.f});
+          Renderer::DrawLine(pos + (size * glm::vec2 {1.f, 0.5f}),
+                             output->pos + (size * glm::vec2 {0.f, 0.5f}),
+                             0.1f,
+                             {0.f, 1.f, 0.f, 1.f});
           break;
 
         case State::OFF:
           Renderer::DrawLine(pos + (size * glm::vec2 {1.f, 0.5f}),
                              output->pos + (size * glm::vec2 {0.f, 0.5f}),
+                             0.1f,
                              {0.3f, 0.3f, 0.3f, 1.f});
           break;
       }
@@ -145,7 +151,7 @@ namespace Gates {
     }
   }
 
-  void OrGate::Draw(bool sel) {
+  void OrGate::Draw() {
     switch (state) {
       case State::ERROR:
         Renderer::DrawQuad(pos, size, {1.f, 0.f, 0.f, 1.f});
@@ -160,23 +166,26 @@ namespace Gates {
         break;
     }
 
-    if (sel) Renderer::OutlineQuad(pos, size);
-
     for (auto&& output : outputs) {
       switch (state) {
         case State::ERROR:
-          Renderer::DrawLine(
-              pos + (size * glm::vec2 {1.f, 0.5f}), output->pos + (size * glm::vec2 {0.f, 0.5f}), {1.f, 0.f, 0.f, 1.f});
+          Renderer::DrawLine(pos + (size * glm::vec2 {1.f, 0.5f}),
+                             output->pos + (size * glm::vec2 {0.f, 0.5f}),
+                             0.1f,
+                             {1.f, 0.f, 0.f, 1.f});
           break;
 
         case State::ON:
-          Renderer::DrawLine(
-              pos + (size * glm::vec2 {1.f, 0.5f}), output->pos + (size * glm::vec2 {0.f, 0.5f}), {0.f, 1.f, 0.f, 1.f});
+          Renderer::DrawLine(pos + (size * glm::vec2 {1.f, 0.5f}),
+                             output->pos + (size * glm::vec2 {0.f, 0.5f}),
+                             0.1f,
+                             {0.f, 1.f, 0.f, 1.f});
           break;
 
         case State::OFF:
           Renderer::DrawLine(pos + (size * glm::vec2 {1.f, 0.5f}),
                              output->pos + (size * glm::vec2 {0.f, 0.5f}),
+                             0.1f,
                              {0.3f, 0.3f, 0.3f, 1.f});
           break;
       }
@@ -210,7 +219,7 @@ namespace Gates {
     }
   }
 
-  void XorGate::Draw(bool sel) {
+  void XorGate::Draw() {
     switch (state) {
       case State::ERROR:
         Renderer::DrawQuad(pos, size, {1.f, 0.f, 0.f, 1.f});
@@ -225,23 +234,26 @@ namespace Gates {
         break;
     }
 
-    if (sel) Renderer::OutlineQuad(pos, size);
-
     for (auto&& output : outputs) {
       switch (state) {
         case State::ERROR:
-          Renderer::DrawLine(
-              pos + (size * glm::vec2 {1.f, 0.5f}), output->pos + (size * glm::vec2 {0.f, 0.5f}), {1.f, 0.f, 0.f, 1.f});
+          Renderer::DrawLine(pos + (size * glm::vec2 {1.f, 0.5f}),
+                             output->pos + (size * glm::vec2 {0.f, 0.5f}),
+                             0.1f,
+                             {1.f, 0.f, 0.f, 1.f});
           break;
 
         case State::ON:
-          Renderer::DrawLine(
-              pos + (size * glm::vec2 {1.f, 0.5f}), output->pos + (size * glm::vec2 {0.f, 0.5f}), {0.f, 1.f, 0.f, 1.f});
+          Renderer::DrawLine(pos + (size * glm::vec2 {1.f, 0.5f}),
+                             output->pos + (size * glm::vec2 {0.f, 0.5f}),
+                             0.1f,
+                             {0.f, 1.f, 0.f, 1.f});
           break;
 
         case State::OFF:
           Renderer::DrawLine(pos + (size * glm::vec2 {1.f, 0.5f}),
                              output->pos + (size * glm::vec2 {0.f, 0.5f}),
+                             0.1f,
                              {0.3f, 0.3f, 0.3f, 1.f});
           break;
       }
@@ -251,9 +263,6 @@ namespace Gates {
   Texture InputGate::on_tex;
   Texture InputGate::off_tex;
   Texture InputGate::err_tex;
-  Texture InputGate::on_tex_sel;
-  Texture InputGate::off_tex_sel;
-  Texture InputGate::err_tex_sel;
 
   uint64_t InputGate::count = 0;
 
@@ -264,9 +273,6 @@ namespace Gates {
       on_tex.Load("assets/gates/input_on.png");
       off_tex.Load("assets/gates/input_off.png");
       err_tex.Load("assets/gates/input_err.png");
-      on_tex_sel.Load("assets/gates/input_on_sel.png");
-      off_tex_sel.Load("assets/gates/input_off_sel.png");
-      err_tex_sel.Load("assets/gates/input_err_sel.png");
     }
   }
 
@@ -275,53 +281,46 @@ namespace Gates {
       on_tex.Release();
       off_tex.Release();
       err_tex.Release();
-      on_tex_sel.Release();
-      off_tex_sel.Release();
-      err_tex_sel.Release();
     }
   }
 
   void InputGate::UpdateState() {}
 
-  void InputGate::Draw(bool sel) {
+  void InputGate::Draw() {
     switch (state) {
       case State::ERROR:
-        if (sel)
-          Renderer::DrawQuad(pos, size, {1.f, 1.f, 1.f, 1.f}, err_tex_sel);
-        else
-          Renderer::DrawQuad(pos, size, {1.f, 1.f, 1.f, 1.f}, err_tex);
+        Renderer::DrawQuad(pos, size, {1.f, 1.f, 1.f, 1.f}, err_tex);
         break;
 
       case State::ON:
-        if (sel)
-          Renderer::DrawQuad(pos, size, {1.f, 1.f, 1.f, 1.f}, on_tex_sel);
-        else
-          Renderer::DrawQuad(pos, size, {1.f, 1.f, 1.f, 1.f}, on_tex);
+        Renderer::DrawQuad(pos, size, {1.f, 1.f, 1.f, 1.f}, on_tex);
         break;
 
       case State::OFF:
-        if (sel)
-          Renderer::DrawQuad(pos, size, {1.f, 1.f, 1.f, 1.f}, off_tex_sel);
-        else
-          Renderer::DrawQuad(pos, size, {1.f, 1.f, 1.f, 1.f}, off_tex);
+        Renderer::DrawQuad(pos, size, {1.f, 1.f, 1.f, 1.f}, off_tex);
         break;
     }
 
     for (auto&& output : outputs) {
       switch (state) {
         case State::ERROR:
-          Renderer::DrawLine(
-              pos + (size * glm::vec2 {1.f, 0.5f}), output->pos + (size * glm::vec2 {0.f, 0.5f}), {1.f, 0.f, 0.f, 1.f});
+          Renderer::DrawLine(pos + (size * glm::vec2 {1.f, 0.5f}),
+                             output->pos + (size * glm::vec2 {0.f, 0.5f}),
+                             0.1f,
+                             {1.f, 0.f, 0.f, 1.f});
           break;
 
         case State::ON:
-          Renderer::DrawLine(
-              pos + (size * glm::vec2 {1.f, 0.5f}), output->pos + (size * glm::vec2 {0.f, 0.5f}), {0.f, 1.f, 0.f, 1.f});
+          Renderer::DrawLine(pos + (size * glm::vec2 {1.f, 0.5f}),
+                             output->pos + (size * glm::vec2 {0.f, 0.5f}),
+                             0.1f,
+                             {0.f, 1.f, 0.f, 1.f});
           break;
 
         case State::OFF:
           Renderer::DrawLine(pos + (size * glm::vec2 {1.f, 0.5f}),
                              output->pos + (size * glm::vec2 {0.f, 0.5f}),
+                             0.1f,
                              {0.3f, 0.3f, 0.3f, 1.f});
           break;
       }
@@ -331,9 +330,6 @@ namespace Gates {
   Texture OutputGate::on_tex;
   Texture OutputGate::off_tex;
   Texture OutputGate::err_tex;
-  Texture OutputGate::on_tex_sel;
-  Texture OutputGate::off_tex_sel;
-  Texture OutputGate::err_tex_sel;
 
   uint64_t OutputGate::count = 0;
 
@@ -344,9 +340,6 @@ namespace Gates {
       on_tex.Load("assets/gates/output_on.png");
       off_tex.Load("assets/gates/output_off.png");
       err_tex.Load("assets/gates/output_err.png");
-      on_tex_sel.Load("assets/gates/output_on_sel.png");
-      off_tex_sel.Load("assets/gates/output_off_sel.png");
-      err_tex_sel.Load("assets/gates/output_err_sel.png");
     }
   }
 
@@ -355,9 +348,6 @@ namespace Gates {
       on_tex.Release();
       off_tex.Release();
       err_tex.Release();
-      on_tex_sel.Release();
-      off_tex_sel.Release();
-      err_tex_sel.Release();
     }
   }
 
@@ -369,45 +359,41 @@ namespace Gates {
     }
   }
 
-  void OutputGate::Draw(bool sel) {
+  void OutputGate::Draw() {
     switch (state) {
       case State::ERROR:
-        if (sel)
-          Renderer::DrawQuad(pos, size, {1.f, 1.f, 1.f, 1.f}, err_tex_sel);
-        else
-          Renderer::DrawQuad(pos, size, {1.f, 1.f, 1.f, 1.f}, err_tex);
+        Renderer::DrawQuad(pos, size, {1.f, 1.f, 1.f, 1.f}, err_tex);
         break;
 
       case State::ON:
-        if (sel)
-          Renderer::DrawQuad(pos, size, {1.f, 1.f, 1.f, 1.f}, on_tex_sel);
-        else
-          Renderer::DrawQuad(pos, size, {1.f, 1.f, 1.f, 1.f}, on_tex);
+        Renderer::DrawQuad(pos, size, {1.f, 1.f, 1.f, 1.f}, on_tex);
         break;
 
       case State::OFF:
-        if (sel)
-          Renderer::DrawQuad(pos, size, {1.f, 1.f, 1.f, 1.f}, off_tex_sel);
-        else
-          Renderer::DrawQuad(pos, size, {1.f, 1.f, 1.f, 1.f}, off_tex);
+        Renderer::DrawQuad(pos, size, {1.f, 1.f, 1.f, 1.f}, off_tex);
         break;
     }
 
     for (auto&& output : outputs) {
       switch (state) {
         case State::ERROR:
-          Renderer::DrawLine(
-              pos + (size * glm::vec2 {1.f, 0.5f}), output->pos + (size * glm::vec2 {0.f, 0.5f}), {1.f, 0.f, 0.f, 1.f});
+          Renderer::DrawLine(pos + (size * glm::vec2 {1.f, 0.5f}),
+                             output->pos + (size * glm::vec2 {0.f, 0.5f}),
+                             0.1f,
+                             {1.f, 0.f, 0.f, 1.f});
           break;
 
         case State::ON:
-          Renderer::DrawLine(
-              pos + (size * glm::vec2 {1.f, 0.5f}), output->pos + (size * glm::vec2 {0.f, 0.5f}), {0.f, 1.f, 0.f, 1.f});
+          Renderer::DrawLine(pos + (size * glm::vec2 {1.f, 0.5f}),
+                             output->pos + (size * glm::vec2 {0.f, 0.5f}),
+                             0.1f,
+                             {0.f, 1.f, 0.f, 1.f});
           break;
 
         case State::OFF:
           Renderer::DrawLine(pos + (size * glm::vec2 {1.f, 0.5f}),
                              output->pos + (size * glm::vec2 {0.f, 0.5f}),
+                             0.1f,
                              {0.3f, 0.3f, 0.3f, 1.f});
           break;
       }

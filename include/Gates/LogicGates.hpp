@@ -10,7 +10,7 @@ namespace Gates {
    public:
     NotGate();
     void        UpdateState();
-    void        Draw(bool sel);
+    void        Draw();
     const char* getName() { return "not"; }
   };
 
@@ -18,7 +18,7 @@ namespace Gates {
    public:
     AndGate();
     void        UpdateState();
-    void        Draw(bool sel);
+    void        Draw();
     const char* getName() { return "and"; }
   };
 
@@ -26,7 +26,7 @@ namespace Gates {
    public:
     OrGate();
     void        UpdateState();
-    void        Draw(bool sel);
+    void        Draw();
     const char* getName() { return "or"; }
   };
 
@@ -34,7 +34,7 @@ namespace Gates {
    public:
     XorGate();
     void        UpdateState();
-    void        Draw(bool sel);
+    void        Draw();
     const char* getName() { return "xor"; }
   };
 
@@ -44,16 +44,13 @@ namespace Gates {
     ~InputGate();
 
     void        UpdateState();
-    void        Draw(bool sel);
+    void        Draw();
     const char* getName() { return "input"; }
 
    private:
     static Texture err_tex;
     static Texture on_tex;
     static Texture off_tex;
-    static Texture err_tex_sel;
-    static Texture on_tex_sel;
-    static Texture off_tex_sel;
 
     static uint64_t count;
   };
@@ -64,16 +61,13 @@ namespace Gates {
     ~OutputGate();
 
     void        UpdateState();
-    void        Draw(bool sel);
+    void        Draw();
     const char* getName() { return "output"; }
 
    private:
     static Texture err_tex;
     static Texture on_tex;
     static Texture off_tex;
-    static Texture err_tex_sel;
-    static Texture on_tex_sel;
-    static Texture off_tex_sel;
 
     static uint64_t count;
   };
