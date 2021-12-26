@@ -499,21 +499,18 @@ namespace Gates {
                             const glm::vec2& v3,
                             const float&     width,
                             const glm::vec4& color) {
-    // DrawCircle(v1, 1.f, 3, {1.f, 0.f, 1.f, 1.f});
-    // DrawCircle(v2, 1.f, 3, {1.f, 0.f, 1.f, 1.f});
-    // DrawCircle(v3, 1.f, 3, {1.f, 0.f, 1.f, 1.f});
+    const float a = glm::length(v1 - v2);
+    const float b = glm::length(v2 - v3);
+    const float c = glm::length(v3 - v1);
 
-    const glm::vec2 center = (v1 + v2 + v3) / 3.f;
+    const float s = (a + b + c) / 2;
+    const float r = std::sqrt(((s - a) * (s - b) * (s - c)) / s);
 
-    // DrawCircle(center, 1.f, 3, {0.f, 1.f, 1.f, 1.f});
+    const glm::vec2 center = ((v1 * b) + (v2 * c) + (v3 * a)) / (a + b + c);
 
-    glm::vec2 v1_offset = width * (center - v1) / glm::length(center - v1);
-    glm::vec2 v2_offset = width * (center - v2) / glm::length(center - v2);
-    glm::vec2 v3_offset = width * (center - v3) / glm::length(center - v3);
-
-    // Renderer::DrawCircle(v1 + offset_v1, 1.f, 3, {1.f, 1.f, 0.f, 1.f});
-    // Renderer::DrawCircle(v2 + offset_v2, 1.f, 3, {1.f, 1.f, 0.f, 1.f});
-    // Renderer::DrawCircle(v3 + offset_v3, 1.f, 3, {1.f, 1.f, 0.f, 1.f});
+    const glm::vec2 v1_i = (width * (center - v1) / r) + v1;
+    const glm::vec2 v2_i = (width * (center - v2) / r) + v2;
+    const glm::vec2 v3_i = (width * (center - v3) / r) + v3;
 
     data.tri_vertex_buffer_current->position  = {v1.x, v1.y, 0.f};
     data.tri_vertex_buffer_current->color     = color;
@@ -533,19 +530,19 @@ namespace Gates {
     data.tri_vertex_buffer_current->tex_id    = 0;
     data.tri_vertex_buffer_current++;
 
-    data.tri_vertex_buffer_current->position  = {v1.x + v1_offset.x, v1.y + v1_offset.y, 0.f};
+    data.tri_vertex_buffer_current->position  = {v1_i.x, v1_i.y, 0.f};
     data.tri_vertex_buffer_current->color     = color;
     data.tri_vertex_buffer_current->tex_coord = {0.f, 0.f};
     data.tri_vertex_buffer_current->tex_id    = 0;
     data.tri_vertex_buffer_current++;
 
-    data.tri_vertex_buffer_current->position  = {v2.x + v2_offset.x, v2.y + v2_offset.y, 0.f};
+    data.tri_vertex_buffer_current->position  = {v2_i.x, v2_i.y, 0.f};
     data.tri_vertex_buffer_current->color     = color;
     data.tri_vertex_buffer_current->tex_coord = {0.f, 0.f};
     data.tri_vertex_buffer_current->tex_id    = 0;
     data.tri_vertex_buffer_current++;
 
-    data.tri_vertex_buffer_current->position  = {v3.x + v3_offset.x, v3.y + v3_offset.y, 0.f};
+    data.tri_vertex_buffer_current->position  = {v3_i.x, v3_i.y, 0.f};
     data.tri_vertex_buffer_current->color     = color;
     data.tri_vertex_buffer_current->tex_coord = {0.f, 0.f};
     data.tri_vertex_buffer_current->tex_id    = 0;

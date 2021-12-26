@@ -229,7 +229,7 @@ namespace Gates {
 
     // circuit.DrawGates();
 
-    Renderer::OutlineTri({0.f, 0.f}, {20.f, 0.f}, {10.f, 10.f}, 1.f);
+    Renderer::OutlineTri({0.f, 0.f}, {25.f, 0.f}, {10.f, -10.f}, 1.f);
 
     Renderer::EndBatch();
     Renderer::FlushBatch();
