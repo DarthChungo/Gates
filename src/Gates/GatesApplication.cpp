@@ -112,6 +112,8 @@ namespace Gates {
         ImGui::Text("Triángulos (bordeados): %d", Renderer::GetStats().tris_bordered);
         ImGui::Text("Círculos: %d", Renderer::GetStats().circles_drawn);
         ImGui::Text("Círculos (resaltados): %d", Renderer::GetStats().circles_outlined);
+        ImGui::Text("Círculos (bordeados): %d", Renderer::GetStats().circles_bordered);
+        ImGui::Text("Semicírculos (bordeados): %d", Renderer::GetStats().semicircles_bordered);
         ImGui::Text("Líneas: %d", Renderer::GetStats().lines_drawn);
         ImGui::Text("Líneas (con grosor): %d", Renderer::GetStats().wide_lines_drawn);
         ImGui::Text("Cuadrados (resaltados): %d", Renderer::GetStats().quads_outlined);
@@ -216,12 +218,12 @@ namespace Gates {
   rcode GatesApplication::pOnLaunch() {
     Renderer::Init();
 
-    auto in1   = circuit.AddGateDirect<InputGate>({0.f, 0.f});
-    auto gate1 = circuit.AddGateDirect<NotGate>({15.f, 0.f});
-    auto out1  = circuit.AddGateDirect<OutputGate>({30.f, 0.f});
-
-    circuit.ToggleConnection(in1, gate1);
-    circuit.ToggleConnection(gate1, out1);
+    circuit.AddGateDirect<InputGate>({0.f, 0.f});
+    circuit.AddGateDirect<OutputGate>({15.f, 0.f});
+    circuit.AddGateDirect<AndGate>({30.f, 0.f});
+    circuit.AddGateDirect<NotGate>({45.f, 0.f});
+    circuit.AddGateDirect<OrGate>({60.f, 0.f});
+    circuit.AddGateDirect<XorGate>({75.f, 0.f});
 
     return rcode::ok;
   }
@@ -233,7 +235,8 @@ namespace Gates {
     // circuit.DrawGates();
 
     for (uint32_t i = 0; i < 10; i++) {
-      Renderer::BorderCircle({(float)(i * 11), 0.f}, 10.f, i + 3, 0.5f, {0.3f, 0.3f, 0.3f, 1.f});
+      Renderer::BorderSemicircle(
+          {(float)(i * 11), 0.f}, 10.f, 0.f, (i + 1) * glm::pi<float>() / 10, i + 3, 0.5f, {0.3f, 0.3f, 0.3f, 1.f});
     }
 
     Renderer::EndBatch();

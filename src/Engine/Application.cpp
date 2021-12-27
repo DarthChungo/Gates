@@ -144,6 +144,7 @@ namespace Gates {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+    glfwWindowHint(GLFW_SAMPLES, 4);
 
     pWindow = glfwCreateWindow(pWindowSize.x, pWindowSize.y, "Gates", NULL, NULL);
     if (!pWindow) Logger::Die("GLFW window creation failed");
@@ -182,6 +183,7 @@ namespace Gates {
     std::cout << "[INFO] Using " << glGetString(GL_RENDERER) << " driver with opengl " << glGetString(GL_VERSION)
               << "\n";
 
+    glEnable(GL_MULTISAMPLE);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
