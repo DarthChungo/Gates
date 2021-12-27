@@ -17,43 +17,13 @@ namespace Gates {
   }
 
   void NotGate::Draw() {
-    switch (state) {
-      case State::ERROR:
-        Renderer::DrawQuad(pos, size, {1.f, 0.f, 0.f, 1.f});
-        break;
+    const auto color = state == State::OFF ? off_color : (state == State::ON ? on_color : err_color);
 
-      case State::ON:
-        Renderer::DrawQuad(pos, size, {0.f, 1.f, 0.f, 1.f});
-        break;
-
-      case State::OFF:
-        Renderer::DrawQuad(pos, size, {0.3f, 0.3f, 0.3f, 1.f});
-        break;
-    }
+    Renderer::BorderTri(pos, pos + glm::vec2(size.x, size.y / 2.f), pos + glm::vec2(0.f, size.y), 0.5f, color);
 
     for (auto&& output : outputs) {
-      switch (state) {
-        case State::ERROR:
-          Renderer::DrawLine(pos + (size * glm::vec2 {1.f, 0.5f}),
-                             output->pos + (size * glm::vec2 {0.f, 0.5f}),
-                             0.1f,
-                             {1.f, 0.f, 0.f, 1.f});
-          break;
-
-        case State::ON:
-          Renderer::DrawLine(pos + (size * glm::vec2 {1.f, 0.5f}),
-                             output->pos + (size * glm::vec2 {0.f, 0.5f}),
-                             0.1f,
-                             {0.f, 1.f, 0.f, 1.f});
-          break;
-
-        case State::OFF:
-          Renderer::DrawLine(pos + (size * glm::vec2 {1.f, 0.5f}),
-                             output->pos + (size * glm::vec2 {0.f, 0.5f}),
-                             0.1f,
-                             {0.3f, 0.3f, 0.3f, 1.f});
-          break;
-      }
+      Renderer::DrawLine(
+          pos + (size * glm::vec2 {1.f, 0.5f}), output->pos + (size * glm::vec2 {0.f, 0.5f}), 0.1f, color);
     }
   }
 

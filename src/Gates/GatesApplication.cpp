@@ -108,7 +108,10 @@ namespace Gates {
         ImGui::Indent();
         ImGui::Text("Cuadrados: %d", Renderer::GetStats().quads_drawn);
         ImGui::Text("Triángulos: %d", Renderer::GetStats().tris_drawn);
+        ImGui::Text("Triángulos (resaltados): %d", Renderer::GetStats().tris_outlined);
+        ImGui::Text("Triángulos (bordeados): %d", Renderer::GetStats().tris_bordered);
         ImGui::Text("Círculos: %d", Renderer::GetStats().circles_drawn);
+        ImGui::Text("Círculos (resaltados): %d", Renderer::GetStats().circles_outlined);
         ImGui::Text("Líneas: %d", Renderer::GetStats().lines_drawn);
         ImGui::Text("Líneas (con grosor): %d", Renderer::GetStats().wide_lines_drawn);
         ImGui::Text("Cuadrados (resaltados): %d", Renderer::GetStats().quads_outlined);
@@ -229,7 +232,9 @@ namespace Gates {
 
     // circuit.DrawGates();
 
-    Renderer::OutlineTri({0.f, 0.f}, {25.f, 0.f}, {10.f, -10.f}, 1.f);
+    for (uint32_t i = 0; i < 10; i++) {
+      Renderer::OutlineCircle({(float)(i * 10), 0.f}, 10.f, i + 3, 0.5f);
+    }
 
     Renderer::EndBatch();
     Renderer::FlushBatch();
