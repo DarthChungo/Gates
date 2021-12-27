@@ -690,8 +690,8 @@ namespace Gates {
                                const uint32_t&  segments,
                                const float&     width,
                                const glm::vec4& color) {
-    if ((data.tri_index_count + segments * 3) >= pMaxIndexCount ||
-        (data.tri_vertex_count + segments + 1) >= pMaxVertexCount) {
+    if ((data.tri_index_count + segments * 6) >= pMaxIndexCount ||
+        (data.tri_vertex_count + segments * 2) >= pMaxVertexCount) {
       EndTriBatch();
       FlushTriBatch();
       BeginTriBatch();
@@ -731,6 +731,72 @@ namespace Gates {
     }
 
     data.tri_vertex_count += (2 * segments);
+    data.stats.circles_outlined++;
+  }
+
+  void Renderer::BorderCircle(const glm::vec2& position,
+                              const float&     radius,
+                              const uint32_t&  segments,
+                              const float&     width,
+                              const glm::vec4& inner_color,
+                              const glm::vec4& outter_color) {
+    if ((data.tri_index_count + segments * 9) >= pMaxIndexCount ||
+        (data.tri_vertex_count + segments * 3 + 1) >= pMaxVertexCount) {
+      EndTriBatch();
+      FlushTriBatch();
+      BeginTriBatch();
+    }
+
+    const float inc = glm::two_pi<float>() / segments;
+    const float w   = width / std::cos(inc / 2);
+
+    for (uint32_t current = 0; current < segments; current++) {
+      const glm::vec2 outter_pos = {glm::cos(current * inc) * radius + position.x,
+                                    glm::sin(current * inc) * radius + position.y};
+
+      const glm::vec2 inner_pos = {glm::cos(current * inc) * (radius - w) + position.x,
+                                   glm::sin(current * inc) * (radius - w) + position.y};
+
+      data.tri_vertex_buffer_current->position  = {outter_pos.x, outter_pos.y, 0.f};
+      data.tri_vertex_buffer_current->color     = outter_color;
+      data.tri_vertex_buffer_current->tex_coord = {0.f, 0.f};
+      data.tri_vertex_buffer_current->tex_id    = 0;
+      data.tri_vertex_buffer_current++;
+
+      data.tri_vertex_buffer_current->position  = {inner_pos.x, inner_pos.y, 0.f};
+      data.tri_vertex_buffer_current->color     = outter_color;
+      data.tri_vertex_buffer_current->tex_coord = {0.f, 0.f};
+      data.tri_vertex_buffer_current->tex_id    = 0;
+      data.tri_vertex_buffer_current++;
+
+      data.tri_vertex_buffer_current->position  = {inner_pos.x, inner_pos.y, 0.f};
+      data.tri_vertex_buffer_current->color     = inner_color;
+      data.tri_vertex_buffer_current->tex_coord = {0.f, 0.f};
+      data.tri_vertex_buffer_current->tex_id    = 0;
+      data.tri_vertex_buffer_current++;
+
+      data.tri_index_buffer[data.tri_index_count + 0] = data.tri_vertex_count + (current * 3);
+      data.tri_index_buffer[data.tri_index_count + 1] = data.tri_vertex_count + ((current * 3) + 1);
+      data.tri_index_buffer[data.tri_index_count + 2] = data.tri_vertex_count + ((current * 3) + 4) % (segments * 3);
+
+      data.tri_index_buffer[data.tri_index_count + 3] = data.tri_vertex_count + (current * 3);
+      data.tri_index_buffer[data.tri_index_count + 4] = data.tri_vertex_count + ((current * 3) + 3) % (segments * 3);
+      data.tri_index_buffer[data.tri_index_count + 5] = data.tri_vertex_count + ((current * 3) + 4) % (segments * 3);
+
+      data.tri_index_buffer[data.tri_index_count + 6] = data.tri_vertex_count + (current * 3) + 2;
+      data.tri_index_buffer[data.tri_index_count + 7] = data.tri_vertex_count + ((current * 3) + 5) % (segments * 3);
+      data.tri_index_buffer[data.tri_index_count + 8] = data.tri_vertex_count + 3 * segments;
+
+      data.tri_index_count += 9;
+    }
+
+    data.tri_vertex_buffer_current->position  = {position.x, position.y, 0.f};
+    data.tri_vertex_buffer_current->color     = inner_color;
+    data.tri_vertex_buffer_current->tex_coord = {0.f, 0.f};
+    data.tri_vertex_buffer_current->tex_id    = 0;
+    data.tri_vertex_buffer_current++;
+
+    data.tri_vertex_count += (3 * segments + 1);
     data.stats.circles_outlined++;
   }
 

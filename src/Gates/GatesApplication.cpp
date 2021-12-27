@@ -233,7 +233,7 @@ namespace Gates {
     // circuit.DrawGates();
 
     for (uint32_t i = 0; i < 10; i++) {
-      Renderer::OutlineCircle({(float)(i * 10), 0.f}, 10.f, i + 3, 0.5f);
+      Renderer::BorderCircle({(float)(i * 11), 0.f}, 10.f, i + 3, 0.5f, {0.3f, 0.3f, 0.3f, 1.f});
     }
 
     Renderer::EndBatch();

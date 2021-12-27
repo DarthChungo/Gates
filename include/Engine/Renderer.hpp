@@ -67,6 +67,13 @@ namespace Gates {
                               const float&     width,
                               const glm::vec4& color = {1.f, 1.f, 1.f, 1.f});
 
+    static void BorderCircle(const glm::vec2& position,
+                             const float&     radius,
+                             const uint32_t&  segments,
+                             const float&     width,
+                             const glm::vec4& inner_color,
+                             const glm::vec4& outter_color = {1.f, 1.f, 1.f, 1.f});
+
     static void SetViewProjection(const glm::mat4& view_projection);
     static void SetTransform(const glm::vec3& transform);
     static void UseCamera(const OrthographicCamera& camera);
@@ -84,6 +91,7 @@ namespace Gates {
 
       uint32_t circles_drawn    = 0;
       uint32_t circles_outlined = 0;
+      uint32_t circles_bordered = 0;
 
       uint32_t draw_calls = 0;
 
