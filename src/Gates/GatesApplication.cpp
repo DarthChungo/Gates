@@ -232,12 +232,7 @@ namespace Gates {
     Renderer::UseCamera(camera);
     Renderer::BeginBatch();
 
-    // circuit.DrawGates();
-
-    for (uint32_t i = 0; i < 10; i++) {
-      Renderer::BorderSemicircle(
-          {(float)(i * 11), 0.f}, 10.f, 0.f, (i + 1) * glm::pi<float>() / 10, i + 3, 0.5f, {0.3f, 0.3f, 0.3f, 1.f});
-    }
+    circuit.DrawGates();
 
     Renderer::EndBatch();
     Renderer::FlushBatch();

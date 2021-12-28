@@ -17,17 +17,15 @@ namespace Gates {
   }
 
   void NotGate::Draw() {
-    Renderer::BorderTri(
-        pos, pos + glm::vec2(size.x - 2.7f, size.y / 2.f), pos + glm::vec2(0.f, size.y), 0.3f, getColor());
-    Renderer::BorderCircle(pos + glm::vec2(size.x - 1.5f, size.y / 2.f), 1.5f, 20, 0.3f, getColor());
+    Renderer::BorderTri(pos, pos + glm::vec2(5.3f, 5.f), pos + glm::vec2(0.f, 10.f), 0.3f, getColor());
+    Renderer::BorderCircle(pos + glm::vec2(6.5f, 5.f), 1.5f, 20, 0.3f, getColor());
 
     for (auto&& output : outputs) {
-      Renderer::DrawLine(
-          pos + (size * glm::vec2 {1.f, 0.5f}), output->pos + (size * glm::vec2 {0.f, 0.5f}), 0.1f, getColor());
+      Renderer::DrawLine(pos + glm::vec2(8.f, 5.f), output->pos + glm::vec2(0.f, 5.f), 0.1f, getColor());
     }
   }
 
-  AndGate::AndGate() : LogicGate() { size = glm::vec2 {10.f, 10.f}; }
+  AndGate::AndGate() : LogicGate() { size = glm::vec2 {14.7f, 10.f}; }
 
   void AndGate::UpdateState() {
     if (inputs.size() < 2) {
@@ -56,43 +54,21 @@ namespace Gates {
   }
 
   void AndGate::Draw() {
-    switch (state) {
-      case State::ERROR:
-        Renderer::DrawQuad(pos, size, {1.f, 0.f, 0.f, 1.f});
-        break;
+    Renderer::BorderSemicircle(pos + glm::vec2(5.f, 5.f),
+                               5.f * std::sqrt(2),
+                               glm::pi<float>() / 4.f,
+                               7 * glm::pi<float>() / 4,
+                               3,
+                               0.3f,
+                               getColor());
 
-      case State::ON:
-        Renderer::DrawQuad(pos, size, {0.f, 1.f, 0.f, 1.f});
-        break;
+    Renderer::BorderSemicircle(
+        pos + glm::vec2(9.7f, 5.f), 5.f, -glm::pi<float>() / 2.f, glm::pi<float>() / 2.f, 30, 0.3f, getColor());
 
-      case State::OFF:
-        Renderer::DrawQuad(pos, size, {0.3f, 0.3f, 0.3f, 1.f});
-        break;
-    }
+    Renderer::DrawTri(pos + glm::vec2(5.f, 5.f), pos + glm::vec2(9.7f, 0.3f), pos + glm::vec2(9.7f, 9.7f), getColor());
 
     for (auto&& output : outputs) {
-      switch (state) {
-        case State::ERROR:
-          Renderer::DrawLine(pos + (size * glm::vec2 {1.f, 0.5f}),
-                             output->pos + (size * glm::vec2 {0.f, 0.5f}),
-                             0.1f,
-                             {1.f, 0.f, 0.f, 1.f});
-          break;
-
-        case State::ON:
-          Renderer::DrawLine(pos + (size * glm::vec2 {1.f, 0.5f}),
-                             output->pos + (size * glm::vec2 {0.f, 0.5f}),
-                             0.1f,
-                             {0.f, 1.f, 0.f, 1.f});
-          break;
-
-        case State::OFF:
-          Renderer::DrawLine(pos + (size * glm::vec2 {1.f, 0.5f}),
-                             output->pos + (size * glm::vec2 {0.f, 0.5f}),
-                             0.1f,
-                             {0.3f, 0.3f, 0.3f, 1.f});
-          break;
-      }
+      Renderer::DrawLine(pos + glm::vec2(14.7f, 5.f), output->pos + glm::vec2(0.f, 5.f), 0.1f, getColor());
     }
   }
 
@@ -122,43 +98,11 @@ namespace Gates {
   }
 
   void OrGate::Draw() {
-    switch (state) {
-      case State::ERROR:
-        Renderer::DrawQuad(pos, size, {1.f, 0.f, 0.f, 1.f});
-        break;
-
-      case State::ON:
-        Renderer::DrawQuad(pos, size, {0.f, 1.f, 0.f, 1.f});
-        break;
-
-      case State::OFF:
-        Renderer::DrawQuad(pos, size, {0.3f, 0.3f, 0.3f, 1.f});
-        break;
-    }
+    Renderer::DrawQuad(pos, size, getColor());
 
     for (auto&& output : outputs) {
-      switch (state) {
-        case State::ERROR:
-          Renderer::DrawLine(pos + (size * glm::vec2 {1.f, 0.5f}),
-                             output->pos + (size * glm::vec2 {0.f, 0.5f}),
-                             0.1f,
-                             {1.f, 0.f, 0.f, 1.f});
-          break;
-
-        case State::ON:
-          Renderer::DrawLine(pos + (size * glm::vec2 {1.f, 0.5f}),
-                             output->pos + (size * glm::vec2 {0.f, 0.5f}),
-                             0.1f,
-                             {0.f, 1.f, 0.f, 1.f});
-          break;
-
-        case State::OFF:
-          Renderer::DrawLine(pos + (size * glm::vec2 {1.f, 0.5f}),
-                             output->pos + (size * glm::vec2 {0.f, 0.5f}),
-                             0.1f,
-                             {0.3f, 0.3f, 0.3f, 1.f});
-          break;
-      }
+      Renderer::DrawLine(
+          pos + (size * glm::vec2 {1.f, 0.5f}), output->pos + (size * glm::vec2 {0.f, 0.5f}), 0.1f, getColor());
     }
   }
 
@@ -257,11 +201,10 @@ namespace Gates {
   void InputGate::UpdateState() {}
 
   void InputGate::Draw() {
-    Renderer::BorderCircle(pos + size / 2.f, size.x / 2.f, 30, 0.3f, getColor());
+    Renderer::BorderCircle(pos + glm::vec2(5.f, 5.f), 5.f, 30, 0.3f, getColor());
 
     for (auto&& output : outputs) {
-      Renderer::DrawLine(
-          pos + (size * glm::vec2 {1.f, 0.5f}), output->pos + (size * glm::vec2 {0.f, 0.5f}), 0.1f, getColor());
+      Renderer::DrawLine(pos + glm::vec2(10.f, 5.f), output->pos + glm::vec2(0.f, 5.f), 0.1f, getColor());
     }
   }
 
@@ -297,12 +240,5 @@ namespace Gates {
     }
   }
 
-  void OutputGate::Draw() {
-    Renderer::BorderCircle(pos + size / 2.f, size.x / 2.f, 30, 0.3f, getColor());
-
-    for (auto&& output : outputs) {
-      Renderer::DrawLine(
-          pos + (size * glm::vec2 {1.f, 0.5f}), output->pos + (size * glm::vec2 {0.f, 0.5f}), 0.1f, getColor());
-    }
-  }
+  void OutputGate::Draw() { Renderer::BorderCircle(pos + glm::vec2(5.f, 5.f), 5.f, 30, 0.3f, getColor()); }
 }
