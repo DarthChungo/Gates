@@ -83,6 +83,16 @@ namespace Gates {
                                  const glm::vec4& inner_color,
                                  const glm::vec4& outter_color = {1.f, 1.f, 1.f, 1.f});
 
+    static void BorderSemicircleCustomCenter(const glm::vec2& position,
+                                             const glm::vec2& center,
+                                             const float&     radius,
+                                             const float&     start_angle,
+                                             const float&     end_angle,
+                                             const uint32_t&  segments,
+                                             const float&     width,
+                                             const glm::vec4& inner_color,
+                                             const glm::vec4& outter_color = {1.f, 1.f, 1.f, 1.f});
+
     static void SetViewProjection(const glm::mat4& view_projection);
     static void SetTransform(const glm::vec3& transform);
     static void UseCamera(const OrthographicCamera& camera);

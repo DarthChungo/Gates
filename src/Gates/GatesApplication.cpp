@@ -232,7 +232,25 @@ namespace Gates {
     Renderer::UseCamera(camera);
     Renderer::BeginBatch();
 
-    circuit.DrawGates();
+    // circuit.DrawGates();
+
+    Renderer::BorderSemicircleCustomCenter({0.f, 0.f},
+                                           {5.f, 0.f},
+                                           10.f,
+                                           -glm::pi<float>() / 4.f,
+                                           glm::pi<float>() / 4.f,
+                                           5,
+                                           0.3f,
+                                           {0.3f, 0.3f, 0.3f, 1.f});
+
+    Renderer::BorderSemicircleCustomCenter({30.f, 0.f},
+                                           {40.f, 0.f},
+                                           5.f,
+                                           -glm::pi<float>() / 4.f,
+                                           glm::pi<float>() / 4.f,
+                                           5,
+                                           0.3f,
+                                           {0.3f, 0.3f, 0.3f, 1.f});
 
     Renderer::EndBatch();
     Renderer::FlushBatch();
