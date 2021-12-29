@@ -25,7 +25,7 @@ namespace Gates {
     }
   }
 
-  AndGate::AndGate() : LogicGate() { size = glm::vec2 {14.7f, 10.f}; }
+  AndGate::AndGate() : LogicGate() { size = glm::vec2 {12.5, 10.f}; }
 
   void AndGate::UpdateState() {
     if (inputs.size() < 2) {
@@ -54,25 +54,19 @@ namespace Gates {
   }
 
   void AndGate::Draw() {
-    Renderer::BorderSemicircle(pos + glm::vec2(5.f, 5.f),
-                               5.f * std::sqrt(2),
-                               glm::pi<float>() / 4.f,
-                               7 * glm::pi<float>() / 4,
-                               3,
-                               0.3f,
-                               getColor());
+    Renderer::DrawQuad(pos, glm::vec2(0.3f, 10.f));
+    Renderer::DrawQuad(pos, glm::vec2(7.5f, 0.3f));
+    Renderer::DrawQuad(pos + glm::vec2(0.f, 9.7f), glm::vec2(7.5f, 0.3f));
+    Renderer::DrawQuad(pos + glm::vec2(0.3f, 0.3f), glm::vec2(7.2f, 9.4f), getColor());
 
-    Renderer::BorderSemicircle(
-        pos + glm::vec2(9.7f, 5.f), 5.f, -glm::pi<float>() / 2.f, glm::pi<float>() / 2.f, 30, 0.3f, getColor());
-
-    Renderer::DrawTri(pos + glm::vec2(5.f, 5.f), pos + glm::vec2(9.7f, 0.3f), pos + glm::vec2(9.7f, 9.7f), getColor());
+    Renderer::BorderSemicircle(pos + glm::vec2(7.5f, 5.f), 5.f, -1.570f, 1.570f, 30, 0.3f, getColor());
 
     for (auto&& output : outputs) {
-      Renderer::DrawLine(pos + glm::vec2(14.7f, 5.f), output->pos + glm::vec2(0.f, 5.f), 0.1f, getColor());
+      Renderer::DrawLine(pos + glm::vec2(12.5f, 5.f), output->pos + glm::vec2(0.f, 5.f), 0.1f, getColor());
     }
   }
 
-  OrGate::OrGate() : LogicGate() { size = glm::vec2 {10.f, 10.f}; }
+  OrGate::OrGate() : LogicGate() { size = glm::vec2 {12.5f, 10.f}; }
 
   void OrGate::UpdateState() {
     if (inputs.size() < 2) {
@@ -98,7 +92,50 @@ namespace Gates {
   }
 
   void OrGate::Draw() {
-    Renderer::DrawQuad(pos, size, getColor());
+    Renderer::BorderSemicircleCustomCenterOutside(
+        pos + glm::vec2(-3.75f, 5.f), pos + glm::vec2(7.f, 5.f), 6.25f, -0.927f, 0.927f, 20, 0.3f, getColor());
+
+    Renderer::BorderSemicircleCustomCenterInside(pos + glm::vec2(5.f, 1.875f),
+                                                 pos + glm::vec2(5.f, 5.f),
+                                                 8.125f,
+                                                 0.394f,
+                                                 glm::pi<float>() / 2.f,
+                                                 30,
+                                                 0.3f,
+                                                 getColor());
+
+    Renderer::BorderSemicircleCustomCenterInside(pos + glm::vec2(5.f, 8.125f),
+                                                 pos + glm::vec2(5.f, 5.f),
+                                                 8.125f,
+                                                 -glm::pi<float>() / 2.f,
+                                                 -0.394f,
+                                                 30,
+                                                 0.3f,
+                                                 getColor());
+
+    Renderer::BorderSemicircleCustomCenterInside(pos + glm::vec2(2.5f, 7.5f),
+                                                 pos + glm::vec2(5.f, 5.f),
+                                                 3.535f,
+                                                 glm::pi<float>() / 4.f,
+                                                 3 * glm::pi<float>() / 4.f,
+                                                 1,
+                                                 0.3f,
+                                                 getColor());
+
+    Renderer::DrawTri(pos + glm::vec2(5.f, 5.f), pos + glm::vec2(5.f, 9.7f), pos + glm::vec2(4.7f, 9.7f), getColor());
+    Renderer::DrawTri(pos + glm::vec2(5.f, 10.f), pos + glm::vec2(5.f, 9.7f), pos + glm::vec2(4.7f, 9.7f));
+
+    Renderer::BorderSemicircleCustomCenterInside(pos + glm::vec2(2.5f, 2.5f),
+                                                 pos + glm::vec2(5.f, 5.f),
+                                                 3.535f,
+                                                 -3.f * glm::pi<float>() / 4.f,
+                                                 -glm::pi<float>() / 4.f,
+                                                 1,
+                                                 0.3f,
+                                                 getColor());
+
+    Renderer::DrawTri(pos + glm::vec2(5.f, 5.f), pos + glm::vec2(5.f, 0.3f), pos + glm::vec2(4.7f, 0.3f), getColor());
+    Renderer::DrawTri(pos + glm::vec2(5.f, 0.f), pos + glm::vec2(5.f, 0.3f), pos + glm::vec2(4.7f, 0.3f));
 
     for (auto&& output : outputs) {
       Renderer::DrawLine(
@@ -106,7 +143,7 @@ namespace Gates {
     }
   }
 
-  XorGate::XorGate() : LogicGate() { size = glm::vec2 {10.f, 10.f}; }
+  XorGate::XorGate() : LogicGate() { size = glm::vec2 {12.5f, 10.f}; }
 
   void XorGate::UpdateState() {
     if (inputs.size() < 2) {
@@ -134,43 +171,57 @@ namespace Gates {
   }
 
   void XorGate::Draw() {
-    switch (state) {
-      case State::ERROR:
-        Renderer::DrawQuad(pos, size, {1.f, 0.f, 0.f, 1.f});
-        break;
+    Renderer::BorderSemicircleCustomCenterOutside(
+        pos + glm::vec2(-3.75f, 5.f), pos + glm::vec2(7.f, 5.f), 6.25f, -0.927f, 0.927f, 20, 0.3f, getColor());
 
-      case State::ON:
-        Renderer::DrawQuad(pos, size, {0.f, 1.f, 0.f, 1.f});
-        break;
+    Renderer::BorderSemicircleCustomCenterOutside(
+        pos + glm::vec2(-3.75, 5.f), pos + glm::vec2(7.f, 5.f), 5.25f, -1.2f, 1.2f, 20, 0.3f, {0.f, 0.f, 0.f, 0.f});
 
-      case State::OFF:
-        Renderer::DrawQuad(pos, size, {0.3f, 0.3f, 0.3f, 1.f});
-        break;
-    }
+    Renderer::BorderSemicircleCustomCenterInside(pos + glm::vec2(5.f, 1.875f),
+                                                 pos + glm::vec2(5.f, 5.f),
+                                                 8.125f,
+                                                 0.394f,
+                                                 glm::pi<float>() / 2.f,
+                                                 30,
+                                                 0.3f,
+                                                 getColor());
+
+    Renderer::BorderSemicircleCustomCenterInside(pos + glm::vec2(5.f, 8.125f),
+                                                 pos + glm::vec2(5.f, 5.f),
+                                                 8.125f,
+                                                 -glm::pi<float>() / 2.f,
+                                                 -0.394f,
+                                                 30,
+                                                 0.3f,
+                                                 getColor());
+
+    Renderer::BorderSemicircleCustomCenterInside(pos + glm::vec2(2.5f, 7.5f),
+                                                 pos + glm::vec2(5.f, 5.f),
+                                                 3.535f,
+                                                 glm::pi<float>() / 4.f,
+                                                 3 * glm::pi<float>() / 4.f,
+                                                 1,
+                                                 0.3f,
+                                                 getColor());
+
+    Renderer::DrawTri(pos + glm::vec2(5.f, 5.f), pos + glm::vec2(5.f, 9.7f), pos + glm::vec2(4.7f, 9.7f), getColor());
+    Renderer::DrawTri(pos + glm::vec2(5.f, 10.f), pos + glm::vec2(5.f, 9.7f), pos + glm::vec2(4.7f, 9.7f));
+
+    Renderer::BorderSemicircleCustomCenterInside(pos + glm::vec2(2.5f, 2.5f),
+                                                 pos + glm::vec2(5.f, 5.f),
+                                                 3.535f,
+                                                 -3.f * glm::pi<float>() / 4.f,
+                                                 -glm::pi<float>() / 4.f,
+                                                 1,
+                                                 0.3f,
+                                                 getColor());
+
+    Renderer::DrawTri(pos + glm::vec2(5.f, 5.f), pos + glm::vec2(5.f, 0.3f), pos + glm::vec2(4.7f, 0.3f), getColor());
+    Renderer::DrawTri(pos + glm::vec2(5.f, 0.f), pos + glm::vec2(5.f, 0.3f), pos + glm::vec2(4.7f, 0.3f));
 
     for (auto&& output : outputs) {
-      switch (state) {
-        case State::ERROR:
-          Renderer::DrawLine(pos + (size * glm::vec2 {1.f, 0.5f}),
-                             output->pos + (size * glm::vec2 {0.f, 0.5f}),
-                             0.1f,
-                             {1.f, 0.f, 0.f, 1.f});
-          break;
-
-        case State::ON:
-          Renderer::DrawLine(pos + (size * glm::vec2 {1.f, 0.5f}),
-                             output->pos + (size * glm::vec2 {0.f, 0.5f}),
-                             0.1f,
-                             {0.f, 1.f, 0.f, 1.f});
-          break;
-
-        case State::OFF:
-          Renderer::DrawLine(pos + (size * glm::vec2 {1.f, 0.5f}),
-                             output->pos + (size * glm::vec2 {0.f, 0.5f}),
-                             0.1f,
-                             {0.3f, 0.3f, 0.3f, 1.f});
-          break;
-      }
+      Renderer::DrawLine(
+          pos + (size * glm::vec2 {1.f, 0.5f}), output->pos + (size * glm::vec2 {0.f, 0.5f}), 0.1f, getColor());
     }
   }
 

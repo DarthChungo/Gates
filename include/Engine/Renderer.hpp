@@ -33,15 +33,15 @@ namespace Gates {
                         const glm::vec4& color = {1.f, 1.f, 1.f, 1.f});
 
     static void DrawCircle(const glm::vec2& position,
-                           const float&     radius,
-                           const uint32_t&  segments,
+                           float            radius,
+                           uint32_t         segments,
                            const glm::vec4& color = {1.f, 1.f, 1.f, 1.f});
 
     static void DrawLine(const glm::vec2& pos1, const glm::vec2& pos2, const glm::vec4& color = {1.f, 1.f, 1.f, 1.f});
 
     static void DrawLine(const glm::vec2& pos1,
                          const glm::vec2& pos2,
-                         const float&     width,
+                         float            width,
                          const glm::vec4& color = {1.f, 1.f, 1.f, 1.f});
 
     static void OutlineQuad(const glm::vec2& position,
@@ -51,47 +51,57 @@ namespace Gates {
     static void OutlineTri(const glm::vec2& v1,
                            const glm::vec2& v2,
                            const glm::vec2& v3,
-                           const float&     width,
+                           float            width,
                            const glm::vec4& color = {1.f, 1.f, 1.f, 1.f});
 
     static void BorderTri(const glm::vec2& v1,
                           const glm::vec2& v2,
                           const glm::vec2& v3,
-                          const float&     width,
+                          float            width,
                           const glm::vec4& inner_color,
                           const glm::vec4& outter_color = {1.f, 1.f, 1.f, 1.f});
 
     static void OutlineCircle(const glm::vec2& position,
-                              const float&     radius,
-                              const uint32_t&  segments,
-                              const float&     width,
+                              float            radius,
+                              uint32_t         segments,
+                              float            width,
                               const glm::vec4& color = {1.f, 1.f, 1.f, 1.f});
 
     static void BorderCircle(const glm::vec2& position,
-                             const float&     radius,
-                             const uint32_t&  segments,
-                             const float&     width,
+                             float            radius,
+                             uint32_t         segments,
+                             float            width,
                              const glm::vec4& inner_color,
                              const glm::vec4& outter_color = {1.f, 1.f, 1.f, 1.f});
 
     static void BorderSemicircle(const glm::vec2& position,
-                                 const float&     radius,
-                                 const float&     start_angle,
-                                 const float&     end_angle,
-                                 const uint32_t&  segments,
-                                 const float&     width,
+                                 float            radius,
+                                 float            start_angle,
+                                 float            end_angle,
+                                 uint32_t         segments,
+                                 float            width,
                                  const glm::vec4& inner_color,
                                  const glm::vec4& outter_color = {1.f, 1.f, 1.f, 1.f});
 
-    static void BorderSemicircleCustomCenter(const glm::vec2& position,
-                                             const glm::vec2& center,
-                                             const float&     radius,
-                                             const float&     start_angle,
-                                             const float&     end_angle,
-                                             const uint32_t&  segments,
-                                             const float&     width,
-                                             const glm::vec4& inner_color,
-                                             const glm::vec4& outter_color = {1.f, 1.f, 1.f, 1.f});
+    static void BorderSemicircleCustomCenterInside(const glm::vec2& position,
+                                                   const glm::vec2& center,
+                                                   float            radius,
+                                                   float            start_angle,
+                                                   float            end_angle,
+                                                   uint32_t         segments,
+                                                   float            width,
+                                                   const glm::vec4& inner_color,
+                                                   const glm::vec4& outter_color = {1.f, 1.f, 1.f, 1.f});
+
+    static void BorderSemicircleCustomCenterOutside(const glm::vec2& position,
+                                                    const glm::vec2& center,
+                                                    float            radius,
+                                                    float            start_angle,
+                                                    float            end_angle,
+                                                    uint32_t         segments,
+                                                    float            width,
+                                                    const glm::vec4& inner_color,
+                                                    const glm::vec4& outter_color = {1.f, 1.f, 1.f, 1.f});
 
     static void SetViewProjection(const glm::mat4& view_projection);
     static void SetTransform(const glm::vec3& transform);

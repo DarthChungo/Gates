@@ -330,10 +330,7 @@ namespace Gates {
     data.stats.tris_drawn++;
   }
 
-  void Renderer::DrawCircle(const glm::vec2& position,
-                            const float&     radius,
-                            const uint32_t&  segments,
-                            const glm::vec4& color) {
+  void Renderer::DrawCircle(const glm::vec2& position, float radius, uint32_t segments, const glm::vec4& color) {
     if ((data.tri_index_count + segments * 3) >= pMaxIndexCount ||
         (data.tri_vertex_count + segments + 1) >= pMaxVertexCount) {
       EndTriBatch();
@@ -396,7 +393,7 @@ namespace Gates {
     data.stats.lines_drawn++;
   }
 
-  void Renderer::DrawLine(const glm::vec2& pos1, const glm::vec2& pos2, const float& width, const glm::vec4& color) {
+  void Renderer::DrawLine(const glm::vec2& pos1, const glm::vec2& pos2, float width, const glm::vec4& color) {
     if ((data.tri_index_count + 6) >= pMaxIndexCount || (data.tri_vertex_count + 4) >= pMaxVertexCount ||
         data.texture_slot_index > (pMaxTextures - 1)) {
       EndTriBatch();
@@ -497,7 +494,7 @@ namespace Gates {
   void Renderer::OutlineTri(const glm::vec2& v1,
                             const glm::vec2& v2,
                             const glm::vec2& v3,
-                            const float&     width,
+                            float            width,
                             const glm::vec4& color) {
     const float a = glm::length(v1 - v2);
     const float b = glm::length(v2 - v3);
@@ -581,7 +578,7 @@ namespace Gates {
   void Renderer::BorderTri(const glm::vec2& v1,
                            const glm::vec2& v2,
                            const glm::vec2& v3,
-                           const float&     width,
+                           float            width,
                            const glm::vec4& inner_color,
                            const glm::vec4& outter_color) {
     const float a = glm::length(v1 - v2);
@@ -686,9 +683,9 @@ namespace Gates {
   }
 
   void Renderer::OutlineCircle(const glm::vec2& position,
-                               const float&     radius,
-                               const uint32_t&  segments,
-                               const float&     width,
+                               float            radius,
+                               uint32_t         segments,
+                               float            width,
                                const glm::vec4& color) {
     if ((data.tri_index_count + segments * 6) >= pMaxIndexCount ||
         (data.tri_vertex_count + segments * 2) >= pMaxVertexCount) {
@@ -735,9 +732,9 @@ namespace Gates {
   }
 
   void Renderer::BorderCircle(const glm::vec2& position,
-                              const float&     radius,
-                              const uint32_t&  segments,
-                              const float&     width,
+                              float            radius,
+                              uint32_t         segments,
+                              float            width,
                               const glm::vec4& inner_color,
                               const glm::vec4& outter_color) {
     if ((data.tri_index_count + segments * 9) >= pMaxIndexCount ||
@@ -801,11 +798,11 @@ namespace Gates {
   }
 
   void Renderer::BorderSemicircle(const glm::vec2& position,
-                                  const float&     radius,
-                                  const float&     start_angle,
-                                  const float&     end_angle,
-                                  const uint32_t&  segments,
-                                  const float&     width,
+                                  float            radius,
+                                  float            start_angle,
+                                  float            end_angle,
+                                  uint32_t         segments,
+                                  float            width,
                                   const glm::vec4& inner_color,
                                   const glm::vec4& outter_color) {
     if ((data.tri_index_count + segments * 9) >= pMaxIndexCount ||
@@ -872,15 +869,15 @@ namespace Gates {
     data.stats.semicircles_bordered++;
   }
 
-  void Renderer::BorderSemicircleCustomCenter(const glm::vec2& position,
-                                              const glm::vec2& center,
-                                              const float&     radius,
-                                              const float&     start_angle,
-                                              const float&     end_angle,
-                                              const uint32_t&  segments,
-                                              const float&     width,
-                                              const glm::vec4& inner_color,
-                                              const glm::vec4& outter_color) {
+  void Renderer::BorderSemicircleCustomCenterInside(const glm::vec2& position,
+                                                    const glm::vec2& center,
+                                                    float            radius,
+                                                    float            start_angle,
+                                                    float            end_angle,
+                                                    uint32_t         segments,
+                                                    float            width,
+                                                    const glm::vec4& inner_color,
+                                                    const glm::vec4& outter_color) {
     if ((data.tri_index_count + segments * 9) >= pMaxIndexCount ||
         (data.tri_vertex_count + segments * 3 + 4) >= pMaxVertexCount) {
       EndTriBatch();
@@ -915,20 +912,86 @@ namespace Gates {
       data.tri_vertex_buffer_current->tex_id    = 0;
       data.tri_vertex_buffer_current++;
 
-      if (is_center_outside) {
-        data.tri_vertex_buffer_current->position  = {outter_pos.x, outter_pos.y, 0.f};
-        data.tri_vertex_buffer_current->color     = inner_color;
-        data.tri_vertex_buffer_current->tex_coord = {0.f, 0.f};
-        data.tri_vertex_buffer_current->tex_id    = 0;
-        data.tri_vertex_buffer_current++;
+      data.tri_vertex_buffer_current->position  = {inner_pos.x, inner_pos.y, 0.f};
+      data.tri_vertex_buffer_current->color     = inner_color;
+      data.tri_vertex_buffer_current->tex_coord = {0.f, 0.f};
+      data.tri_vertex_buffer_current->tex_id    = 0;
+      data.tri_vertex_buffer_current++;
+    }
 
-      } else {
-        data.tri_vertex_buffer_current->position  = {inner_pos.x, inner_pos.y, 0.f};
-        data.tri_vertex_buffer_current->color     = inner_color;
-        data.tri_vertex_buffer_current->tex_coord = {0.f, 0.f};
-        data.tri_vertex_buffer_current->tex_id    = 0;
-        data.tri_vertex_buffer_current++;
-      }
+    for (uint32_t current = 0; current < segments; current++) {
+      data.tri_index_buffer[data.tri_index_count + 0] = data.tri_vertex_count + (current * 3);
+      data.tri_index_buffer[data.tri_index_count + 1] = data.tri_vertex_count + (current * 3) + 1;
+      data.tri_index_buffer[data.tri_index_count + 2] = data.tri_vertex_count + (current * 3) + 4;
+
+      data.tri_index_buffer[data.tri_index_count + 3] = data.tri_vertex_count + (current * 3);
+      data.tri_index_buffer[data.tri_index_count + 4] = data.tri_vertex_count + (current * 3) + 3;
+      data.tri_index_buffer[data.tri_index_count + 5] = data.tri_vertex_count + (current * 3) + 4;
+
+      data.tri_index_buffer[data.tri_index_count + 6] = data.tri_vertex_count + (current * 3) + 2;
+      data.tri_index_buffer[data.tri_index_count + 7] = data.tri_vertex_count + (current * 3) + 5;
+      data.tri_index_buffer[data.tri_index_count + 8] = data.tri_vertex_count + (segments * 3) + 3;
+
+      data.tri_index_count += 9;
+    }
+
+    data.tri_vertex_buffer_current->position  = {center.x, center.y, 0.f};
+    data.tri_vertex_buffer_current->color     = inner_color;
+    data.tri_vertex_buffer_current->tex_coord = {0.f, 0.f};
+    data.tri_vertex_buffer_current->tex_id    = 0;
+    data.tri_vertex_buffer_current++;
+
+    data.tri_vertex_count += (3 * segments + 4);
+    data.stats.semicircles_bordered++;
+  }
+
+  void Renderer::BorderSemicircleCustomCenterOutside(const glm::vec2& position,
+                                                     const glm::vec2& center,
+                                                     float            radius,
+                                                     float            start_angle,
+                                                     float            end_angle,
+                                                     uint32_t         segments,
+                                                     float            width,
+                                                     const glm::vec4& inner_color,
+                                                     const glm::vec4& outter_color) {
+    if ((data.tri_index_count + segments * 9) >= pMaxIndexCount ||
+        (data.tri_vertex_count + segments * 3 + 4) >= pMaxVertexCount) {
+      EndTriBatch();
+      FlushTriBatch();
+      BeginTriBatch();
+    }
+
+    const float inc          = (end_angle - start_angle) / segments;
+    const float inner_radius = radius - (width / std::cos(inc / 2));
+
+    const glm::vec2 offset = center - position;
+
+    for (uint32_t current = 0; current <= segments; current++) {
+      const float current_angle = current * inc + start_angle;
+
+      const glm::vec2 outter_pos = {glm::cos(current_angle) * radius + position.x,
+                                    glm::sin(current_angle) * radius + position.y};
+
+      const glm::vec2 inner_pos = {glm::cos(current_angle) * inner_radius + position.x,
+                                   glm::sin(current_angle) * inner_radius + position.y};
+
+      data.tri_vertex_buffer_current->position  = {outter_pos.x, outter_pos.y, 0.f};
+      data.tri_vertex_buffer_current->color     = outter_color;
+      data.tri_vertex_buffer_current->tex_coord = {0.f, 0.f};
+      data.tri_vertex_buffer_current->tex_id    = 0;
+      data.tri_vertex_buffer_current++;
+
+      data.tri_vertex_buffer_current->position  = {inner_pos.x, inner_pos.y, 0.f};
+      data.tri_vertex_buffer_current->color     = outter_color;
+      data.tri_vertex_buffer_current->tex_coord = {0.f, 0.f};
+      data.tri_vertex_buffer_current->tex_id    = 0;
+      data.tri_vertex_buffer_current++;
+
+      data.tri_vertex_buffer_current->position  = {outter_pos.x, outter_pos.y, 0.f};
+      data.tri_vertex_buffer_current->color     = inner_color;
+      data.tri_vertex_buffer_current->tex_coord = {0.f, 0.f};
+      data.tri_vertex_buffer_current->tex_id    = 0;
+      data.tri_vertex_buffer_current++;
     }
 
     for (uint32_t current = 0; current < segments; current++) {
