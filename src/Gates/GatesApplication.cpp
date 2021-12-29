@@ -218,12 +218,39 @@ namespace Gates {
   rcode GatesApplication::pOnLaunch() {
     Renderer::Init();
 
-    circuit.AddGateDirect<InputGate>({0.f, 0.f});
-    circuit.AddGateDirect<OutputGate>({15.f, 0.f});
-    circuit.AddGateDirect<AndGate>({30.f, 0.f});
-    circuit.AddGateDirect<NotGate>({45.f, 0.f});
-    circuit.AddGateDirect<OrGate>({60.f, 0.f});
-    circuit.AddGateDirect<XorGate>({75.f, 0.f});
+    auto in0 = circuit.AddGateDirect<InputGate>({0.f, -30.f});
+    auto in1 = circuit.AddGateDirect<InputGate>({0.f, -15.f});
+    auto in2 = circuit.AddGateDirect<InputGate>({0.f, 0.f});
+
+    auto xor0 = circuit.AddGateDirect<XorGate>({20.f, -30.f});
+    auto xor1 = circuit.AddGateDirect<XorGate>({40.f, -30.f});
+
+    auto and0 = circuit.AddGateDirect<AndGate>({40.f, -15.f});
+    auto and1 = circuit.AddGateDirect<AndGate>({40.f, 0.f});
+
+    auto or0 = circuit.AddGateDirect<OrGate>({60.f, -15.f});
+
+    auto out0 = circuit.AddGateDirect<OutputGate>({80.f, -30.f});
+    auto out1 = circuit.AddGateDirect<OutputGate>({80.f, -15.f});
+
+    circuit.ToggleConnection(in0, xor0);
+    circuit.ToggleConnection(in1, xor0);
+
+    circuit.ToggleConnection(in2, xor1);
+    circuit.ToggleConnection(xor0, xor1);
+
+    circuit.ToggleConnection(xor0, and0);
+    circuit.ToggleConnection(in2, and0);
+
+    circuit.ToggleConnection(in0, and1);
+    circuit.ToggleConnection(in1, and1);
+
+    circuit.ToggleConnection(and0, or0);
+    circuit.ToggleConnection(and1, or0);
+
+    circuit.ToggleConnection(xor1, out0);
+
+    circuit.ToggleConnection(or0, out1);
 
     return rcode::ok;
   }
