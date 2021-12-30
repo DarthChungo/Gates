@@ -168,7 +168,7 @@ namespace Gates {
       current_entry.second.reserve(num_outputs);
 
       for (auto&& gate : gates_input) {
-        bool current_state = ((n >> current_gate++) & 1ULL) == true;
+        const bool current_state = ((n >> current_gate++) & 1ULL) == true;
 
         SetInput(gate, current_state ? State::ON : State::OFF);
         current_entry.first.push_back(current_state);

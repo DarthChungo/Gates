@@ -209,17 +209,42 @@ namespace Gates {
       }
 
       if (ImGui::CollapsingHeader("Tabla de verdades: ")) {
+        static LogicCircuit::TruthTable table;
+
         if (ImGui::Button("Calcular...")) {
-          auto table = circuit.ComputeTruthTable();
+          table = circuit.ComputeTruthTable();
+        }
 
-          for (const auto& entry : table) {
-            std::ostringstream stream0;
-            std::copy(entry.first.begin(), entry.first.end(), std::ostream_iterator<bool>(stream0, ", "));
+        if (table.size() != 0) {
+          static ImGuiTableFlags table_flags  = ImGuiTableFlags_RowBg | ImGuiTableFlags_BordersInnerV;
+          static const uint32_t  columns_ins  = table[0].first.size();
+          static const uint32_t  columns_outs = table[0].second.size();
 
-            std::ostringstream stream1;
-            std::copy(entry.second.begin(), entry.second.end(), std::ostream_iterator<bool>(stream1, ", "));
+          if (ImGui::BeginTable("##ttable1", columns_ins + columns_outs, table_flags)) {
+            for (uint32_t i = 0; i < columns_ins; i++) ImGui::TableSetupColumn(("in" + std::to_string(i)).c_str());
 
-            Logger::Info(stream0.str() + " -> " + stream1.str());
+            for (uint32_t i = 0; i < columns_outs; i++) ImGui::TableSetupColumn(("out" + std::to_string(i)).c_str());
+
+            ImGui::TableHeadersRow();
+
+            for (const auto& entry : table) {
+              ImGui::TableNextRow();
+              uint32_t colum = 0;
+
+              for (const auto& in : entry.first) {
+                ImGui::TableSetColumnIndex(colum);
+                ImGui::Text("%s", in ? "1" : "0");
+                colum++;
+              }
+
+              for (const auto& out : entry.second) {
+                ImGui::TableSetColumnIndex(colum);
+                ImGui::Text("%s", out ? "1" : "0");
+                colum++;
+              }
+            }
+
+            ImGui::EndTable();
           }
         }
       }
