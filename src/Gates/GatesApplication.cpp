@@ -1,6 +1,7 @@
 #include "Engine/Renderer.hpp"
 #include "Gates/GatesApplication.hpp"
 #include "Gates/LogicGates.hpp"
+#include "Util/Logger.hpp"
 
 namespace Gates {
   rcode GatesApplication::pOnUpdate() {
@@ -205,6 +206,22 @@ namespace Gates {
         }
 
         ImGui::Unindent();
+      }
+
+      if (ImGui::CollapsingHeader("Tabla de verdades: ")) {
+        if (ImGui::Button("Calcular...")) {
+          auto table = circuit.ComputeTruthTable();
+
+          for (const auto& entry : table) {
+            std::ostringstream stream0;
+            std::copy(entry.first.begin(), entry.first.end(), std::ostream_iterator<bool>(stream0, ", "));
+
+            std::ostringstream stream1;
+            std::copy(entry.second.begin(), entry.second.end(), std::ostream_iterator<bool>(stream1, ", "));
+
+            Logger::Info(stream0.str() + " -> " + stream1.str());
+          }
+        }
       }
 
       ImGui::End();

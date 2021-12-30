@@ -12,6 +12,9 @@ namespace Gates {
 
   class LogicCircuit {
    public:
+    using TruthTableEntry = std::pair<std::vector<bool>, std::vector<bool>>;
+    using TruthTable      = std::vector<TruthTableEntry>;
+
     LogicCircuit(GatesApplication* application) : app(application) {}
 
     template <class GateType>
@@ -54,6 +57,8 @@ namespace Gates {
 
     void SetInput(const std::shared_ptr<LogicGate>& input, State val);
     void ToggleConnection(const std::shared_ptr<LogicGate>& who, const std::shared_ptr<LogicGate>& output);
+
+    TruthTable ComputeTruthTable();
 
    public:
     std::set<std::shared_ptr<LogicGate>> gates;

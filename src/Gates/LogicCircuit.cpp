@@ -150,4 +150,39 @@ namespace Gates {
 
     gates_update_pending.insert(output);
   }
+
+  LogicCircuit::TruthTable LogicCircuit::ComputeTruthTable() {
+    const size_t   num_inputs  = gates_input.size();
+    const size_t   num_outputs = gates_output.size();
+    const uint64_t num_entries = std::pow(2, num_inputs);
+
+    LogicCircuit::TruthTable table;
+    table.reserve(num_entries);
+
+    for (uint64_t n = 0; n < num_entries; n++) {
+      uint64_t current_gate = 0;
+
+      TruthTableEntry current_entry = std::make_pair(std::vector<bool>(), std::vector<bool>());
+
+      current_entry.first.reserve(num_inputs);
+      current_entry.second.reserve(num_outputs);
+
+      for (auto&& gate : gates_input) {
+        bool current_state = ((n >> current_gate++) & 1ULL) == true;
+
+        SetInput(gate, current_state ? State::ON : State::OFF);
+        current_entry.first.push_back(current_state);
+      }
+
+      UpdateLogicState();
+
+      for (auto&& gate : gates_output) {
+        current_entry.second.emplace_back(gate->state == State::ON ? true : false);
+      }
+
+      table.push_back(current_entry);
+    }
+
+    return table;
+  }
 }
