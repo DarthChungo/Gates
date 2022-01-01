@@ -105,8 +105,7 @@ namespace Gates {
     if (show_statistics) {
       ImGui::Begin("Estadísticas");
 
-      if (ImGui::CollapsingHeader("Renderizado:")) {
-        ImGui::Indent();
+      if (ImGui::TreeNode("Renderizado:")) {
         ImGui::Text("Cuadrados: %d", Renderer::GetStats().quads_drawn);
         ImGui::Text("Triángulos: %d", Renderer::GetStats().tris_drawn);
         ImGui::Text("Triángulos (resaltados): %d", Renderer::GetStats().tris_outlined);
@@ -123,36 +122,32 @@ namespace Gates {
         ImGui::Text("Índices (triángulos): %d", Renderer::GetStats().tri_index_count);
         ImGui::Text("Vértices (líneas): %d", Renderer::GetStats().line_vertex_count);
         ImGui::Text("Índices (líneas): %d", Renderer::GetStats().line_index_count);
-        ImGui::Unindent();
+        ImGui::TreePop();
       }
 
-      if (ImGui::CollapsingHeader("Ratón:")) {
-        ImGui::Indent();
+      if (ImGui::TreeNode("Ratón:")) {
         ImGui::TextWrapped("Posición (puntero): %s", std::to_string(MousePos()).c_str());
         ImGui::TextWrapped("Posición (rueda): %s", std::to_string(MouseWheel()).c_str());
         ImGui::TextWrapped("¿En la ventada? %s", MouseFocus() ? "yes" : "no");
-        ImGui::Unindent();
+        ImGui::TreePop();
       }
 
-      if (ImGui::CollapsingHeader("Ventana:")) {
-        ImGui::Indent();
+      if (ImGui::TreeNode("Ventana:")) {
         ImGui::TextWrapped("Tamaño: %s", std::to_string(WindowSize()).c_str());
         ImGui::TextWrapped("Posición: %s", std::to_string(WindowPos()).c_str());
-        ImGui::Unindent();
+        ImGui::TreePop();
       }
 
-      if (ImGui::CollapsingHeader("Aplicación:")) {
-        ImGui::Indent();
+      if (ImGui::TreeNode("Aplicación:")) {
         ImGui::Text("FPS: %d f/s", fps());
         ImGui::Text("MSPF: %.4f ms/f", 1000 / (float)fps());
-        ImGui::Unindent();
+        ImGui::TreePop();
       }
 
-      if (ImGui::CollapsingHeader("Cámara:")) {
-        ImGui::Indent();
+      if (ImGui::TreeNode("Cámara:")) {
         ImGui::Text("Posición: %s", std::to_string(glm::vec2 {camera.getPosition().x, camera.getPosition().y}).c_str());
         ImGui::Text("Distancia de visión: %f", view_distance);
-        ImGui::Unindent();
+        ImGui::TreePop();
       }
 
       ImGui::End();
@@ -161,54 +156,47 @@ namespace Gates {
     if (show_controls) {
       ImGui::Begin("Controles");
 
-      if (ImGui::CollapsingHeader("Añadir")) {
-        ImGui::Indent();
-
+      if (ImGui::TreeNode("Añadir")) {
         if (ImGui::Button("Puerta input")) circuit.AddGate<InputGate>();
         if (ImGui::Button("Puerta output")) circuit.AddGate<OutputGate>();
         if (ImGui::Button("Puerta not")) circuit.AddGate<NotGate>();
         if (ImGui::Button("Puerta or")) circuit.AddGate<OrGate>();
         if (ImGui::Button("Puerta and")) circuit.AddGate<AndGate>();
         if (ImGui::Button("Puerta xor")) circuit.AddGate<XorGate>();
-
-        ImGui::Unindent();
+        ImGui::TreePop();
       }
 
-      if (ImGui::CollapsingHeader("Puertas:")) {
-        ImGui::Indent();
+      if (ImGui::TreeNode("Puertas:")) {
+        uint32_t id = 0;
 
-        for (auto&& gate : circuit.gates) {
-          ImGui::Text("Puerta %s", gate->getName());
+        const auto DisplayGate = [&id](const auto& self, const std::shared_ptr<LogicGate>& gate) -> void {
+          if (gate->outputs.size() > 0) {
+            bool open = ImGui::TreeNodeEx((gate->getName() + std::string("##tree_node") + std::to_string(id++)).c_str(),
+                                          ImGuiTreeNodeFlags_SpanFullWidth);
 
-          ImGui::Indent();
+            if (open) {
+              for (const std::shared_ptr<LogicGate>& output : gate->outputs) {
+                self(self, output);
+              }
 
-          ImGui::Text("ID: %lu", (uint64_t)gate->id);
-          ImGui::Text("Estado: %s", StateNames[gate->state]);
+              ImGui::TreePop();
+            }
 
-          ImGui::Text("Ins:");
-          ImGui::Indent();
-
-          for (auto&& in : gate->inputs) {
-            ImGui::Text("ID: %lu", (uint64_t)in->id);
+          } else {
+            ImGui::TreeNodeEx((gate->getName() + std::string("##tree_node") + std::to_string(id++)).c_str(),
+                              ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_Bullet |
+                                  ImGuiTreeNodeFlags_NoTreePushOnOpen | ImGuiTreeNodeFlags_SpanFullWidth);
           }
+        };
 
-          ImGui::Unindent();
-
-          ImGui::Text("Outs:");
-          ImGui::Indent();
-
-          for (auto&& out : gate->outputs) {
-            ImGui::Text("ID: %lu", (uint64_t)out->id);
-          }
-
-          ImGui::Unindent();
-          ImGui::Unindent();
+        for (const std::shared_ptr<LogicGate>& gate : circuit.gates_input) {
+          DisplayGate(DisplayGate, gate);
         }
 
-        ImGui::Unindent();
+        ImGui::TreePop();
       }
 
-      if (ImGui::CollapsingHeader("Tabla de verdades: ")) {
+      if (ImGui::TreeNode("Tabla de verdades: ")) {
         static LogicCircuit::TruthTable table;
 
         if (ImGui::Button("Calcular...")) {
@@ -222,7 +210,6 @@ namespace Gates {
 
           if (ImGui::BeginTable("##ttable1", columns_ins + columns_outs, table_flags)) {
             for (uint32_t i = 0; i < columns_ins; i++) ImGui::TableSetupColumn(("in" + std::to_string(i)).c_str());
-
             for (uint32_t i = 0; i < columns_outs; i++) ImGui::TableSetupColumn(("out" + std::to_string(i)).c_str());
 
             ImGui::TableHeadersRow();
@@ -247,6 +234,8 @@ namespace Gates {
             ImGui::EndTable();
           }
         }
+
+        ImGui::TreePop();
       }
 
       ImGui::End();
