@@ -138,17 +138,30 @@ namespace Gates {
     gates_update_forced.insert(input);
   }
 
-  void LogicCircuit::ToggleConnection(const std::shared_ptr<LogicGate>& who, const std::shared_ptr<LogicGate>& output) {
-    if (who->outputs.contains(output) || output->inputs.contains(who)) {
-      who->outputs.erase(output);
-      output->inputs.erase(who);
+  void LogicCircuit::ToggleConnection(const std::shared_ptr<LogicGate>& from, const std::shared_ptr<LogicGate>& to) {
+    if (from->outputs.contains(to) || to->inputs.contains(from)) {
+      from->outputs.erase(to);
+      to->inputs.erase(from);
 
     } else {
-      who->outputs.insert(output);
-      output->inputs.insert(who);
+      from->outputs.insert(to);
+      to->inputs.insert(from);
     }
 
-    gates_update_pending.insert(output);
+    gates_update_pending.insert(to);
+  }
+
+  void LogicCircuit::MakeConnection(const UUID& from, const UUID& to) {
+    std::shared_ptr<LogicGate> from_gate = *std::find_if(
+        gates.begin(), gates.end(), [&from](const std::shared_ptr<LogicGate>& gate) { return gate->id == from; });
+
+    std::shared_ptr<LogicGate> to_gate = *std::find_if(
+        gates.begin(), gates.end(), [&to](const std::shared_ptr<LogicGate>& gate) { return gate->id == to; });
+
+    from_gate->outputs.insert(to_gate);
+    to_gate->inputs.insert(from_gate);
+
+    gates_update_pending.insert(to_gate);
   }
 
   LogicCircuit::TruthTable LogicCircuit::ComputeTruthTable() {

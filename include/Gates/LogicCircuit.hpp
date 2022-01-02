@@ -36,8 +36,9 @@ namespace Gates {
     }
 
     template <class GateType>
-    std::shared_ptr<LogicGate> AddGateDirect(const glm::vec2 pos) requires std::derived_from<GateType, LogicGate> {
-      auto new_gate = std::make_shared<GateType>();
+    std::shared_ptr<LogicGate> AddGateDirect(const glm::vec2 pos,
+                                             const UUID&     uuid) requires std::derived_from<GateType, LogicGate> {
+      auto new_gate = std::make_shared<GateType>(uuid);
       new_gate->pos = pos;
       gates.insert(new_gate);
 
@@ -56,7 +57,8 @@ namespace Gates {
     void DrawGates();
 
     void SetInput(const std::shared_ptr<LogicGate>& input, State val);
-    void ToggleConnection(const std::shared_ptr<LogicGate>& who, const std::shared_ptr<LogicGate>& output);
+    void ToggleConnection(const std::shared_ptr<LogicGate>& from, const std::shared_ptr<LogicGate>& to);
+    void MakeConnection(const UUID& from, const UUID& to);
 
     TruthTable ComputeTruthTable();
 

@@ -9,6 +9,8 @@ namespace Gates {
   class NotGate : public LogicGate {
    public:
     NotGate();
+    NotGate(const UUID& uuid);
+
     void        UpdateState();
     void        Draw();
     const char* getName() { return "not"; }
@@ -17,6 +19,8 @@ namespace Gates {
   class AndGate : public LogicGate {
    public:
     AndGate();
+    AndGate(const UUID& uuid);
+
     void        UpdateState();
     void        Draw();
     const char* getName() { return "and"; }
@@ -25,6 +29,8 @@ namespace Gates {
   class OrGate : public LogicGate {
    public:
     OrGate();
+    OrGate(const UUID& uuid);
+
     void        UpdateState();
     void        Draw();
     const char* getName() { return "or"; }
@@ -33,6 +39,8 @@ namespace Gates {
   class XorGate : public LogicGate {
    public:
     XorGate();
+    XorGate(const UUID& uuid);
+
     void        UpdateState();
     void        Draw();
     const char* getName() { return "xor"; }
@@ -41,35 +49,21 @@ namespace Gates {
   class InputGate : public LogicGate {
    public:
     InputGate();
-    ~InputGate();
+    InputGate(const UUID& uuid);
 
     void        UpdateState();
     void        Draw();
     const char* getName() { return "input"; }
-
-   private:
-    static Texture err_tex;
-    static Texture on_tex;
-    static Texture off_tex;
-
-    static uint64_t count;
   };
 
   class OutputGate : public LogicGate {
    public:
     OutputGate();
-    ~OutputGate();
+    OutputGate(const UUID& uuid);
 
     void        UpdateState();
     void        Draw();
     const char* getName() { return "output"; }
-
-   private:
-    static Texture err_tex;
-    static Texture on_tex;
-    static Texture off_tex;
-
-    static uint64_t count;
   };
 }
 

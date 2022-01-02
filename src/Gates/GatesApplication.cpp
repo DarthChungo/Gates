@@ -79,37 +79,68 @@ namespace Gates {
       if (ImGui::BeginMenu("Archivo")) {
         if (ImGui::MenuItem("Salir sin guardar")) Close();
 
-        static char        filename[256] = {};
-        static WriteStatus last_status   = WriteStatus::UNSET;
+        static ReadStatus read_status = ReadStatus::UNSET;
 
-        if (ImGui::BeginMenu("Guardar como...")) {
-          ImGui::InputText(".gates", filename, 256);
-          ImGui::SameLine();
+        if (ImGui::BeginMenu("Abrir circuito...")) {
+          const auto& list = DataSerializer::ListCircuitFiles();
 
-          if (ImGui::Button("Guardar")) {
-            last_status = DataSerializer::WriteCircuitFile(filename, circuit, false);
+          if (list.empty()) {
+            ImGui::TextDisabled("No se ha guardado ningún circuito");
           }
 
-          if (last_status == WriteStatus::ERR_FILE_EXISTS) {
-            ImGui::TextColored(ImVec4(1.f, 0.f, 0.f, 1.f), "%s", WriteStatusReadableName[WriteStatus::ERR_FILE_EXISTS]);
-
-            ImGui::SameLine();
-            if (ImGui::Button("Sobreescribir")) {
-              last_status = DataSerializer::WriteCircuitFile(filename, circuit, true);
+          if (read_status == ReadStatus::UNSET) {
+            for (const std::string& name : DataSerializer::ListCircuitFiles()) {
+              if (ImGui::Button(name.c_str())) {
+                read_status = DataSerializer::ParseCircuitFile(name.c_str(), circuit);
+              }
             }
-          }
 
-          if (last_status != WriteStatus::UNSET && last_status != WriteStatus::ERR_FILE_EXISTS) {
-            ImGui::TextColored(is_error(last_status) ? ImVec4(1.f, 0.f, 0.f, 1.f) : ImVec4(0.f, 1.f, 0.f, 1.f),
+          } else {
+            ImGui::TextColored(is_error(read_status) ? ImVec4(1.f, 0.f, 0.f, 1.f) : ImVec4(0.f, 1.f, 0.f, 1.f),
                                "%s",
-                               WriteStatusReadableName[last_status]);
+                               ReadStatusReadableName[read_status]);
           }
 
           ImGui::EndMenu();
 
         } else {
-          *filename   = 0;
-          last_status = WriteStatus::UNSET;
+          read_status = ReadStatus::UNSET;
+        }
+
+        static char        filename[256] = {};
+        static WriteStatus write_status  = WriteStatus::UNSET;
+
+        if (ImGui::BeginMenu("Guardar como...")) {
+          ImGui::InputText("##save_input", filename, 256);
+
+          ImGui::SameLine();
+          ImGui::TextDisabled(".gates");
+          ImGui::SameLine();
+
+          if (ImGui::Button("Guardar")) {
+            write_status = DataSerializer::WriteCircuitFile(filename, circuit, false);
+          }
+
+          if (write_status == WriteStatus::ERR_FILE_EXISTS) {
+            ImGui::TextColored(ImVec4(1.f, 0.f, 0.f, 1.f), "%s", WriteStatusReadableName[WriteStatus::ERR_FILE_EXISTS]);
+
+            ImGui::SameLine();
+            if (ImGui::Button("Sobreescribir")) {
+              write_status = DataSerializer::WriteCircuitFile(filename, circuit, true);
+            }
+          }
+
+          if (write_status != WriteStatus::UNSET && write_status != WriteStatus::ERR_FILE_EXISTS) {
+            ImGui::TextColored(is_error(write_status) ? ImVec4(1.f, 0.f, 0.f, 1.f) : ImVec4(0.f, 1.f, 0.f, 1.f),
+                               "%s",
+                               WriteStatusReadableName[write_status]);
+          }
+
+          ImGui::EndMenu();
+
+        } else {
+          *filename    = 0;
+          write_status = WriteStatus::UNSET;
         }
 
         ImGui::EndMenu();
@@ -212,7 +243,7 @@ namespace Gates {
           ImGui::PopID();
         };
 
-        for (const std::shared_ptr<LogicGate>& gate : circuit.gates_input) {
+        for (const std::shared_ptr<LogicGate>& gate : circuit.gates) {
           DisplayGate(DisplayGate, gate);
         }
 
@@ -271,41 +302,6 @@ namespace Gates {
 
   rcode GatesApplication::pOnLaunch() {
     Renderer::Init();
-
-    auto in0 = circuit.AddGateDirect<InputGate>({0.f, -30.f});
-    auto in1 = circuit.AddGateDirect<InputGate>({0.f, -15.f});
-    auto in2 = circuit.AddGateDirect<InputGate>({0.f, 0.f});
-
-    auto xor0 = circuit.AddGateDirect<XorGate>({20.f, -30.f});
-    auto xor1 = circuit.AddGateDirect<XorGate>({40.f, -30.f});
-
-    auto and0 = circuit.AddGateDirect<AndGate>({40.f, -15.f});
-    auto and1 = circuit.AddGateDirect<AndGate>({40.f, 0.f});
-
-    auto or0 = circuit.AddGateDirect<OrGate>({60.f, -15.f});
-
-    auto out0 = circuit.AddGateDirect<OutputGate>({80.f, -30.f});
-    auto out1 = circuit.AddGateDirect<OutputGate>({80.f, -15.f});
-
-    circuit.ToggleConnection(in0, xor0);
-    circuit.ToggleConnection(in1, xor0);
-
-    circuit.ToggleConnection(in2, xor1);
-    circuit.ToggleConnection(xor0, xor1);
-
-    circuit.ToggleConnection(xor0, and0);
-    circuit.ToggleConnection(in2, and0);
-
-    circuit.ToggleConnection(in0, and1);
-    circuit.ToggleConnection(in1, and1);
-
-    circuit.ToggleConnection(and0, or0);
-    circuit.ToggleConnection(and1, or0);
-
-    circuit.ToggleConnection(xor1, out0);
-
-    circuit.ToggleConnection(or0, out1);
-
     return rcode::ok;
   }
 

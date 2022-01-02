@@ -3,6 +3,7 @@
 
 namespace Gates {
   NotGate::NotGate() : LogicGate() { size = glm::vec2 {8.f, 10.f}; }
+  NotGate::NotGate(const UUID& uuid) : LogicGate(uuid) { size = glm::vec2 {8.f, 10.f}; };
 
   void NotGate::UpdateState() {
     if (inputs.size() != 1 || inputs.begin()->get()->state == State::ERROR) {
@@ -26,6 +27,7 @@ namespace Gates {
   }
 
   AndGate::AndGate() : LogicGate() { size = glm::vec2 {12.5, 10.f}; }
+  AndGate::AndGate(const UUID& uuid) : LogicGate(uuid) { size = glm::vec2 {12.5, 10.f}; }
 
   void AndGate::UpdateState() {
     if (inputs.size() < 2) {
@@ -67,6 +69,7 @@ namespace Gates {
   }
 
   OrGate::OrGate() : LogicGate() { size = glm::vec2 {12.5f, 10.f}; }
+  OrGate::OrGate(const UUID& uuid) : LogicGate(uuid) { size = glm::vec2 {12.5f, 10.f}; }
 
   void OrGate::UpdateState() {
     if (inputs.size() < 2) {
@@ -144,6 +147,7 @@ namespace Gates {
   }
 
   XorGate::XorGate() : LogicGate() { size = glm::vec2 {12.5f, 10.f}; }
+  XorGate::XorGate(const UUID& uuid) : LogicGate(uuid) { size = glm::vec2 {12.5f, 10.f}; }
 
   void XorGate::UpdateState() {
     if (inputs.size() < 2) {
@@ -225,29 +229,8 @@ namespace Gates {
     }
   }
 
-  Texture InputGate::on_tex;
-  Texture InputGate::off_tex;
-  Texture InputGate::err_tex;
-
-  uint64_t InputGate::count = 0;
-
-  InputGate::InputGate() : LogicGate() {
-    size = glm::vec2 {10.f, 10.f};
-
-    if (count++ == 0) {
-      on_tex.Load("assets/gates/input_on.png");
-      off_tex.Load("assets/gates/input_off.png");
-      err_tex.Load("assets/gates/input_err.png");
-    }
-  }
-
-  InputGate::~InputGate() {
-    if (--count == 0) {
-      on_tex.Release();
-      off_tex.Release();
-      err_tex.Release();
-    }
-  }
+  InputGate::InputGate() : LogicGate() { size = glm::vec2 {10.f, 10.f}; }
+  InputGate::InputGate(const UUID& uuid) : LogicGate(uuid) { size = glm::vec2 {10.f, 10.f}; }
 
   void InputGate::UpdateState() {}
 
@@ -259,29 +242,8 @@ namespace Gates {
     }
   }
 
-  Texture OutputGate::on_tex;
-  Texture OutputGate::off_tex;
-  Texture OutputGate::err_tex;
-
-  uint64_t OutputGate::count = 0;
-
-  OutputGate::OutputGate() : LogicGate() {
-    size = glm::vec2 {10.f, 10.f};
-
-    if (count++ == 0) {
-      on_tex.Load("assets/gates/output_on.png");
-      off_tex.Load("assets/gates/output_off.png");
-      err_tex.Load("assets/gates/output_err.png");
-    }
-  }
-
-  OutputGate::~OutputGate() {
-    if (--count == 0) {
-      on_tex.Release();
-      off_tex.Release();
-      err_tex.Release();
-    }
-  }
+  OutputGate::OutputGate() : LogicGate() { size = glm::vec2 {10.f, 10.f}; }
+  OutputGate::OutputGate(const UUID& uuid) : LogicGate(uuid) { size = glm::vec2 {10.f, 10.f}; }
 
   void OutputGate::UpdateState() {
     if (inputs.size() != 1) {

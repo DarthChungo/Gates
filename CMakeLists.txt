@@ -41,6 +41,12 @@ add_custom_command(
   COMMENT "Copying assets" VERBATIM
   )
 
+add_custom_command(
+  TARGET Gates POST_BUILD
+  COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/circuits $<TARGET_FILE_DIR:Gates>/circuits
+  COMMENT "Copying circuits" VERBATIM
+  )
+
 # Libraries
 
 add_subdirectory(lib/glfw EXCLUDE_FROM_ALL)
