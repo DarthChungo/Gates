@@ -1,6 +1,7 @@
 #include "Engine/Renderer.hpp"
 #include "Gates/GatesApplication.hpp"
 #include "Gates/LogicGates.hpp"
+#include "Gates/DataSerializer.hpp"
 #include "Util/Logger.hpp"
 
 namespace Gates {
@@ -78,16 +79,37 @@ namespace Gates {
       if (ImGui::BeginMenu("Archivo")) {
         if (ImGui::MenuItem("Salir sin guardar")) Close();
 
-        static char filename[120] = {};
+        static char        filename[256] = {};
+        static WriteStatus last_status   = WriteStatus::UNSET;
 
         if (ImGui::BeginMenu("Guardar como...")) {
-          ImGui::InputText(".gates", filename, 120);
+          ImGui::InputText(".gates", filename, 256);
           ImGui::SameLine();
 
           if (ImGui::Button("Guardar")) {
+            last_status = DataSerializer::WriteCircuitFile(filename, circuit, false);
+          }
+
+          if (last_status == WriteStatus::ERR_FILE_EXISTS) {
+            ImGui::TextColored(ImVec4(1.f, 0.f, 0.f, 1.f), "%s", WriteStatusReadableName[WriteStatus::ERR_FILE_EXISTS]);
+
+            ImGui::SameLine();
+            if (ImGui::Button("Sobreescribir")) {
+              last_status = DataSerializer::WriteCircuitFile(filename, circuit, true);
+            }
+          }
+
+          if (last_status != WriteStatus::UNSET && last_status != WriteStatus::ERR_FILE_EXISTS) {
+            ImGui::TextColored(is_error(last_status) ? ImVec4(1.f, 0.f, 0.f, 1.f) : ImVec4(0.f, 1.f, 0.f, 1.f),
+                               "%s",
+                               WriteStatusReadableName[last_status]);
           }
 
           ImGui::EndMenu();
+
+        } else {
+          *filename   = 0;
+          last_status = WriteStatus::UNSET;
         }
 
         ImGui::EndMenu();
@@ -105,7 +127,7 @@ namespace Gates {
     if (show_statistics) {
       ImGui::Begin("Estadísticas");
 
-      if (ImGui::TreeNode("Renderizado:")) {
+      if (ImGui::TreeNodeEx("Renderizado:", ImGuiTreeNodeFlags_SpanFullWidth)) {
         ImGui::Text("Cuadrados: %d", Renderer::GetStats().quads_drawn);
         ImGui::Text("Triángulos: %d", Renderer::GetStats().tris_drawn);
         ImGui::Text("Triángulos (resaltados): %d", Renderer::GetStats().tris_outlined);
@@ -125,26 +147,26 @@ namespace Gates {
         ImGui::TreePop();
       }
 
-      if (ImGui::TreeNode("Ratón:")) {
+      if (ImGui::TreeNodeEx("Ratón:", ImGuiTreeNodeFlags_SpanFullWidth)) {
         ImGui::TextWrapped("Posición (puntero): %s", std::to_string(MousePos()).c_str());
         ImGui::TextWrapped("Posición (rueda): %s", std::to_string(MouseWheel()).c_str());
         ImGui::TextWrapped("¿En la ventada? %s", MouseFocus() ? "yes" : "no");
         ImGui::TreePop();
       }
 
-      if (ImGui::TreeNode("Ventana:")) {
+      if (ImGui::TreeNodeEx("Ventana:", ImGuiTreeNodeFlags_SpanFullWidth)) {
         ImGui::TextWrapped("Tamaño: %s", std::to_string(WindowSize()).c_str());
         ImGui::TextWrapped("Posición: %s", std::to_string(WindowPos()).c_str());
         ImGui::TreePop();
       }
 
-      if (ImGui::TreeNode("Aplicación:")) {
+      if (ImGui::TreeNodeEx("Aplicación:", ImGuiTreeNodeFlags_SpanFullWidth)) {
         ImGui::Text("FPS: %d f/s", fps());
         ImGui::Text("MSPF: %.4f ms/f", 1000 / (float)fps());
         ImGui::TreePop();
       }
 
-      if (ImGui::TreeNode("Cámara:")) {
+      if (ImGui::TreeNodeEx("Cámara:", ImGuiTreeNodeFlags_SpanFullWidth)) {
         ImGui::Text("Posición: %s", std::to_string(glm::vec2 {camera.getPosition().x, camera.getPosition().y}).c_str());
         ImGui::Text("Distancia de visión: %f", view_distance);
         ImGui::TreePop();
@@ -156,7 +178,7 @@ namespace Gates {
     if (show_controls) {
       ImGui::Begin("Controles");
 
-      if (ImGui::TreeNode("Añadir")) {
+      if (ImGui::TreeNodeEx("Añadir", ImGuiTreeNodeFlags_SpanFullWidth)) {
         if (ImGui::Button("Puerta input")) circuit.AddGate<InputGate>();
         if (ImGui::Button("Puerta output")) circuit.AddGate<OutputGate>();
         if (ImGui::Button("Puerta not")) circuit.AddGate<NotGate>();
@@ -166,13 +188,12 @@ namespace Gates {
         ImGui::TreePop();
       }
 
-      if (ImGui::TreeNode("Puertas:")) {
-        uint32_t id = 0;
+      if (ImGui::TreeNodeEx("Puertas:", ImGuiTreeNodeFlags_SpanFullWidth)) {
+        const auto DisplayGate = [](const auto& self, const std::shared_ptr<LogicGate>& gate) -> void {
+          ImGui::PushID(gate->id);
 
-        const auto DisplayGate = [&id](const auto& self, const std::shared_ptr<LogicGate>& gate) -> void {
           if (gate->outputs.size() > 0) {
-            bool open = ImGui::TreeNodeEx((gate->getName() + std::string("##tree_node") + std::to_string(id++)).c_str(),
-                                          ImGuiTreeNodeFlags_SpanFullWidth);
+            bool open = ImGui::TreeNodeEx(gate->getName(), ImGuiTreeNodeFlags_SpanFullWidth);
 
             if (open) {
               for (const std::shared_ptr<LogicGate>& output : gate->outputs) {
@@ -183,10 +204,12 @@ namespace Gates {
             }
 
           } else {
-            ImGui::TreeNodeEx((gate->getName() + std::string("##tree_node") + std::to_string(id++)).c_str(),
+            ImGui::TreeNodeEx(gate->getName(),
                               ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_Bullet |
                                   ImGuiTreeNodeFlags_NoTreePushOnOpen | ImGuiTreeNodeFlags_SpanFullWidth);
           }
+
+          ImGui::PopID();
         };
 
         for (const std::shared_ptr<LogicGate>& gate : circuit.gates_input) {
@@ -196,7 +219,7 @@ namespace Gates {
         ImGui::TreePop();
       }
 
-      if (ImGui::TreeNode("Tabla de verdades: ")) {
+      if (ImGui::TreeNodeEx("Tabla de verdades: ", ImGuiTreeNodeFlags_SpanFullWidth)) {
         static LogicCircuit::TruthTable table;
 
         if (ImGui::Button("Calcular...")) {

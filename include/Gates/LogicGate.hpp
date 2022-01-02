@@ -13,6 +13,7 @@ namespace Gates {
   class LogicGate {
    public:
     LogicGate();
+    LogicGate(UUID custom_id);
 
     virtual void UpdateState() = 0;
     virtual void Draw()        = 0;

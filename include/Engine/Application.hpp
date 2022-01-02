@@ -6,7 +6,7 @@
 namespace std {
   template <typename T>
   inline std::string to_string(const glm::vec<2, T>& vector) {
-    return std::to_string(vector.x) + ", " + std::to_string(vector.y);
+    return std::to_string(vector.x) + "," + std::to_string(vector.y);
   }
 }
 
