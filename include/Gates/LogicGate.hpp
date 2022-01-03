@@ -6,9 +6,9 @@
 
 namespace Gates {
   enum class State : uint32_t { ON, OFF, ERROR };
-  static std::unordered_map<State, const char*> StateNames = {{State::ON, "ON"},
-                                                              {State::OFF, "OFF"},
-                                                              {State::ERROR, "ERROR"}};
+  static std::unordered_map<State, const char*> StateReadableNames = {{State::ON, "ON"},
+                                                                      {State::OFF, "OFF"},
+                                                                      {State::ERROR, "ERROR"}};
 
   class LogicGate {
    public:

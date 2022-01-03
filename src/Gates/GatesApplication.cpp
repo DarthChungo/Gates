@@ -33,13 +33,6 @@ namespace Gates {
   }
 
   rcode GatesApplication::pOnImGuiRender() {
-    static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_PassthruCentralNode;
-
-    ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoTitleBar |
-                                    ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove |
-                                    ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus |
-                                    ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_MenuBar;
-
     ImGuiViewport* viewport = ImGui::GetMainViewport();
 
     ImGui::SetNextWindowPos(viewport->Pos);
@@ -48,20 +41,25 @@ namespace Gates {
 
     ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
     ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
-
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
-    ImGui::Begin("DockSpace", nullptr, window_flags);
-    ImGui::PopStyleVar();
-    ImGui::PopStyleVar(2);
 
-    ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
-    ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
+    static const ImGuiWindowFlags win_flags =
+        ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse |
+        ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBringToFrontOnFocus |
+        ImGuiWindowFlags_NoNavFocus | ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_MenuBar;
 
-    static bool first_time = true;
+    ImGui::Begin("main_dockspace_window", nullptr, win_flags);
 
-    if (first_time && !(first_time = false)) {
+    ImGui::PopStyleVar(3);
+
+    static const ImGuiDockNodeFlags ds_flags = ImGuiDockNodeFlags_PassthruCentralNode;
+
+    ImGuiID dockspace_id = ImGui::GetID("main_dockspace");
+    ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_PassthruCentralNode);
+
+    if (static bool first_time = true; first_time && !(first_time = false)) {
       ImGui::DockBuilderRemoveNode(dockspace_id);
-      ImGui::DockBuilderAddNode(dockspace_id, dockspace_flags | ImGuiDockNodeFlags_DockSpace);
+      ImGui::DockBuilderAddNode(dockspace_id, ds_flags | ImGuiDockNodeFlags_DockSpace);
       ImGui::DockBuilderSetNodeSize(dockspace_id, viewport->Size);
 
       ImGui::DockBuilderDockWindow(
@@ -224,7 +222,7 @@ namespace Gates {
       if (ImGui::TreeNodeEx(
               "Puertas:",
               ImGuiTreeNodeFlags_SpanFullWidth | ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen)) {
-        static const ImVec4 less_attention_color(0.6f, 0.6f, 0.6f, 1.f);
+        static const ImVec4 less_attention_color(0.65f, 0.65f, 0.65f, 1.f);
 
         const auto DisplayGate = [&](const auto& self, const std::shared_ptr<LogicGate>& gate) -> void {
           ImGui::PushID(gate->id);
@@ -236,7 +234,7 @@ namespace Gates {
                               ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_Bullet |
                                   ImGuiTreeNodeFlags_NoTreePushOnOpen | ImGuiTreeNodeFlags_SpanFullWidth,
                               "Estado %s",
-                              gate->state == State::OFF ? "off" : (gate->state == State::ON ? "on" : "error"));
+                              StateReadableNames[gate->state]);
 
             ImGui::TreeNodeEx("##gstate",
                               ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_Bullet |
