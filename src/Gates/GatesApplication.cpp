@@ -209,7 +209,9 @@ namespace Gates {
     if (show_controls) {
       ImGui::Begin("Controles");
 
-      if (ImGui::TreeNodeEx("Añadir", ImGuiTreeNodeFlags_SpanFullWidth)) {
+      if (ImGui::TreeNodeEx(
+              "Añadir",
+              ImGuiTreeNodeFlags_SpanFullWidth | ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen)) {
         if (ImGui::Button("Puerta input")) circuit.AddGate<InputGate>();
         if (ImGui::Button("Puerta output")) circuit.AddGate<OutputGate>();
         if (ImGui::Button("Puerta not")) circuit.AddGate<NotGate>();
@@ -219,25 +221,58 @@ namespace Gates {
         ImGui::TreePop();
       }
 
-      if (ImGui::TreeNodeEx("Puertas:", ImGuiTreeNodeFlags_SpanFullWidth)) {
-        const auto DisplayGate = [](const auto& self, const std::shared_ptr<LogicGate>& gate) -> void {
+      if (ImGui::TreeNodeEx(
+              "Puertas:",
+              ImGuiTreeNodeFlags_SpanFullWidth | ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen)) {
+        static const ImVec4 less_attention_color(0.6f, 0.6f, 0.6f, 1.f);
+
+        const auto DisplayGate = [&](const auto& self, const std::shared_ptr<LogicGate>& gate) -> void {
           ImGui::PushID(gate->id);
 
-          if (gate->outputs.size() > 0) {
-            bool open = ImGui::TreeNodeEx(gate->getName(), ImGuiTreeNodeFlags_SpanFullWidth);
+          if (ImGui::TreeNodeEx((std::string("Puerta ") + gate->getName()).c_str(), ImGuiTreeNodeFlags_SpanFullWidth)) {
+            ImGui::PushStyleColor(ImGuiCol_Text, less_attention_color);
 
-            if (open) {
+            ImGui::TreeNodeEx("##gstate",
+                              ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_Bullet |
+                                  ImGuiTreeNodeFlags_NoTreePushOnOpen | ImGuiTreeNodeFlags_SpanFullWidth,
+                              "Estado %s",
+                              gate->state == State::OFF ? "off" : (gate->state == State::ON ? "on" : "error"));
+
+            ImGui::TreeNodeEx("##gstate",
+                              ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_Bullet |
+                                  ImGuiTreeNodeFlags_NoTreePushOnOpen | ImGuiTreeNodeFlags_SpanFullWidth,
+                              "ID 0x%lx",
+                              (uint64_t)gate->id);
+
+            if (ImGui::TreeNodeEx("Salidas", ImGuiTreeNodeFlags_SpanFullWidth)) {
+              ImGui::PopStyleColor();
+
               for (const std::shared_ptr<LogicGate>& output : gate->outputs) {
                 self(self, output);
               }
 
               ImGui::TreePop();
+
+            } else {
+              ImGui::PopStyleColor();
             }
 
-          } else {
-            ImGui::TreeNodeEx(gate->getName(),
-                              ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_Bullet |
-                                  ImGuiTreeNodeFlags_NoTreePushOnOpen | ImGuiTreeNodeFlags_SpanFullWidth);
+            ImGui::PushStyleColor(ImGuiCol_Text, less_attention_color);
+
+            if (ImGui::TreeNodeEx("Entradas", ImGuiTreeNodeFlags_SpanFullWidth)) {
+              ImGui::PopStyleColor();
+
+              for (const std::shared_ptr<LogicGate>& input : gate->inputs) {
+                self(self, input);
+              }
+
+              ImGui::TreePop();
+
+            } else {
+              ImGui::PopStyleColor();
+            }
+
+            ImGui::TreePop();
           }
 
           ImGui::PopID();
@@ -250,19 +285,21 @@ namespace Gates {
         ImGui::TreePop();
       }
 
-      if (ImGui::TreeNodeEx("Tabla de verdades: ", ImGuiTreeNodeFlags_SpanFullWidth)) {
+      if (ImGui::TreeNodeEx(
+              "Tabla de verdad",
+              ImGuiTreeNodeFlags_SpanFullWidth | ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen)) {
         static LogicCircuit::TruthTable table;
 
         if (ImGui::Button("Calcular...")) {
           table = circuit.ComputeTruthTable();
         }
 
-        if (table.size() != 0) {
-          static ImGuiTableFlags table_flags  = ImGuiTableFlags_RowBg | ImGuiTableFlags_BordersInnerV;
-          static const uint32_t  columns_ins  = table[0].first.size();
-          static const uint32_t  columns_outs = table[0].second.size();
+        if (table.size() != 0 && table[0].first.size() != 0) {
+          static uint32_t columns_ins  = table[0].first.size();
+          static uint32_t columns_outs = table[0].second.size();
 
-          if (ImGui::BeginTable("##ttable1", columns_ins + columns_outs, table_flags)) {
+          if (ImGui::BeginTable(
+                  "##ttable1", columns_ins + columns_outs, ImGuiTableFlags_RowBg | ImGuiTableFlags_BordersInnerV)) {
             for (uint32_t i = 0; i < columns_ins; i++) ImGui::TableSetupColumn(("in" + std::to_string(i)).c_str());
             for (uint32_t i = 0; i < columns_outs; i++) ImGui::TableSetupColumn(("out" + std::to_string(i)).c_str());
 

@@ -21,9 +21,9 @@ namespace Gates {
     virtual const char* getName() = 0;
     const glm::vec4&    getColor();
 
-    static constexpr glm::vec4 on_color  = {0.f, 1.f, 0.f, 1.f};
+    static constexpr glm::vec4 on_color  = {0.545f, 0.765f, 0.29f, 1.f};
     static constexpr glm::vec4 off_color = {0.3f, 0.3f, 0.3f, 1.f};
-    static constexpr glm::vec4 err_color = {1.f, 0.f, 0.f, 1.f};
+    static constexpr glm::vec4 err_color = {0.769f, 0.09f, 0.0f, 1.f};
 
    public:
     std::set<std::shared_ptr<LogicGate>> inputs;
