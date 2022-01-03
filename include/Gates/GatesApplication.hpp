@@ -25,6 +25,8 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #include "Engine/OrthographicCamera.hpp"
 #include "Engine/Texture.hpp"
 
+#define GATES_APPLICATION_VERSION_TXT "Versión 1.0"
+
 namespace Gates {
   class GatesApplication : public Application {
    public:

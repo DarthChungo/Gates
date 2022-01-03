@@ -21,6 +21,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #include "Gates/LogicGates.hpp"
 #include "Gates/DataSerializer.hpp"
 #include "Util/Logger.hpp"
+#include "Util/Misc.hpp"
 
 namespace Gates {
   rcode GatesApplication::pOnUpdate() {
@@ -89,6 +90,9 @@ namespace Gates {
     }
 
     ImGui::End();
+
+    static bool open_version_modal = false;
+    static bool open_license_modal = false;
 
     if (ImGui::BeginMainMenuBar()) {
       if (ImGui::BeginMenu("Archivo")) {
@@ -169,15 +173,52 @@ namespace Gates {
 
       if (ImGui::BeginMenu("Acerca de")) {
         if (ImGui::MenuItem("Licencia")) {
+          open_license_modal = true;
         }
 
         if (ImGui::MenuItem("Versión")) {
+          open_version_modal = true;
         }
 
         ImGui::EndMenu();
       }
 
       ImGui::EndMainMenuBar();
+    }
+
+    if (open_version_modal) {
+      ImGui::OpenPopup("Versión");
+
+      ImGui::SetNextWindowPos(viewport->GetCenter(), ImGuiCond_Appearing, {0.5f, 0.5f});
+
+      if (ImGui::BeginPopupModal("Versión", nullptr, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove)) {
+        ImGui::TextUnformatted("Gates " GATES_APPLICATION_VERSION_TXT);
+        ImGui::TextUnformatted("Programado por DarthChungo (https://github.com/DarthChungo)");
+        ImGui::TextUnformatted("Código disponible en https://github.com/DarthChungo/Gates");
+
+        if (ImGui::Button("Cerrar")) {
+          ImGui::CloseCurrentPopup();
+          open_version_modal = false;
+        }
+
+        ImGui::EndPopup();
+      }
+
+    } else if (open_license_modal) {
+      ImGui::OpenPopup("Licencia");
+
+      ImGui::SetNextWindowPos(viewport->GetCenter(), ImGuiCond_Appearing, {0.5f, 0.5f});
+
+      if (ImGui::BeginPopupModal("Licencia", nullptr, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove)) {
+        ImGui::TextUnformatted(GATES_APPLICATION_LICENSE);
+
+        if (ImGui::Button("Cerrar")) {
+          ImGui::CloseCurrentPopup();
+          open_license_modal = false;
+        }
+
+        ImGui::EndPopup();
+      }
     }
 
     if (show_statistics) {
