@@ -33,7 +33,8 @@ namespace Gates {
   }
 
   rcode GatesApplication::pOnImGuiRender() {
-    ImGuiViewport* viewport = ImGui::GetMainViewport();
+    const ImGuiViewport* viewport = ImGui::GetMainViewport();
+    const ImGuiIO&       io       = ImGui::GetIO();
 
     ImGui::SetNextWindowPos(viewport->Pos);
     ImGui::SetNextWindowSize(viewport->Size);
@@ -336,6 +337,30 @@ namespace Gates {
 
       ImGui::End();
     }
+
+    const ImGuiWindowFlags overlay_flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoDocking |
+                                           ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings |
+                                           ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav |
+                                           ImGuiWindowFlags_NoMove;
+
+    ImGui::SetNextWindowPos(viewport->WorkSize + viewport->WorkPos - ImVec2(10.f, 10.f), ImGuiCond_Always, {1.f, 1.f});
+    ImGui::SetNextWindowViewport(viewport->ID);
+    ImGui::SetNextWindowBgAlpha(0.35f);
+
+    if (ImGui::Begin("Example: Simple overlay", nullptr, overlay_flags)) {
+      if (const std::shared_ptr<LogicGate>& gate = circuit.selected_gate; circuit.selected_gate) {
+        ImGui::Text("Selección: \n - Tipo %s\n - Estado %s\n - Entradas %lu\n - Salidas %lu",
+                    gate->getName(),
+                    StateReadableNames[gate->state],
+                    gate->inputs.size(),
+                    gate->outputs.size());
+
+      } else {
+        ImGui::TextDisabled("Ninguna puerta seleccionada");
+      }
+    }
+
+    ImGui::End();
 
     Renderer::ResetStats();
 
