@@ -6,8 +6,6 @@
 
 namespace Gates {
   rcode GatesApplication::pOnUpdate() {
-    if (KeyboardKey(KeyboardKey::KEY_CAPS_LOCK).pressed) Close();
-
     if (MouseButton(MouseButton::BUTTON_1).pressed && KeyboardKey(KeyboardKey::KEY_LEFT_CONTROL).held) {
       dragging = true;
       offset   = MousePosWorld();
