@@ -16,4 +16,11 @@ namespace Gates {
   };
 }
 
+namespace std {
+  template <>
+  struct hash<Gates::UUID> {
+    inline std::size_t operator()(const Gates::UUID& uuid) const { return hash<uint64_t>()((uint64_t)uuid); }
+  };
+}
+
 #endif

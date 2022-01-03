@@ -156,7 +156,7 @@ namespace Gates {
     if (show_statistics) {
       ImGui::Begin("Estadísticas");
 
-      if (ImGui::TreeNodeEx("Renderizado:", ImGuiTreeNodeFlags_SpanFullWidth)) {
+      if (ImGui::TreeNodeEx("Renderizado:", ImGuiTreeNodeFlags_SpanFullWidth | ImGuiTreeNodeFlags_Framed)) {
         ImGui::Text("Cuadrados: %d", Renderer::GetStats().quads_drawn);
         ImGui::Text("Triángulos: %d", Renderer::GetStats().tris_drawn);
         ImGui::Text("Triángulos (resaltados): %d", Renderer::GetStats().tris_outlined);
@@ -176,26 +176,26 @@ namespace Gates {
         ImGui::TreePop();
       }
 
-      if (ImGui::TreeNodeEx("Ratón:", ImGuiTreeNodeFlags_SpanFullWidth)) {
+      if (ImGui::TreeNodeEx("Ratón:", ImGuiTreeNodeFlags_SpanFullWidth | ImGuiTreeNodeFlags_Framed)) {
         ImGui::TextWrapped("Posición (puntero): %s", std::to_string(MousePos()).c_str());
         ImGui::TextWrapped("Posición (rueda): %s", std::to_string(MouseWheel()).c_str());
         ImGui::TextWrapped("¿En la ventada? %s", MouseFocus() ? "yes" : "no");
         ImGui::TreePop();
       }
 
-      if (ImGui::TreeNodeEx("Ventana:", ImGuiTreeNodeFlags_SpanFullWidth)) {
+      if (ImGui::TreeNodeEx("Ventana:", ImGuiTreeNodeFlags_SpanFullWidth | ImGuiTreeNodeFlags_Framed)) {
         ImGui::TextWrapped("Tamaño: %s", std::to_string(WindowSize()).c_str());
         ImGui::TextWrapped("Posición: %s", std::to_string(WindowPos()).c_str());
         ImGui::TreePop();
       }
 
-      if (ImGui::TreeNodeEx("Aplicación:", ImGuiTreeNodeFlags_SpanFullWidth)) {
+      if (ImGui::TreeNodeEx("Aplicación:", ImGuiTreeNodeFlags_SpanFullWidth | ImGuiTreeNodeFlags_Framed)) {
         ImGui::Text("FPS: %d f/s", fps());
         ImGui::Text("MSPF: %.4f ms/f", 1000 / (float)fps());
         ImGui::TreePop();
       }
 
-      if (ImGui::TreeNodeEx("Cámara:", ImGuiTreeNodeFlags_SpanFullWidth)) {
+      if (ImGui::TreeNodeEx("Cámara:", ImGuiTreeNodeFlags_SpanFullWidth | ImGuiTreeNodeFlags_Framed)) {
         ImGui::Text("Posición: %s", std::to_string(glm::vec2 {camera.getPosition().x, camera.getPosition().y}).c_str());
         ImGui::Text("Distancia de visión: %f", view_distance);
         ImGui::TreePop();
@@ -205,7 +205,7 @@ namespace Gates {
     }
 
     if (show_controls) {
-      ImGui::Begin("Controles");
+      ImGui::Begin("Controles", nullptr, ImGuiWindowFlags_HorizontalScrollbar);
 
       if (ImGui::TreeNodeEx(
               "Añadir",
@@ -219,11 +219,12 @@ namespace Gates {
         ImGui::TreePop();
       }
 
+      static const ImVec4 less_attention_color(0.65f, 0.65f, 0.65f, 1.f);
+      static const ImVec4 normal_attention_color(1.f, 1.f, 1.f, 1.f);
+
       if (ImGui::TreeNodeEx(
               "Puertas:",
               ImGuiTreeNodeFlags_SpanFullWidth | ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen)) {
-        static const ImVec4 less_attention_color(0.65f, 0.65f, 0.65f, 1.f);
-
         const auto DisplayGate = [&](const auto& self, const std::shared_ptr<LogicGate>& gate) -> void {
           ImGui::PushID(gate->id);
 
@@ -288,9 +289,15 @@ namespace Gates {
               ImGuiTreeNodeFlags_SpanFullWidth | ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen)) {
         static LogicCircuit::TruthTable table;
 
+        const bool disable_calc = circuit.gates.size() == 0;
+
+        if (disable_calc) ImGui::BeginDisabled();
+
         if (ImGui::Button("Calcular...")) {
           table = circuit.ComputeTruthTable();
         }
+
+        if (disable_calc) ImGui::EndDisabled();
 
         if (table.size() != 0 && table[0].first.size() != 0) {
           static uint32_t columns_ins  = table[0].first.size();
@@ -309,13 +316,13 @@ namespace Gates {
 
               for (const auto& in : entry.first) {
                 ImGui::TableSetColumnIndex(colum);
-                ImGui::Text("%s", in ? "1" : "0");
+                ImGui::TextColored(in ? normal_attention_color : less_attention_color, "%s", in ? "1" : "0");
                 colum++;
               }
 
               for (const auto& out : entry.second) {
                 ImGui::TableSetColumnIndex(colum);
-                ImGui::Text("%s", out ? "1" : "0");
+                ImGui::TextColored(out ? normal_attention_color : less_attention_color, "%s", out ? "1" : "0");
                 colum++;
               }
             }

@@ -169,6 +169,12 @@ namespace Gates {
     const size_t   num_outputs = gates_output.size();
     const uint64_t num_entries = std::pow(2, num_inputs);
 
+    std::unordered_map<UUID, State> previous_states;
+
+    for (auto&& input : gates_input) {
+      previous_states[input->id] = input->state;
+    }
+
     LogicCircuit::TruthTable table;
     table.reserve(num_entries);
 
@@ -193,7 +199,11 @@ namespace Gates {
         current_entry.second.emplace_back(gate->state == State::ON ? true : false);
       }
 
-      table.push_back(current_entry);
+      table.push_back(std::move(current_entry));
+    }
+
+    for (auto&& input : gates_input) {
+      SetInput(input, previous_states[input->id]);
     }
 
     return table;
