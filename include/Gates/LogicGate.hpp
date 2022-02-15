@@ -22,6 +22,8 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #include "pch.hpp"
 #include "Util/UUID.hpp"
 
+using namespace Pixel;
+
 namespace Gates {
   enum class State : uint32_t { ON, OFF, ERROR };
   static std::unordered_map<State, const char*> StateReadableNames = {{State::ON, "ON"},

@@ -16,8 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include "pch.hpp"
-#include "Gates/GatesApplication.hpp"
+#include "Gates/GatesApplication.cpp"
 
 int main(int, char**) {
   Gates::GatesApplication app;

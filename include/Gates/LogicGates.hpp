@@ -23,6 +23,8 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #include "pch.hpp"
 #include "Gates/LogicGate.hpp"
 
+using namespace Pixel;
+
 namespace Gates {
   class NotGate : public LogicGate {
    public:

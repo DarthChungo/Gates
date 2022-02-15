@@ -33,35 +33,8 @@ set_property(TARGET Gates PROPERTY C_STANDARD 17)
 
 target_include_directories(Gates PRIVATE include)
 target_include_directories(Gates PRIVATE lib)
-target_precompile_headers(Gates PRIVATE include/pch.hpp)
-
-add_custom_command(
-  TARGET Gates POST_BUILD
-  COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/assets $<TARGET_FILE_DIR:Gates>/assets
-  COMMENT "Copying assets" VERBATIM
-  )
-
-add_custom_command(
-  TARGET Gates POST_BUILD
-  COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/circuits $<TARGET_FILE_DIR:Gates>/circuits
-  COMMENT "Copying circuits" VERBATIM
-  )
 
 # Libraries
 
-add_subdirectory(lib/glfw EXCLUDE_FROM_ALL)
-target_link_libraries(Gates PRIVATE glfw)
-
-add_definitions(-DGLEW_STATIC)
-add_subdirectory(lib/glew EXCLUDE_FROM_ALL)
-target_link_libraries(Gates PRIVATE libglew_static)
-
-add_subdirectory(lib/imgui EXCLUDE_FROM_ALL)
-target_link_libraries(Gates PRIVATE imgui)
-
-add_subdirectory(lib/glm EXCLUDE_FROM_ALL)
-target_link_libraries(Gates PRIVATE glm)
-
-add_subdirectory(lib/stb-image EXCLUDE_FROM_ALL)
-target_link_libraries(Gates PRIVATE stb-image)
-
+add_subdirectory(lib/pixel EXCLUDE_FROM_ALL)
+target_link_libraries(Gates PRIVATE pixel)

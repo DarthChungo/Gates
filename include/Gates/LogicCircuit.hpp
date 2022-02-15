@@ -25,6 +25,8 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #include "Gates/LogicGate.hpp"
 #include "Util/UUID.hpp"
 
+using namespace Pixel;
+
 namespace Gates {
   class GatesApplication;
 
