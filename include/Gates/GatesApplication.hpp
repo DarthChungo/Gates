@@ -19,27 +19,22 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #ifndef GATES_GATESAPPLICATION_HPP
 #define GATES_GATESAPPLICATION_HPP
 
+#include "Gates/include.hpp"
 #include "Gates/LogicCircuit.hpp"
-#include "pch.hpp"
-#include "Engine/Application.hpp"
-#include "Engine/OrthographicCamera.hpp"
-#include "Engine/Texture.hpp"
-
-using namespace Pixel;
 
 #define GATES_APPLICATION_VERSION_TXT "Versión 1.0"
 
 namespace Gates {
-  class GatesApplication : public Pixel::Application {
+  class GatesApplication : public px::Application {
    public:
     friend class LogicCircuit;
 
    private:
-    rcode pOnUpdate() override;
-    rcode pOnRender() override;
-    rcode pOnImGuiRender() override;
-    rcode pOnLaunch() override;
-    rcode pOnClose() override;
+    px::rcode pOnUpdate() override;
+    px::rcode pOnRender() override;
+    px::rcode pOnImGuiRender() override;
+    px::rcode pOnLaunch() override;
+    px::rcode pOnClose() override;
 
     glm::vec2 MousePosWorld();
 
@@ -48,9 +43,9 @@ namespace Gates {
 
     glm::vec2 offset = {};
 
-    float              view_distance = 60.f;
-    float              view_rotation = 0.f;
-    OrthographicCamera camera {view_distance, 1.f};
+    float                  view_distance = 60.f;
+    float                  view_rotation = 0.f;
+    px::OrthographicCamera camera {view_distance, 1.f};
 
     bool show_statistics = false;
     bool show_controls   = true;

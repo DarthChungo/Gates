@@ -18,7 +18,6 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 #include "Gates/DataSerializer.hpp"
 #include "Gates/LogicCircuit.hpp"
-#include "Util/Logger.hpp"
 
 namespace Gates {
   ReadStatus DataSerializer::ParseCircuitFile(const std::string& name, LogicCircuit& circuit) {
@@ -65,7 +64,7 @@ namespace Gates {
         if (line_parsed.size() != 3) return ReadStatus::ERR_FILE_FORMAT;
 
         try {
-          const UUID         uuid      = std::stoull(line_parsed[0]);
+          const px::UUID     uuid      = std::stoull(line_parsed[0]);
           const std::string& gate_type = line_parsed[1];
 
           const float pos_x = std::stof(line_parsed[2].substr(0, line_parsed[2].find_first_of(',')));
@@ -103,8 +102,8 @@ namespace Gates {
         if (line_parsed.size() != 2) return ReadStatus::ERR_FILE_FORMAT;
 
         try {
-          const UUID from = std::stoull(line_parsed[0]);
-          const UUID to   = std::stoull(line_parsed[1]);
+          const px::UUID from = std::stoull(line_parsed[0]);
+          const px::UUID to   = std::stoull(line_parsed[1]);
 
           circuit.MakeConnection(from, to);
 
@@ -158,7 +157,7 @@ namespace Gates {
     std::vector<std::string> list;
 
     if (!std::filesystem::is_directory(circuits_dir))
-      if (!std::filesystem::create_directory(circuits_dir)) Logger::Die("Error creando la carpeta de circuitos");
+      if (!std::filesystem::create_directory(circuits_dir)) px::Logger::Die("Error creando la carpeta de circuitos");
 
     for (const auto& entry : std::filesystem::directory_iterator(circuits_dir)) {
       std::string name = entry.path().filename();

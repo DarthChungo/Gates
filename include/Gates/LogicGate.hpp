@@ -19,10 +19,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #ifndef GATES_LOGICGATE_HPP
 #define GATES_LOGICGATE_HPP
 
-#include "pch.hpp"
-#include "Util/UUID.hpp"
-
-using namespace Pixel;
+#include "Gates/include.hpp"
 
 namespace Gates {
   enum class State : uint32_t { ON, OFF, ERROR };
@@ -33,7 +30,7 @@ namespace Gates {
   class LogicGate {
    public:
     LogicGate();
-    LogicGate(const UUID& custom_id);
+    LogicGate(const px::UUID& custom_id);
 
     virtual void UpdateState() = 0;
     virtual void Draw()        = 0;
@@ -49,8 +46,8 @@ namespace Gates {
     std::set<std::shared_ptr<LogicGate>> inputs;
     std::set<std::shared_ptr<LogicGate>> outputs;
 
-    State state = State::ERROR;
-    UUID  id;
+    State    state = State::ERROR;
+    px::UUID id;
 
     glm::vec2 pos;
     glm::vec2 size;

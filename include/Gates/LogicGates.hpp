@@ -19,17 +19,14 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #ifndef GATES_LOGICGATES_HPP
 #define GATES_LOGICGATES_HPP
 
-#include "Engine/Texture.hpp"
-#include "pch.hpp"
+#include "Gates/include.hpp"
 #include "Gates/LogicGate.hpp"
-
-using namespace Pixel;
 
 namespace Gates {
   class NotGate : public LogicGate {
    public:
     NotGate();
-    NotGate(const UUID& uuid);
+    NotGate(const px::UUID& uuid);
 
     void        UpdateState();
     void        Draw();
@@ -39,7 +36,7 @@ namespace Gates {
   class AndGate : public LogicGate {
    public:
     AndGate();
-    AndGate(const UUID& uuid);
+    AndGate(const px::UUID& uuid);
 
     void        UpdateState();
     void        Draw();
@@ -49,7 +46,7 @@ namespace Gates {
   class OrGate : public LogicGate {
    public:
     OrGate();
-    OrGate(const UUID& uuid);
+    OrGate(const px::UUID& uuid);
 
     void        UpdateState();
     void        Draw();
@@ -59,7 +56,7 @@ namespace Gates {
   class XorGate : public LogicGate {
    public:
     XorGate();
-    XorGate(const UUID& uuid);
+    XorGate(const px::UUID& uuid);
 
     void        UpdateState();
     void        Draw();
@@ -69,7 +66,7 @@ namespace Gates {
   class InputGate : public LogicGate {
    public:
     InputGate();
-    InputGate(const UUID& uuid);
+    InputGate(const px::UUID& uuid);
 
     void        UpdateState();
     void        Draw();
@@ -79,7 +76,7 @@ namespace Gates {
   class OutputGate : public LogicGate {
    public:
     OutputGate();
-    OutputGate(const UUID& uuid);
+    OutputGate(const px::UUID& uuid);
 
     void        UpdateState();
     void        Draw();

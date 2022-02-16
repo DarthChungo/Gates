@@ -19,7 +19,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #ifndef GATES_DATASERIALIZER_H
 #define GATES_DATASERIALIZER_H
 
-#include "pch.hpp"
+#include "Gates/include.hpp"
 
 namespace Gates {
   class LogicCircuit;

@@ -16,13 +16,23 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include "Gates/LogicGate.hpp"
+#ifndef GATES_INCLUDE_HPP
+#define GATES_INCLUDE_HPP
+
+#include "pch.hpp"
+
+#include "Engine/Application.hpp"
+#include "Engine/OrthographicCamera.hpp"
+#include "Engine/Renderer.hpp"
+#include "Engine/Shader.hpp"
+#include "Engine/Texture.hpp"
+
+#include "Util/Logger.hpp"
+#include "Util/Misc.hpp"
+#include "Util/UUID.hpp"
 
 namespace Gates {
-  LogicGate::LogicGate() : id {} {};
-  LogicGate::LogicGate(const px::UUID& custom_id) : id(custom_id) {};
-
-  const glm::vec4& LogicGate::getColor() {
-    return state == State::OFF ? off_color : (state == State::ON ? on_color : err_color);
-  }
+  namespace px = Pixel;
 }
+
+#endif

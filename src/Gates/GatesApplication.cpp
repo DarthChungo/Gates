@@ -16,21 +16,18 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include "Engine/Renderer.hpp"
 #include "Gates/GatesApplication.hpp"
 #include "Gates/LogicGates.hpp"
 #include "Gates/DataSerializer.hpp"
-#include "Util/Logger.hpp"
-#include "Util/Misc.hpp"
 
 namespace Gates {
-  rcode GatesApplication::pOnUpdate() {
-    if (MouseButton(MouseButton::BUTTON_1).pressed && KeyboardKey(KeyboardKey::KEY_LEFT_CONTROL).held) {
+  px::rcode GatesApplication::pOnUpdate() {
+    if (MouseButton(px::MouseButton::BUTTON_1).pressed && KeyboardKey(px::KeyboardKey::KEY_LEFT_CONTROL).held) {
       dragging = true;
       offset   = MousePosWorld();
     }
 
-    if (MouseButton(MouseButton::BUTTON_1).released) dragging = false;
+    if (MouseButton(px::MouseButton::BUTTON_1).released) dragging = false;
 
     if (dragging) {
       camera.offsetPosition(glm::vec3 {offset - MousePosWorld(), 0.f});
@@ -46,10 +43,10 @@ namespace Gates {
     circuit.UpdateGraphicsState();
     circuit.UpdateLogicState();
 
-    return rcode::ok;
+    return px::rcode::ok;
   }
 
-  rcode GatesApplication::pOnImGuiRender() {
+  px::rcode GatesApplication::pOnImGuiRender() {
     const ImGuiViewport* viewport = ImGui::GetMainViewport();
     const ImGuiIO&       io       = ImGui::GetIO();
 
@@ -225,22 +222,22 @@ namespace Gates {
       ImGui::Begin("Estadísticas");
 
       if (ImGui::TreeNodeEx("Renderizado:", ImGuiTreeNodeFlags_SpanFullWidth | ImGuiTreeNodeFlags_Framed)) {
-        ImGui::Text("Cuadrados: %d", Renderer::GetStats().quads_drawn);
-        ImGui::Text("Triángulos: %d", Renderer::GetStats().tris_drawn);
-        ImGui::Text("Triángulos (resaltados): %d", Renderer::GetStats().tris_outlined);
-        ImGui::Text("Triángulos (bordeados): %d", Renderer::GetStats().tris_bordered);
-        ImGui::Text("Círculos: %d", Renderer::GetStats().circles_drawn);
-        ImGui::Text("Círculos (resaltados): %d", Renderer::GetStats().circles_outlined);
-        ImGui::Text("Círculos (bordeados): %d", Renderer::GetStats().circles_bordered);
-        ImGui::Text("Semicírculos (bordeados): %d", Renderer::GetStats().semicircles_bordered);
-        ImGui::Text("Líneas: %d", Renderer::GetStats().lines_drawn);
-        ImGui::Text("Líneas (con grosor): %d", Renderer::GetStats().wide_lines_drawn);
-        ImGui::Text("Cuadrados (resaltados): %d", Renderer::GetStats().quads_outlined);
-        ImGui::Text("Presentaciones: %d", Renderer::GetStats().draw_calls);
-        ImGui::Text("Vértices (triángulos): %d", Renderer::GetStats().tri_vertex_count);
-        ImGui::Text("Índices (triángulos): %d", Renderer::GetStats().tri_index_count);
-        ImGui::Text("Vértices (líneas): %d", Renderer::GetStats().line_vertex_count);
-        ImGui::Text("Índices (líneas): %d", Renderer::GetStats().line_index_count);
+        ImGui::Text("Cuadrados: %d", px::Renderer::GetStats().quads_drawn);
+        ImGui::Text("Triángulos: %d", px::Renderer::GetStats().tris_drawn);
+        ImGui::Text("Triángulos (resaltados): %d", px::Renderer::GetStats().tris_outlined);
+        ImGui::Text("Triángulos (bordeados): %d", px::Renderer::GetStats().tris_bordered);
+        ImGui::Text("Círculos: %d", px::Renderer::GetStats().circles_drawn);
+        ImGui::Text("Círculos (resaltados): %d", px::Renderer::GetStats().circles_outlined);
+        ImGui::Text("Círculos (bordeados): %d", px::Renderer::GetStats().circles_bordered);
+        ImGui::Text("Semicírculos (bordeados): %d", px::Renderer::GetStats().semicircles_bordered);
+        ImGui::Text("Líneas: %d", px::Renderer::GetStats().lines_drawn);
+        ImGui::Text("Líneas (con grosor): %d", px::Renderer::GetStats().wide_lines_drawn);
+        ImGui::Text("Cuadrados (resaltados): %d", px::Renderer::GetStats().quads_outlined);
+        ImGui::Text("Presentaciones: %d", px::Renderer::GetStats().draw_calls);
+        ImGui::Text("Vértices (triángulos): %d", px::Renderer::GetStats().tri_vertex_count);
+        ImGui::Text("Índices (triángulos): %d", px::Renderer::GetStats().tri_index_count);
+        ImGui::Text("Vértices (líneas): %d", px::Renderer::GetStats().line_vertex_count);
+        ImGui::Text("Índices (líneas): %d", px::Renderer::GetStats().line_index_count);
         ImGui::TreePop();
       }
 
@@ -429,31 +426,31 @@ namespace Gates {
 
     ImGui::End();
 
-    Renderer::ResetStats();
+    px::Renderer::ResetStats();
 
-    return rcode::ok;
+    return px::rcode::ok;
   }
 
-  rcode GatesApplication::pOnLaunch() {
-    Renderer::Init();
-    return rcode::ok;
+  px::rcode GatesApplication::pOnLaunch() {
+    px::Renderer::Init();
+    return px::rcode::ok;
   }
 
-  rcode GatesApplication::pOnRender() {
-    Renderer::UseCamera(camera);
-    Renderer::BeginBatch();
+  px::rcode GatesApplication::pOnRender() {
+    px::Renderer::UseCamera(camera);
+    px::Renderer::BeginBatch();
 
     circuit.DrawGates();
 
-    Renderer::EndBatch();
-    Renderer::FlushBatch();
+    px::Renderer::EndBatch();
+    px::Renderer::FlushBatch();
 
-    return rcode::ok;
+    return px::rcode::ok;
   }
 
-  rcode GatesApplication::pOnClose() {
-    Renderer::Delete();
-    return rcode::ok;
+  px::rcode GatesApplication::pOnClose() {
+    px::Renderer::Delete();
+    return px::rcode::ok;
   }
 
   glm::vec2 GatesApplication::MousePosWorld() { return camera.ScreenToWorld(MousePos(), view_distance, AspectRatio()); }

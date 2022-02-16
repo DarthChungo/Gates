@@ -16,11 +16,10 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include "Engine/Renderer.hpp"
+#include "Gates/include.hpp"
 #include "Gates/GatesApplication.hpp"
 #include "Gates/LogicCircuit.hpp"
 #include "Gates/LogicGates.hpp"
-#include "Util/Misc.hpp"
 
 namespace Gates {
   void LogicCircuit::UpdateLogicState() {
@@ -62,12 +61,13 @@ namespace Gates {
 
     for (auto&& gate : gates) {
       if (gate->pos > (app->MousePosWorld() - gate->size) && gate->pos < app->MousePosWorld()) {
-        if (app->MouseButton(MouseButton::BUTTON_1).pressed) {
-          if (app->KeyboardKey(KeyboardKey::KEY_LEFT_ALT).held && ! instanceof <OutputGate>(gate.get())) {
+        if (app->MouseButton(px::MouseButton::BUTTON_1).pressed) {
+          if (app->KeyboardKey(px::KeyboardKey::KEY_LEFT_ALT).held && !px:: instanceof <OutputGate>(gate.get())) {
             outputing_gate = gate;
             outputing      = true;
 
-          } else if (app->KeyboardKey(KeyboardKey::KEY_LEFT_SHIFT).held && instanceof <InputGate>(gate.get())) {
+          } else if (app->KeyboardKey(px::KeyboardKey::KEY_LEFT_SHIFT).held && px:: instanceof
+                     <InputGate>(gate.get())) {
             SetInput(gate, (gate->state == State::OFF || gate->state == State::ERROR) ? State::ON : State::OFF);
 
           } else {
@@ -77,8 +77,8 @@ namespace Gates {
             dragging_gate   = gate;
             dragging        = true;
           }
-        } else if (app->MouseButton(MouseButton::BUTTON_1).released && outputing) {
-          if (gate != outputing_gate && ! instanceof <InputGate>(gate.get())) {
+        } else if (app->MouseButton(px::MouseButton::BUTTON_1).released && outputing) {
+          if (gate != outputing_gate && !px:: instanceof <InputGate>(gate.get())) {
             ToggleConnection(outputing_gate, gate);
           }
 
@@ -88,12 +88,12 @@ namespace Gates {
 
         hovered_gate = gate;
 
-      } else if (app->MouseButton(MouseButton::BUTTON_1).pressed && (selected_gate == gate)) {
+      } else if (app->MouseButton(px::MouseButton::BUTTON_1).pressed && (selected_gate == gate)) {
         selected_gate.reset();
       }
     }
 
-    if (app->KeyboardKey(KeyboardKey::KEY_DELETE).pressed && selected_gate) {
+    if (app->KeyboardKey(px::KeyboardKey::KEY_DELETE).pressed && selected_gate) {
       gates.erase(selected_gate);
       gates_input.erase(selected_gate);
       gates_output.erase(selected_gate);
@@ -117,11 +117,11 @@ namespace Gates {
       selected_gate.reset();
     }
 
-    if (app->MouseButton(MouseButton::BUTTON_1).pressed && adding) {
+    if (app->MouseButton(px::MouseButton::BUTTON_1).pressed && adding) {
       adding = false;
       adding_gate.reset();
 
-    } else if (app->MouseButton(MouseButton::BUTTON_1).released) {
+    } else if (app->MouseButton(px::MouseButton::BUTTON_1).released) {
       dragging = false;
 
       outputing = false;
@@ -142,29 +142,30 @@ namespace Gates {
     }
 
     if (selected_gate) {
-      Renderer::OutlineQuad(selected_gate->pos, selected_gate->size, {1.f, 1.f, 0.f, 1.f});
+      px::Renderer::OutlineQuad(selected_gate->pos, selected_gate->size, {1.f, 1.f, 0.f, 1.f});
 
       for (auto&& input : selected_gate->inputs) {
-        Renderer::OutlineQuad(input->pos, input->size, {0.f, 1.f, 1.f, 1.f});
-        Renderer::DrawLine(input->pos + (input->size * glm::vec2(1.f, 0.5f)),
-                           selected_gate->pos + (selected_gate->size * glm::vec2(0.f, 0.5f)),
-                           0.1f,
-                           {0.f, 1.f, 1.f, 1.f});
+        px::Renderer::OutlineQuad(input->pos, input->size, {0.f, 1.f, 1.f, 1.f});
+        px::Renderer::DrawLine(input->pos + (input->size * glm::vec2(1.f, 0.5f)),
+                               selected_gate->pos + (selected_gate->size * glm::vec2(0.f, 0.5f)),
+                               0.1f,
+                               {0.f, 1.f, 1.f, 1.f});
       }
 
       for (auto&& output : selected_gate->outputs) {
-        Renderer::OutlineQuad(output->pos, output->size, {0.f, 1.f, 1.f, 1.f});
-        Renderer::DrawLine(selected_gate->pos + (selected_gate->size * glm::vec2(1.f, 0.5f)),
-                           output->pos + (output->size * glm::vec2(0.f, 0.5f)),
-                           0.1f,
-                           {0.f, 1.f, 1.f, 1.f});
+        px::Renderer::OutlineQuad(output->pos, output->size, {0.f, 1.f, 1.f, 1.f});
+        px::Renderer::DrawLine(selected_gate->pos + (selected_gate->size * glm::vec2(1.f, 0.5f)),
+                               output->pos + (output->size * glm::vec2(0.f, 0.5f)),
+                               0.1f,
+                               {0.f, 1.f, 1.f, 1.f});
       }
     }
 
     if (outputing) {
-      Renderer::DrawLine(outputing_gate->pos + (outputing_gate->size * glm::vec2 {1.f, 0.5f}), app->MousePosWorld());
-      Renderer::OutlineQuad(outputing_gate->pos, outputing_gate->size, {1.f, 0.f, 1.f, 1.f});
-      if (hovered_gate) Renderer::OutlineQuad(hovered_gate->pos, hovered_gate->size, {1.f, 0.f, 1.f, 1.f});
+      px::Renderer::DrawLine(outputing_gate->pos + (outputing_gate->size * glm::vec2 {1.f, 0.5f}),
+                             app->MousePosWorld());
+      px::Renderer::OutlineQuad(outputing_gate->pos, outputing_gate->size, {1.f, 0.f, 1.f, 1.f});
+      if (hovered_gate) px::Renderer::OutlineQuad(hovered_gate->pos, hovered_gate->size, {1.f, 0.f, 1.f, 1.f});
     }
   }
 
@@ -187,7 +188,7 @@ namespace Gates {
     gates_update_pending.insert(to);
   }
 
-  void LogicCircuit::MakeConnection(const UUID& from, const UUID& to) {
+  void LogicCircuit::MakeConnection(const px::UUID& from, const px::UUID& to) {
     std::shared_ptr<LogicGate> from_gate = *std::find_if(
         gates.begin(), gates.end(), [&from](const std::shared_ptr<LogicGate>& gate) { return gate->id == from; });
 
@@ -205,7 +206,7 @@ namespace Gates {
     const size_t   num_outputs = gates_output.size();
     const uint64_t num_entries = std::pow(2, num_inputs);
 
-    std::unordered_map<UUID, State> previous_states;
+    std::unordered_map<px::UUID, State> previous_states;
 
     for (auto&& input : gates_input) {
       previous_states[input->id] = input->state;

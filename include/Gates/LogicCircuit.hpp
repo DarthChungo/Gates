@@ -19,13 +19,9 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #ifndef GATES_LOGICCIRCUIT_HPP
 #define GATES_LOGICCIRCUIT_HPP
 
+#include "Gates/include.hpp"
 #include "Gates/LogicGates.hpp"
-#include "pch.hpp"
-#include "Engine/Application.hpp"
 #include "Gates/LogicGate.hpp"
-#include "Util/UUID.hpp"
-
-using namespace Pixel;
 
 namespace Gates {
   class GatesApplication;
@@ -57,7 +53,7 @@ namespace Gates {
 
     template <class GateType>
     std::shared_ptr<LogicGate> AddGateDirect(const glm::vec2 pos,
-                                             const UUID&     uuid) requires std::derived_from<GateType, LogicGate> {
+                                             const px::UUID& uuid) requires std::derived_from<GateType, LogicGate> {
       auto new_gate = std::make_shared<GateType>(uuid);
       new_gate->pos = pos;
       gates.insert(new_gate);
@@ -78,7 +74,7 @@ namespace Gates {
 
     void SetInput(const std::shared_ptr<LogicGate>& input, State val);
     void ToggleConnection(const std::shared_ptr<LogicGate>& from, const std::shared_ptr<LogicGate>& to);
-    void MakeConnection(const UUID& from, const UUID& to);
+    void MakeConnection(const px::UUID& from, const px::UUID& to);
 
     TruthTable ComputeTruthTable();
 
