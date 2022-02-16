@@ -19,7 +19,9 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #ifndef GATES_LOGICGATE_HPP
 #define GATES_LOGICGATE_HPP
 
-#include "Gates/include.hpp"
+#include "Pixel/Pixel.hpp"
+
+namespace px = Pixel;
 
 namespace Gates {
   enum class State : uint32_t { ON, OFF, ERROR };

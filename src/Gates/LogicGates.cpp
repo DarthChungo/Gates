@@ -17,7 +17,6 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
 #include "Gates/LogicGates.hpp"
-#include "Engine/Renderer.hpp"
 
 namespace Gates {
   NotGate::NotGate() : LogicGate() { size = glm::vec2 {8.f, 10.f}; }

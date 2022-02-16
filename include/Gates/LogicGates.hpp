@@ -19,8 +19,10 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #ifndef GATES_LOGICGATES_HPP
 #define GATES_LOGICGATES_HPP
 
-#include "Gates/include.hpp"
+#include "Pixel/Pixel.hpp"
 #include "Gates/LogicGate.hpp"
+
+namespace px = Pixel;
 
 namespace Gates {
   class NotGate : public LogicGate {
