@@ -49,12 +49,13 @@ namespace Gates {
     float                  view_rotation = 0.f;
     px::OrthographicCamera camera {view_distance, 1.f};
 
-    bool show_statistics = false;
+    bool show_truthtable = true;
     bool show_controls   = true;
 
     LogicCircuit circuit {this};
   };
 }
+
 #define GATES_APPLICATION_LICENSE                                          \
   "Gates, a simple logic circuit simulator written in C++\n"               \
   "Copyright (C) 2022 DarthChungo\n"                                       \

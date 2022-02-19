@@ -79,10 +79,10 @@ namespace Gates {
       ImGui::DockBuilderSetNodeSize(dockspace_id, viewport->Size);
 
       ImGui::DockBuilderDockWindow(
-          "Estadísticas", ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Right, .25f, nullptr, &dockspace_id));
+          "Tabla de verdad", ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Right, .2f, nullptr, &dockspace_id));
 
       ImGui::DockBuilderDockWindow(
-          "Controles", ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Left, .4f, nullptr, &dockspace_id));
+          "Controles", ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Left, .2f, nullptr, &dockspace_id));
 
       ImGui::DockBuilderFinish(dockspace_id);
     }
@@ -164,7 +164,7 @@ namespace Gates {
       }
 
       if (ImGui::BeginMenu("Ver")) {
-        ImGui::Checkbox("Estadísticas", &show_statistics);
+        ImGui::Checkbox("Tabla de verdad", &show_truthtable);
         ImGui::Checkbox("Controles", &show_controls);
         ImGui::EndMenu();
       }
@@ -219,55 +219,67 @@ namespace Gates {
       }
     }
 
-    if (show_statistics) {
-      ImGui::Begin("Estadísticas");
+    static const ImVec4 less_attention_color(0.65f, 0.65f, 0.65f, 1.f);
+    static const ImVec4 normal_attention_color(1.f, 1.f, 1.f, 1.f);
 
-      if (ImGui::TreeNodeEx("Renderizado:", ImGuiTreeNodeFlags_SpanFullWidth | ImGuiTreeNodeFlags_Framed)) {
-        ImGui::Text("Cuadrados: %d", px::Renderer::GetStats().quads_drawn);
-        ImGui::Text("Triángulos: %d", px::Renderer::GetStats().tris_drawn);
-        ImGui::Text("Triángulos (resaltados): %d", px::Renderer::GetStats().tris_outlined);
-        ImGui::Text("Triángulos (bordeados): %d", px::Renderer::GetStats().tris_bordered);
-        ImGui::Text("Círculos: %d", px::Renderer::GetStats().circles_drawn);
-        ImGui::Text("Círculos (resaltados): %d", px::Renderer::GetStats().circles_outlined);
-        ImGui::Text("Círculos (bordeados): %d", px::Renderer::GetStats().circles_bordered);
-        ImGui::Text("Semicírculos (bordeados): %d", px::Renderer::GetStats().semicircles_bordered);
-        ImGui::Text("Líneas: %d", px::Renderer::GetStats().lines_drawn);
-        ImGui::Text("Líneas (con grosor): %d", px::Renderer::GetStats().wide_lines_drawn);
-        ImGui::Text("Cuadrados (resaltados): %d", px::Renderer::GetStats().quads_outlined);
-        ImGui::Text("Presentaciones: %d", px::Renderer::GetStats().draw_calls);
-        ImGui::Text("Vértices (triángulos): %d", px::Renderer::GetStats().tri_vertex_count);
-        ImGui::Text("Índices (triángulos): %d", px::Renderer::GetStats().tri_index_count);
-        ImGui::Text("Vértices (líneas): %d", px::Renderer::GetStats().line_vertex_count);
-        ImGui::Text("Índices (líneas): %d", px::Renderer::GetStats().line_index_count);
-        ImGui::TreePop();
+    static float truthtable_window_width = 0;
+
+    if (show_truthtable) {
+      if (ImGui::Begin("Tabla de verdad", nullptr, ImGuiWindowFlags_HorizontalScrollbar)) {
+        truthtable_window_width = ImGui::GetWindowWidth();
+
+        if (ImGui::TreeNodeEx(
+                "Tabla de verdad",
+                ImGuiTreeNodeFlags_SpanFullWidth | ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen)) {
+          static LogicCircuit::TruthTable table;
+
+          const bool disable_calc = circuit.gates.size() == 0;
+
+          if (disable_calc) ImGui::BeginDisabled();
+
+          if (ImGui::Button("Calcular...")) {
+            table = circuit.ComputeTruthTable();
+          }
+
+          if (disable_calc) ImGui::EndDisabled();
+
+          if (table.size() != 0 && table[0].first.size() != 0) {
+            static uint32_t columns_ins  = table[0].first.size();
+            static uint32_t columns_outs = table[0].second.size();
+
+            if (ImGui::BeginTable(
+                    "##ttable1", columns_ins + columns_outs, ImGuiTableFlags_RowBg | ImGuiTableFlags_BordersInnerV)) {
+              for (uint32_t i = 0; i < columns_ins; i++) ImGui::TableSetupColumn(("in" + std::to_string(i)).c_str());
+              for (uint32_t i = 0; i < columns_outs; i++) ImGui::TableSetupColumn(("out" + std::to_string(i)).c_str());
+
+              ImGui::TableHeadersRow();
+
+              for (const auto& entry : table) {
+                ImGui::TableNextRow();
+                uint32_t colum = 0;
+
+                for (const auto& in : entry.first) {
+                  ImGui::TableSetColumnIndex(colum);
+                  ImGui::TextColored(in ? normal_attention_color : less_attention_color, "%s", in ? "1" : "0");
+                  colum++;
+                }
+
+                for (const auto& out : entry.second) {
+                  ImGui::TableSetColumnIndex(colum);
+                  ImGui::TextColored(out ? normal_attention_color : less_attention_color, "%s", out ? "1" : "0");
+                  colum++;
+                }
+              }
+
+              ImGui::EndTable();
+            }
+          }
+
+          ImGui::TreePop();
+        }
+
+        ImGui::End();
       }
-
-      if (ImGui::TreeNodeEx("Ratón:", ImGuiTreeNodeFlags_SpanFullWidth | ImGuiTreeNodeFlags_Framed)) {
-        ImGui::TextWrapped("Posición (puntero): %s", std::to_string(MousePos()).c_str());
-        ImGui::TextWrapped("Posición (rueda): %s", std::to_string(MouseWheel()).c_str());
-        ImGui::TextWrapped("¿En la ventada? %s", MouseFocus() ? "yes" : "no");
-        ImGui::TreePop();
-      }
-
-      if (ImGui::TreeNodeEx("Ventana:", ImGuiTreeNodeFlags_SpanFullWidth | ImGuiTreeNodeFlags_Framed)) {
-        ImGui::TextWrapped("Tamaño: %s", std::to_string(WindowSize()).c_str());
-        ImGui::TextWrapped("Posición: %s", std::to_string(WindowPos()).c_str());
-        ImGui::TreePop();
-      }
-
-      if (ImGui::TreeNodeEx("Aplicación:", ImGuiTreeNodeFlags_SpanFullWidth | ImGuiTreeNodeFlags_Framed)) {
-        ImGui::Text("FPS: %d f/s", fps());
-        ImGui::Text("MSPF: %.4f ms/f", 1000 / (float)fps());
-        ImGui::TreePop();
-      }
-
-      if (ImGui::TreeNodeEx("Cámara:", ImGuiTreeNodeFlags_SpanFullWidth | ImGuiTreeNodeFlags_Framed)) {
-        ImGui::Text("Posición: %s", std::to_string(glm::vec2 {camera.getPosition().x, camera.getPosition().y}).c_str());
-        ImGui::Text("Distancia de visión: %f", view_distance);
-        ImGui::TreePop();
-      }
-
-      ImGui::End();
     }
 
     if (show_controls) {
@@ -284,9 +296,6 @@ namespace Gates {
         if (ImGui::Button("Puerta xor")) circuit.AddGate<XorGate>();
         ImGui::TreePop();
       }
-
-      static const ImVec4 less_attention_color(0.65f, 0.65f, 0.65f, 1.f);
-      static const ImVec4 normal_attention_color(1.f, 1.f, 1.f, 1.f);
 
       if (ImGui::TreeNodeEx(
               "Puertas:",
@@ -350,56 +359,6 @@ namespace Gates {
         ImGui::TreePop();
       }
 
-      if (ImGui::TreeNodeEx(
-              "Tabla de verdad",
-              ImGuiTreeNodeFlags_SpanFullWidth | ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen)) {
-        static LogicCircuit::TruthTable table;
-
-        const bool disable_calc = circuit.gates.size() == 0;
-
-        if (disable_calc) ImGui::BeginDisabled();
-
-        if (ImGui::Button("Calcular...")) {
-          table = circuit.ComputeTruthTable();
-        }
-
-        if (disable_calc) ImGui::EndDisabled();
-
-        if (table.size() != 0 && table[0].first.size() != 0) {
-          static uint32_t columns_ins  = table[0].first.size();
-          static uint32_t columns_outs = table[0].second.size();
-
-          if (ImGui::BeginTable(
-                  "##ttable1", columns_ins + columns_outs, ImGuiTableFlags_RowBg | ImGuiTableFlags_BordersInnerV)) {
-            for (uint32_t i = 0; i < columns_ins; i++) ImGui::TableSetupColumn(("in" + std::to_string(i)).c_str());
-            for (uint32_t i = 0; i < columns_outs; i++) ImGui::TableSetupColumn(("out" + std::to_string(i)).c_str());
-
-            ImGui::TableHeadersRow();
-
-            for (const auto& entry : table) {
-              ImGui::TableNextRow();
-              uint32_t colum = 0;
-
-              for (const auto& in : entry.first) {
-                ImGui::TableSetColumnIndex(colum);
-                ImGui::TextColored(in ? normal_attention_color : less_attention_color, "%s", in ? "1" : "0");
-                colum++;
-              }
-
-              for (const auto& out : entry.second) {
-                ImGui::TableSetColumnIndex(colum);
-                ImGui::TextColored(out ? normal_attention_color : less_attention_color, "%s", out ? "1" : "0");
-                colum++;
-              }
-            }
-
-            ImGui::EndTable();
-          }
-        }
-
-        ImGui::TreePop();
-      }
-
       ImGui::End();
     }
 
@@ -408,11 +367,14 @@ namespace Gates {
                                            ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav |
                                            ImGuiWindowFlags_NoMove;
 
-    ImGui::SetNextWindowPos(viewport->WorkSize + viewport->WorkPos - ImVec2(10.f, 10.f), ImGuiCond_Always, {1.f, 1.f});
+    ImGui::SetNextWindowPos(
+        viewport->WorkSize + viewport->WorkPos - ImVec2(10.f, 10.f) - ImVec2(truthtable_window_width, 0.f),
+        ImGuiCond_Always,
+        {1.f, 1.f});
     ImGui::SetNextWindowViewport(viewport->ID);
     ImGui::SetNextWindowBgAlpha(0.35f);
 
-    if (ImGui::Begin("Example: Simple overlay", nullptr, overlay_flags)) {
+    if (ImGui::Begin("selection_overlay", nullptr, overlay_flags)) {
       if (const std::shared_ptr<LogicGate>& gate = circuit.selected_gate; circuit.selected_gate) {
         ImGui::Text("Selección: \n - Tipo %s\n - Estado %s\n - Entradas %lu\n - Salidas %lu",
                     gate->getName(),
