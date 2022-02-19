@@ -93,6 +93,8 @@ namespace Gates {
       state = State::ERROR;
 
     } else {
+      state = State::OFF;
+
       for (auto&& input : inputs) {
         switch (input->state) {
           case State::ERROR:
@@ -101,10 +103,9 @@ namespace Gates {
 
           case State::ON:
             state = State::ON;
-            return;
+            break;
 
           case State::OFF:
-            state = State::OFF;
             break;
         }
       }
