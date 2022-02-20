@@ -63,7 +63,6 @@ namespace Gates {
             count++;
 
           case State::OFF:
-            state = State::ON;
             break;
         }
       }
