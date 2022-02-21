@@ -72,13 +72,19 @@ namespace Gates {
   }
 
   void AndGate::Draw() {
+    // DrawQuad dubuja un rectángulo en unas coordenadas con un tamaño determinado
+    // Se dubuja la zona cuadrada de la puerta (izquierda)
+    // getColor() devolverá el color de la puerta dependiendo de su estado
     px::Renderer::DrawQuad(pos, glm::vec2(0.3f, 10.f));
     px::Renderer::DrawQuad(pos, glm::vec2(7.5f, 0.3f));
     px::Renderer::DrawQuad(pos + glm::vec2(0.f, 9.7f), glm::vec2(7.5f, 0.3f));
     px::Renderer::DrawQuad(pos + glm::vec2(0.3f, 0.3f), glm::vec2(7.2f, 9.4f), getColor());
 
+    // BorderSemicircle dibuja un semicírculo con bordeado de un color determinado
+    // Se dibuja la parte derecha de la puerta
     px::Renderer::BorderSemicircle(pos + glm::vec2(7.5f, 5.f), 5.f, -1.570f, 1.570f, 30, 0.3f, getColor());
 
+    // Se iteran todos los hijos de la puerta y se utiliza DrawLine para unirlos con una línea
     for (auto&& output : outputs) {
       px::Renderer::DrawLine(pos + glm::vec2(12.5f, 5.f), output->pos + glm::vec2(0.f, 5.f), 0.1f, getColor());
     }

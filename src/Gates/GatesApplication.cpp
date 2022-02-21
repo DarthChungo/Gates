@@ -124,16 +124,21 @@ namespace Gates {
           read_status = ReadStatus::UNSET;
         }
 
+        // Se crea un array estático de caracteres para guardar el texto del usuario
         static char        filename[256] = {};
         static WriteStatus write_status  = WriteStatus::UNSET;
 
+        // Se crea el elemento del menú
         if (ImGui::BeginMenu("Guardar como...")) {
+          // Se usa input text con una referencia a el array creado y su tamaño máximo
           ImGui::InputText("##save_input", filename, 256);
 
+          // El uso de ImGui::SameLine() permite añadir componentes uno al lado del otro
           ImGui::SameLine();
           ImGui::TextDisabled(".gates");
           ImGui::SameLine();
 
+          // Uso de botones
           if (ImGui::Button("Guardar")) {
             write_status = DataSerializer::WriteCircuitFile(filename, circuit, false);
           }
@@ -300,27 +305,33 @@ namespace Gates {
       if (ImGui::TreeNodeEx(
               "Puertas:",
               ImGuiTreeNodeFlags_SpanFullWidth | ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen)) {
+        // Esta función creará un TreeNode con toda la información sobre una puerta lógica
         const auto DisplayGate = [&](const auto& self, const std::shared_ptr<LogicGate>& gate) -> void {
           ImGui::PushID(gate->id);
 
+          // Primero se muestra su nombre
           if (ImGui::TreeNodeEx((std::string("Puerta ") + gate->getName()).c_str(), ImGuiTreeNodeFlags_SpanFullWidth)) {
             ImGui::PushStyleColor(ImGuiCol_Text, less_attention_color);
 
+            // Luego su estado
             ImGui::TreeNodeEx("##gstate",
                               ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_Bullet |
                                   ImGuiTreeNodeFlags_NoTreePushOnOpen | ImGuiTreeNodeFlags_SpanFullWidth,
                               "Estado %s",
                               StateReadableNames[gate->state]);
 
+            // Y su ID interno
             ImGui::TreeNodeEx("##gstate",
                               ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_Bullet |
                                   ImGuiTreeNodeFlags_NoTreePushOnOpen | ImGuiTreeNodeFlags_SpanFullWidth,
                               "ID 0x%lx",
                               (uint64_t)gate->id);
 
+            // Ahora se muestran sus salidas
             if (ImGui::TreeNodeEx("Salidas", ImGuiTreeNodeFlags_SpanFullWidth)) {
               ImGui::PopStyleColor();
 
+              // Se iteran todas sus salidas, llamando recursivamente a la función de vuelta por cada una de ellas
               for (const std::shared_ptr<LogicGate>& output : gate->outputs) {
                 self(self, output);
               }
@@ -333,9 +344,11 @@ namespace Gates {
 
             ImGui::PushStyleColor(ImGuiCol_Text, less_attention_color);
 
+            // Finalmente sus entradas
             if (ImGui::TreeNodeEx("Entradas", ImGuiTreeNodeFlags_SpanFullWidth)) {
               ImGui::PopStyleColor();
 
+              // Se iteran todas sus entradas, llamando recursivamente a la función de vuelta por cada una de ellas
               for (const std::shared_ptr<LogicGate>& input : gate->inputs) {
                 self(self, input);
               }
@@ -352,6 +365,7 @@ namespace Gates {
           ImGui::PopID();
         };
 
+        // Finalmente, se llama a la función para todas las puertas del circuito
         for (const std::shared_ptr<LogicGate>& gate : circuit.gates) {
           DisplayGate(DisplayGate, gate);
         }

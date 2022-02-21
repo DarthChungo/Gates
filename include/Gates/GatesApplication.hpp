@@ -27,11 +27,15 @@ namespace px = Pixel;
 #define GATES_APPLICATION_VERSION_TXT "Versión 1.0"
 
 namespace Gates {
+  // Clase principal, herencia pública de Pixel::Application
   class GatesApplication : public px::Application {
    public:
+    // EL uso de friend permite acceder a los miembros provados desde otra clase
     friend class LogicCircuit;
 
    private:
+    // Eventos principales
+    // El uso de override sobreescribe el código de la clase padre para ejecutal el código propio
     px::rcode pOnUpdate() override;
     px::rcode pOnRender() override;
     px::rcode pOnImGuiRender() override;
@@ -47,12 +51,15 @@ namespace Gates {
 
     float                  view_distance = 60.f;
     float                  view_rotation = 0.f;
-    px::OrthographicCamera camera {view_distance, 1.f};
+    px::OrthographicCamera camera {view_distance, 1.f};  // Anidación con la clase OrthographicCamera
 
     bool show_truthtable = true;
     bool show_controls   = true;
 
-    LogicCircuit circuit {this};
+    LogicCircuit circuit {this};  // Anicación con la clase LogicCircuit
+
+    // También se realizan anidaciones indirectas con clases estáticas, que no tienen instancias, pero cuyo ciclo de
+    // vida depende de esta clase. Ejemplo: Pixel::Renderer y Gates::DataSerializer
   };
 }
 

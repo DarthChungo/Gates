@@ -23,24 +23,36 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 namespace Gates {
   void LogicCircuit::UpdateLogicState() {
+    // Este conjunto guardará referencias a las puertas lógicas que estan siendo procesadas
     std::set<std::shared_ptr<LogicGate>> gates_updating;
 
+    // Se sigue trabajando hasta haber procesado todas las puertas pendientes
     while (!gates_update_pending.empty()) {
+      // Se insertan las puertas pendientes por actualizar en el conjunto de trabajo
       gates_updating = gates_update_pending;
       gates_update_pending.clear();
 
+      // Se iteran todas las puertas del conjunto de trabajo
       for (auto&& gate : gates_updating) {
+        // Se guarda el estado previo y se actualiza utilizando la abstracción para llamar a el método apropiado
         State previous_state = gate->state;
         gate->UpdateState();
 
+        // Si la aplicación ha indicado que la puerta debe ser acualizada si o si (p. ej. al insertar una puerta nueva
+        // en el circuito), esta se actualiza
         if (auto it = gates_update_forced.find(gate); it != gates_update_forced.end()) {
           gates_update_forced.erase(it);
 
+          // Se añaden todos los hijos de la puerta a las puertas pendientes por actualizar para propagar los cambios
+          // por el circuito automáticamente
           for (auto&& child : gate->outputs) {
             gates_update_pending.insert(child);
           }
 
+          // Si el estado de una perta ha cambiado al actualizarla, hay que propagar sus cambios
         } else if (gate->state != previous_state) {
+          // Se añaden todos los hijos de la puerta a las puertas pendientes por actualizar para propagar los cambios
+          // por el circuito automáticamente
           for (auto&& child : gate->outputs) {
             gates_update_pending.insert(child);
           }

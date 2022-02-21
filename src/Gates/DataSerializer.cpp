@@ -102,13 +102,21 @@ namespace Gates {
       } else if (stage == 2) {
         if (line_parsed.size() != 2) return ReadStatus::ERR_FILE_FORMAT;
 
+        // El uso del try permite capturar una excepción sin cerrar el progama
         try {
+          // La función std::stoull transforma una std::string a un entero, lo que puede generar un error si se intenta
+          // convertir un texto que no es un número
+          // La indexación de un array (p. ej. line_parsed[1]) generará un error si no tiene tantos elementos
           const px::UUID from = std::stoull(line_parsed[0]);
           const px::UUID to   = std::stoull(line_parsed[1]);
 
           circuit.MakeConnection(from, to);
 
+          // El bloque catch será llamado si ocurre una excepción
+          // Se usa la elípsis (...) para capturar cualquier tipo de excepción
         } catch (...) {
+          // Se notifica a la aplicación principal a través de un valor de retorno de error, en vez de terminar la
+          // ejecución, para que muestre un mensaje a el usuario
           return ReadStatus::ERR_FILE_FORMAT;
         }
 
