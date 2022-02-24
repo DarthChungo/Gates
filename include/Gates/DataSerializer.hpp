@@ -1,21 +1,3 @@
-/*
-Gates, a simple logic circuit simulator written in C++
-Copyright (C) 2022 DarthChungo
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <https://www.gnu.org/licenses/>.
-*/
-
 #ifndef GATES_DATASERIALIZER_H
 #define GATES_DATASERIALIZER_H
 
@@ -44,9 +26,11 @@ namespace Gates {
     ERR_OTHER       = 6
   };
 
+  // Todos los valores por encima de uno se consideran un error (utilizado para determinar el color del texto)
   inline bool is_error(const WriteStatus& status) { return (uint8_t)status > 1; }
   inline bool is_error(const ReadStatus& status) { return (uint8_t)status > 1; }
 
+  // Mapea la enumeración para sus mensajes legibles
   static std::map<WriteStatus, const char*> WriteStatusReadableName = {
       {WriteStatus::UNSET, "UNSET"},
       {WriteStatus::OK, "Archivo guardado correctamente"},
@@ -57,6 +41,7 @@ namespace Gates {
       {WriteStatus::ERR_OTHER, "Error guardando el archivo"},
   };
 
+  // Mapea la enumeración para sus mensajes legibles
   static std::map<ReadStatus, const char*> ReadStatusReadableName = {
       {ReadStatus::UNSET, "UNSET"},
       {ReadStatus::OK, "Archivo cargado correctamente"},
@@ -69,10 +54,12 @@ namespace Gates {
 
   class DataSerializer {
    public:
-    static ReadStatus  ParseCircuitFile(const std::string& name, LogicCircuit& circuit);
-    static WriteStatus WriteCircuitFile(const std::string& name, const LogicCircuit& circuit, bool overwrite);
+    static ReadStatus  ParseCircuitFile(const std::string& name, LogicCircuit& circuit);  // Leer un archivo de texto
+    static WriteStatus WriteCircuitFile(const std::string&  name,
+                                        const LogicCircuit& circuit,
+                                        bool                overwrite);  // Escribir el archivo de texto
 
-    static std::vector<std::string> ListCircuitFiles();
+    static std::vector<std::string> ListCircuitFiles();  // Listado simple de archivos que tengan la extensión ".gates"
 
     static constexpr const char* circuits_dir = "circuits/";
     static constexpr const char* circuits_ext = ".gates";

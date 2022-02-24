@@ -1,27 +1,10 @@
-/*
-Gates, a simple logic circuit simulator written in C++
-Copyright (C) 2022 DarthChungo
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <https://www.gnu.org/licenses/>.
-*/
-
 #include "Pixel/Pixel.hpp"
 #include "Gates/GatesApplication.hpp"
 #include "Gates/LogicGates.hpp"
 #include "Gates/DataSerializer.hpp"
 
 namespace Gates {
+  // Se ejecuta en cada actualización de la pantalla
   px::rcode GatesApplication::pOnUpdate() {
     if (MouseButton(px::MouseButton::BUTTON_1).pressed && KeyboardKey(px::KeyboardKey::KEY_LEFT_CONTROL).held) {
       dragging = true;
@@ -47,9 +30,12 @@ namespace Gates {
     return px::rcode::ok;
   }
 
+  // Se ejecuta en la actualización de la interfaz gráfica
   px::rcode GatesApplication::pOnImGuiRender() {
     const ImGuiViewport* viewport = ImGui::GetMainViewport();
     const ImGuiIO&       io       = ImGui::GetIO();
+
+    // Se crea una ventana transparente del tamaño de la ventana para que sirva como dockspace
 
     ImGui::SetNextWindowPos(viewport->Pos);
     ImGui::SetNextWindowSize(viewport->Size);
@@ -73,6 +59,7 @@ namespace Gates {
     ImGuiID dockspace_id = ImGui::GetID("main_dockspace");
     ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_PassthruCentralNode);
 
+    // Esto solo se ejecuta en la primera ejecución del bucle
     if (static bool first_time = true; first_time && !(first_time = false)) {
       ImGui::DockBuilderRemoveNode(dockspace_id);
       ImGui::DockBuilderAddNode(dockspace_id, ds_flags | ImGuiDockNodeFlags_DockSpace);
@@ -90,7 +77,8 @@ namespace Gates {
     ImGui::End();
 
     static bool open_version_modal = false;
-    static bool open_license_modal = false;
+
+    // Barra de menú
 
     if (ImGui::BeginMainMenuBar()) {
       if (ImGui::BeginMenu("Archivo")) {
@@ -160,7 +148,7 @@ namespace Gates {
 
           ImGui::EndMenu();
 
-        } else {
+        } else {  // Este bloque resetea la entrada de texto al cerrar el menú
           *filename    = 0;
           write_status = WriteStatus::UNSET;
         }
@@ -175,10 +163,6 @@ namespace Gates {
       }
 
       if (ImGui::BeginMenu("Acerca de")) {
-        if (ImGui::MenuItem("Licencia")) {
-          open_license_modal = true;
-        }
-
         if (ImGui::MenuItem("Versión")) {
           open_version_modal = true;
         }
@@ -189,6 +173,8 @@ namespace Gates {
       ImGui::EndMainMenuBar();
     }
 
+    // Popups
+
     if (open_version_modal) {
       ImGui::OpenPopup("Versión");
 
@@ -196,28 +182,11 @@ namespace Gates {
 
       if (ImGui::BeginPopupModal("Versión", nullptr, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove)) {
         ImGui::TextUnformatted("Gates " GATES_APPLICATION_VERSION_TXT);
-        ImGui::TextUnformatted("Programado por DarthChungo (https://github.com/DarthChungo)");
-        ImGui::TextUnformatted("Código disponible en https://github.com/DarthChungo/Gates");
+        ImGui::TextUnformatted("Programado por Antonio de Haro");
 
         if (ImGui::Button("Cerrar")) {
           ImGui::CloseCurrentPopup();
           open_version_modal = false;
-        }
-
-        ImGui::EndPopup();
-      }
-
-    } else if (open_license_modal) {
-      ImGui::OpenPopup("Licencia");
-
-      ImGui::SetNextWindowPos(viewport->GetCenter(), ImGuiCond_Appearing, {0.5f, 0.5f});
-
-      if (ImGui::BeginPopupModal("Licencia", nullptr, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove)) {
-        ImGui::TextUnformatted(GATES_APPLICATION_LICENSE);
-
-        if (ImGui::Button("Cerrar")) {
-          ImGui::CloseCurrentPopup();
-          open_license_modal = false;
         }
 
         ImGui::EndPopup();
@@ -228,6 +197,8 @@ namespace Gates {
     static const ImVec4 normal_attention_color(1.f, 1.f, 1.f, 1.f);
 
     static float truthtable_window_width = 0;
+
+    // Ventanas
 
     if (show_truthtable) {
       if (ImGui::Begin("Tabla de verdad", nullptr, ImGuiWindowFlags_HorizontalScrollbar)) {
@@ -252,6 +223,7 @@ namespace Gates {
             static uint32_t columns_ins  = table[0].first.size();
             static uint32_t columns_outs = table[0].second.size();
 
+            // Creación de la tabla
             if (ImGui::BeginTable(
                     "##ttable1", columns_ins + columns_outs, ImGuiTableFlags_RowBg | ImGuiTableFlags_BordersInnerV)) {
               for (uint32_t i = 0; i < columns_ins; i++) ImGui::TableSetupColumn(("in" + std::to_string(i)).c_str());
@@ -287,6 +259,7 @@ namespace Gates {
       }
     }
 
+    // Menú de controles
     if (show_controls) {
       ImGui::Begin("Controles", nullptr, ImGuiWindowFlags_HorizontalScrollbar);
 
@@ -388,6 +361,8 @@ namespace Gates {
     ImGui::SetNextWindowViewport(viewport->ID);
     ImGui::SetNextWindowBgAlpha(0.35f);
 
+    // Overlay inferior
+    //
     if (ImGui::Begin("selection_overlay", nullptr, overlay_flags)) {
       if (const std::shared_ptr<LogicGate>& gate = circuit.selected_gate; circuit.selected_gate) {
         ImGui::Text("Selección: \n - Tipo %s\n - Estado %s\n - Entradas %lu\n - Salidas %lu",
@@ -408,11 +383,13 @@ namespace Gates {
     return px::rcode::ok;
   }
 
+  // Se ejecuta al iniciar la aplicación
   px::rcode GatesApplication::pOnLaunch() {
     px::Renderer::Init();
     return px::rcode::ok;
   }
 
+  // Se ejecuta en cada fotograma
   px::rcode GatesApplication::pOnRender() {
     px::Renderer::UseCamera(camera);
     px::Renderer::BeginBatch();
@@ -425,8 +402,9 @@ namespace Gates {
     return px::rcode::ok;
   }
 
+  // Se ejecuta al cerrar la aplicación
   px::rcode GatesApplication::pOnClose() {
-    px::Renderer::Delete();
+    px::Renderer::Delete();  // Desalojar recursos utilizados
     return px::rcode::ok;
   }
 

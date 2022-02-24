@@ -1,21 +1,3 @@
-/*
-Gates, a simple logic circuit simulator written in C++
-Copyright (C) 2022 DarthChungo
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <https://www.gnu.org/licenses/>.
-*/
-
 #include "Pixel/Pixel.hpp"
 #include "Gates/DataSerializer.hpp"
 #include "Gates/LogicCircuit.hpp"
@@ -24,11 +6,13 @@ namespace Gates {
   ReadStatus DataSerializer::ParseCircuitFile(const std::string& name, LogicCircuit& circuit) {
     if (name.empty()) return ReadStatus::ERR_EMPTY_NAME;
 
-    if (!std::filesystem::is_directory(circuits_dir))
+    if (!std::filesystem::is_directory(circuits_dir))  // Crear directorio si no exíste
       if (!std::filesystem::create_directory(circuits_dir)) return ReadStatus::ERR_CREATE_DIR;
 
     std::ifstream ifs(circuits_dir + name + circuits_ext);
     if (!ifs.is_open()) return ReadStatus::ERR_OPEN_FILE;
+
+    // Resetear el circuito anterior
 
     circuit.gates_update_pending.clear();
     circuit.gates_update_forced.clear();
@@ -48,6 +32,7 @@ namespace Gates {
 
     uint8_t stage = 0;
 
+    // Leer línea por línea
     for (std::string line; std::getline(ifs, line);) {
       if (line == "GATES" || line == "CONNECTIONS") {
         stage++;
@@ -57,11 +42,12 @@ namespace Gates {
       std::vector<std::string> line_parsed;
       std::istringstream       line_stream(line);
 
+      // Separar la línea actual con el separador
       for (std::string current_token; std::getline(line_stream, current_token, file_separator);) {
         line_parsed.push_back(current_token);
       }
 
-      if (stage == 1) {
+      if (stage == 1) {  // Cargar puertas
         if (line_parsed.size() != 3) return ReadStatus::ERR_FILE_FORMAT;
 
         try {
@@ -99,7 +85,7 @@ namespace Gates {
           return ReadStatus::ERR_FILE_FORMAT;
         }
 
-      } else if (stage == 2) {
+      } else if (stage == 2) {  // Cargar conexiones
         if (line_parsed.size() != 2) return ReadStatus::ERR_FILE_FORMAT;
 
         // El uso del try permite capturar una excepción sin cerrar el progama
@@ -145,6 +131,7 @@ namespace Gates {
 
     ofs << "GATES" << file_newline;
 
+    // Se escriben todas las puertas en el mismo formato
     for (auto&& gate : circuit.gates) {
       ofs << gate->id << file_separator << gate->getName() << file_separator << std::to_string(gate->pos)
           << file_newline;
@@ -152,6 +139,7 @@ namespace Gates {
 
     ofs << "CONNECTIONS" << file_newline;
 
+    // Se escriben todas las conexiones
     for (auto&& gate : circuit.gates) {
       for (auto&& output : gate->outputs) {
         ofs << gate->id << file_separator << output->id << file_newline;
@@ -162,6 +150,7 @@ namespace Gates {
     return ofs.fail() ? WriteStatus::ERR_OTHER : WriteStatus::OK;
   }
 
+  // Listado simple de archivos que tengan la extensión ".gates"
   std::vector<std::string> DataSerializer::ListCircuitFiles() {
     std::vector<std::string> list;
 

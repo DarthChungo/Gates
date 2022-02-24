@@ -1,21 +1,3 @@
-/*
-Gates, a simple logic circuit simulator written in C++
-Copyright (C) 2022 DarthChungo
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <https://www.gnu.org/licenses/>.
-*/
-
 #include "Pixel/Pixel.hpp"
 #include "Gates/GatesApplication.hpp"
 #include "Gates/LogicCircuit.hpp"
@@ -61,6 +43,8 @@ namespace Gates {
     }
   }
 
+  // Utilidades para poder comparar dos vectores fácilmente
+
   bool inline operator>(const glm::vec2& left, const glm::vec2& right) {
     return (left.x > right.x) && (left.y > right.y);
   }
@@ -68,6 +52,7 @@ namespace Gates {
     return (left.x < right.x) && (left.y < right.y);
   }
 
+  // Actualizar los gráficos del circuito
   void LogicCircuit::UpdateGraphicsState() {
     hovered_gate.reset();
 
@@ -148,11 +133,13 @@ namespace Gates {
     }
   }
 
+  // Dibujar todas las puertas
   void LogicCircuit::DrawGates() {
     for (auto&& gate : gates) {
-      gate->Draw();
+      gate->Draw();  // Metodo abstraco
     }
 
+    // Dibujar información adicional para la puerta seleccionada
     if (selected_gate) {
       px::Renderer::OutlineQuad(selected_gate->pos, selected_gate->size, {1.f, 1.f, 0.f, 1.f});
 
@@ -216,8 +203,9 @@ namespace Gates {
   LogicCircuit::TruthTable LogicCircuit::ComputeTruthTable() {
     const size_t   num_inputs  = gates_input.size();
     const size_t   num_outputs = gates_output.size();
-    const uint64_t num_entries = std::pow(2, num_inputs);
+    const uint64_t num_entries = std::pow(2, num_inputs);  // El número de combinaciones binarias viene dado por 2^n
 
+    // Guardar el estado previo del circuito
     std::unordered_map<px::UUID, State> previous_states;
 
     for (auto&& input : gates_input) {
@@ -227,7 +215,7 @@ namespace Gates {
     LogicCircuit::TruthTable table;
     table.reserve(num_entries);
 
-    for (uint64_t n = 0; n < num_entries; n++) {
+    for (uint64_t n = 0; n < num_entries; n++) {  // Se iteran todas las combinaciones
       uint64_t current_gate = 0;
 
       TruthTableEntry current_entry = std::make_pair(std::vector<bool>(), std::vector<bool>());
@@ -235,22 +223,27 @@ namespace Gates {
       current_entry.first.reserve(num_inputs);
       current_entry.second.reserve(num_outputs);
 
+      // Se cambian las entradas
       for (auto&& gate : gates_input) {
-        const bool current_state = ((n >> current_gate++) & 1ULL) == true;
+        const bool current_state =
+            ((n >> current_gate++) & 1ULL) == true;  // Se descompone en número actual en sus componentes binarios
 
         SetInput(gate, current_state ? State::ON : State::OFF);
         current_entry.first.push_back(current_state);
       }
 
-      UpdateLogicState();
+      UpdateLogicState();  // Actualizar el estado lógico
 
+      // Añadir todas las salidas a la entrada actual
       for (auto&& gate : gates_output) {
         current_entry.second.emplace_back(gate->state == State::ON ? true : false);
       }
 
+      // Añadir la entrada actual a la tabla
       table.push_back(std::move(current_entry));
     }
 
+    // Se restaura el estado anterior
     for (auto&& input : gates_input) {
       SetInput(input, previous_states[input->id]);
     }
