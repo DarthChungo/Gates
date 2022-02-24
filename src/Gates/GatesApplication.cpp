@@ -275,18 +275,24 @@ namespace Gates {
 
     // Menú de controles
     if (show_controls) {
-      ImGui::Begin("Controles", nullptr, ImGuiWindowFlags_HorizontalScrollbar);
+      ImGui::Begin("Controles",
+                   nullptr,
+                   ImGuiWindowFlags_HorizontalScrollbar);  // Se crea el panel Controles
 
-      if (ImGui::TreeNodeEx("Añadir",
-                            ImGuiTreeNodeFlags_SpanFullWidth | ImGuiTreeNodeFlags_Framed |
-                                ImGuiTreeNodeFlags_DefaultOpen)) {
+      if (ImGui::TreeNodeEx(
+              "Añadir",
+              ImGuiTreeNodeFlags_SpanFullWidth | ImGuiTreeNodeFlags_Framed |
+                  ImGuiTreeNodeFlags_DefaultOpen)) {  // El uso de TreeNode permite crear un
+                                                      // encabezado desplegable
+        // Se condiciona el código a pulsar cada uno de los botones
         if (ImGui::Button("Puerta input")) circuit.AddGate<InputGate>();
         if (ImGui::Button("Puerta output")) circuit.AddGate<OutputGate>();
         if (ImGui::Button("Puerta not")) circuit.AddGate<NotGate>();
         if (ImGui::Button("Puerta or")) circuit.AddGate<OrGate>();
         if (ImGui::Button("Puerta and")) circuit.AddGate<AndGate>();
         if (ImGui::Button("Puerta xor")) circuit.AddGate<XorGate>();
-        ImGui::TreePop();
+
+        ImGui::TreePop();  // Se termina la el encabezado
       }
 
       if (ImGui::TreeNodeEx("Puertas:",
