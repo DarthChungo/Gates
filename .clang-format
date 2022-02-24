@@ -1,6 +1,6 @@
 BasedOnStyle: Google
 NamespaceIndentation: All
-ColumnLimit: 120
+ColumnLimit: 100
 SpaceBeforeCpp11BracedList: true
 FixNamespaceComments: false
 IndentPPDirectives: AfterHash

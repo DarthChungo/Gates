@@ -19,11 +19,13 @@ namespace Gates {
   }
 
   void NotGate::Draw() {
-    px::Renderer::BorderTri(pos, pos + glm::vec2(5.3f, 5.f), pos + glm::vec2(0.f, 10.f), 0.3f, getColor());
+    px::Renderer::BorderTri(
+        pos, pos + glm::vec2(5.3f, 5.f), pos + glm::vec2(0.f, 10.f), 0.3f, getColor());
     px::Renderer::BorderCircle(pos + glm::vec2(6.5f, 5.f), 1.5f, 20, 0.3f, getColor());
 
     for (auto&& output : outputs) {
-      px::Renderer::DrawLine(pos + glm::vec2(8.f, 5.f), output->pos + glm::vec2(0.f, 5.f), 0.1f, getColor());
+      px::Renderer::DrawLine(
+          pos + glm::vec2(8.f, 5.f), output->pos + glm::vec2(0.f, 5.f), 0.1f, getColor());
     }
   }
 
@@ -66,11 +68,13 @@ namespace Gates {
 
     // BorderSemicircle dibuja un semicírculo con bordeado de un color determinado
     // Se dibuja la parte derecha de la puerta
-    px::Renderer::BorderSemicircle(pos + glm::vec2(7.5f, 5.f), 5.f, -1.570f, 1.570f, 30, 0.3f, getColor());
+    px::Renderer::BorderSemicircle(
+        pos + glm::vec2(7.5f, 5.f), 5.f, -1.570f, 1.570f, 30, 0.3f, getColor());
 
     // Se iteran todos los hijos de la puerta y se utiliza DrawLine para unirlos con una línea
     for (auto&& output : outputs) {
-      px::Renderer::DrawLine(pos + glm::vec2(12.5f, 5.f), output->pos + glm::vec2(0.f, 5.f), 0.1f, getColor());
+      px::Renderer::DrawLine(
+          pos + glm::vec2(12.5f, 5.f), output->pos + glm::vec2(0.f, 5.f), 0.1f, getColor());
     }
   }
 
@@ -102,8 +106,14 @@ namespace Gates {
   }
 
   void OrGate::Draw() {
-    px::Renderer::BorderSemicircleCustomCenterOutside(
-        pos + glm::vec2(-3.75f, 5.f), pos + glm::vec2(7.f, 5.f), 6.25f, -0.927f, 0.927f, 20, 0.3f, getColor());
+    px::Renderer::BorderSemicircleCustomCenterOutside(pos + glm::vec2(-3.75f, 5.f),
+                                                      pos + glm::vec2(7.f, 5.f),
+                                                      6.25f,
+                                                      -0.927f,
+                                                      0.927f,
+                                                      20,
+                                                      0.3f,
+                                                      getColor());
 
     px::Renderer::BorderSemicircleCustomCenterInside(pos + glm::vec2(5.f, 1.875f),
                                                      pos + glm::vec2(5.f, 5.f),
@@ -132,9 +142,12 @@ namespace Gates {
                                                      0.3f,
                                                      getColor());
 
+    px::Renderer::DrawTri(pos + glm::vec2(5.f, 5.f),
+                          pos + glm::vec2(5.f, 9.7f),
+                          pos + glm::vec2(4.7f, 9.7f),
+                          getColor());
     px::Renderer::DrawTri(
-        pos + glm::vec2(5.f, 5.f), pos + glm::vec2(5.f, 9.7f), pos + glm::vec2(4.7f, 9.7f), getColor());
-    px::Renderer::DrawTri(pos + glm::vec2(5.f, 10.f), pos + glm::vec2(5.f, 9.7f), pos + glm::vec2(4.7f, 9.7f));
+        pos + glm::vec2(5.f, 10.f), pos + glm::vec2(5.f, 9.7f), pos + glm::vec2(4.7f, 9.7f));
 
     px::Renderer::BorderSemicircleCustomCenterInside(pos + glm::vec2(2.5f, 2.5f),
                                                      pos + glm::vec2(5.f, 5.f),
@@ -145,13 +158,18 @@ namespace Gates {
                                                      0.3f,
                                                      getColor());
 
+    px::Renderer::DrawTri(pos + glm::vec2(5.f, 5.f),
+                          pos + glm::vec2(5.f, 0.3f),
+                          pos + glm::vec2(4.7f, 0.3f),
+                          getColor());
     px::Renderer::DrawTri(
-        pos + glm::vec2(5.f, 5.f), pos + glm::vec2(5.f, 0.3f), pos + glm::vec2(4.7f, 0.3f), getColor());
-    px::Renderer::DrawTri(pos + glm::vec2(5.f, 0.f), pos + glm::vec2(5.f, 0.3f), pos + glm::vec2(4.7f, 0.3f));
+        pos + glm::vec2(5.f, 0.f), pos + glm::vec2(5.f, 0.3f), pos + glm::vec2(4.7f, 0.3f));
 
     for (auto&& output : outputs) {
-      px::Renderer::DrawLine(
-          pos + (size * glm::vec2 {1.f, 0.5f}), output->pos + (size * glm::vec2 {0.f, 0.5f}), 0.1f, getColor());
+      px::Renderer::DrawLine(pos + (size * glm::vec2 {1.f, 0.5f}),
+                             output->pos + (size * glm::vec2 {0.f, 0.5f}),
+                             0.1f,
+                             getColor());
     }
   }
 
@@ -184,11 +202,23 @@ namespace Gates {
   }
 
   void XorGate::Draw() {
-    px::Renderer::BorderSemicircleCustomCenterOutside(
-        pos + glm::vec2(-3.75f, 5.f), pos + glm::vec2(7.f, 5.f), 6.25f, -0.927f, 0.927f, 20, 0.3f, getColor());
+    px::Renderer::BorderSemicircleCustomCenterOutside(pos + glm::vec2(-3.75f, 5.f),
+                                                      pos + glm::vec2(7.f, 5.f),
+                                                      6.25f,
+                                                      -0.927f,
+                                                      0.927f,
+                                                      20,
+                                                      0.3f,
+                                                      getColor());
 
-    px::Renderer::BorderSemicircleCustomCenterOutside(
-        pos + glm::vec2(-3.75, 5.f), pos + glm::vec2(7.f, 5.f), 5.25f, -1.2f, 1.2f, 20, 0.3f, {0.f, 0.f, 0.f, 0.f});
+    px::Renderer::BorderSemicircleCustomCenterOutside(pos + glm::vec2(-3.75, 5.f),
+                                                      pos + glm::vec2(7.f, 5.f),
+                                                      5.25f,
+                                                      -1.2f,
+                                                      1.2f,
+                                                      20,
+                                                      0.3f,
+                                                      {0.f, 0.f, 0.f, 0.f});
 
     px::Renderer::BorderSemicircleCustomCenterInside(pos + glm::vec2(5.f, 1.875f),
                                                      pos + glm::vec2(5.f, 5.f),
@@ -217,9 +247,12 @@ namespace Gates {
                                                      0.3f,
                                                      getColor());
 
+    px::Renderer::DrawTri(pos + glm::vec2(5.f, 5.f),
+                          pos + glm::vec2(5.f, 9.7f),
+                          pos + glm::vec2(4.7f, 9.7f),
+                          getColor());
     px::Renderer::DrawTri(
-        pos + glm::vec2(5.f, 5.f), pos + glm::vec2(5.f, 9.7f), pos + glm::vec2(4.7f, 9.7f), getColor());
-    px::Renderer::DrawTri(pos + glm::vec2(5.f, 10.f), pos + glm::vec2(5.f, 9.7f), pos + glm::vec2(4.7f, 9.7f));
+        pos + glm::vec2(5.f, 10.f), pos + glm::vec2(5.f, 9.7f), pos + glm::vec2(4.7f, 9.7f));
 
     px::Renderer::BorderSemicircleCustomCenterInside(pos + glm::vec2(2.5f, 2.5f),
                                                      pos + glm::vec2(5.f, 5.f),
@@ -230,13 +263,18 @@ namespace Gates {
                                                      0.3f,
                                                      getColor());
 
+    px::Renderer::DrawTri(pos + glm::vec2(5.f, 5.f),
+                          pos + glm::vec2(5.f, 0.3f),
+                          pos + glm::vec2(4.7f, 0.3f),
+                          getColor());
     px::Renderer::DrawTri(
-        pos + glm::vec2(5.f, 5.f), pos + glm::vec2(5.f, 0.3f), pos + glm::vec2(4.7f, 0.3f), getColor());
-    px::Renderer::DrawTri(pos + glm::vec2(5.f, 0.f), pos + glm::vec2(5.f, 0.3f), pos + glm::vec2(4.7f, 0.3f));
+        pos + glm::vec2(5.f, 0.f), pos + glm::vec2(5.f, 0.3f), pos + glm::vec2(4.7f, 0.3f));
 
     for (auto&& output : outputs) {
-      px::Renderer::DrawLine(
-          pos + (size * glm::vec2 {1.f, 0.5f}), output->pos + (size * glm::vec2 {0.f, 0.5f}), 0.1f, getColor());
+      px::Renderer::DrawLine(pos + (size * glm::vec2 {1.f, 0.5f}),
+                             output->pos + (size * glm::vec2 {0.f, 0.5f}),
+                             0.1f,
+                             getColor());
     }
   }
 
@@ -249,7 +287,8 @@ namespace Gates {
     px::Renderer::BorderCircle(pos + glm::vec2(5.f, 5.f), 5.f, 30, 0.3f, getColor());
 
     for (auto&& output : outputs) {
-      px::Renderer::DrawLine(pos + glm::vec2(10.f, 5.f), output->pos + glm::vec2(0.f, 5.f), 0.1f, getColor());
+      px::Renderer::DrawLine(
+          pos + glm::vec2(10.f, 5.f), output->pos + glm::vec2(0.f, 5.f), 0.1f, getColor());
     }
   }
 
@@ -264,5 +303,7 @@ namespace Gates {
     }
   }
 
-  void OutputGate::Draw() { px::Renderer::BorderCircle(pos + glm::vec2(5.f, 5.f), 5.f, 30, 0.3f, getColor()); }
+  void OutputGate::Draw() {
+    px::Renderer::BorderCircle(pos + glm::vec2(5.f, 5.f), 5.f, 30, 0.3f, getColor());
+  }
 }

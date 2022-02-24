@@ -33,15 +33,17 @@ namespace Gates {
 
     float                  view_distance = 60.f;
     float                  view_rotation = 0.f;
-    px::OrthographicCamera camera {view_distance, 1.f};  // Anidación con la clase OrthographicCamera
+    px::OrthographicCamera camera {view_distance,
+                                   1.f};  // Anidación con la clase OrthographicCamera
 
     bool show_truthtable = true;
     bool show_controls   = true;
 
     LogicCircuit circuit {this};  // Anicación con la clase LogicCircuit
 
-    // También se realizan anidaciones indirectas con clases estáticas, que no tienen instancias, pero cuyo ciclo de
-    // vida depende de esta clase. Ejemplo: Pixel::Renderer y Gates::DataSerializer
+    // También se realizan anidaciones indirectas con clases estáticas, que no tienen instancias,
+    // pero cuyo ciclo de vida depende de esta clase. Ejemplo: Pixel::Renderer y
+    // Gates::DataSerializer
   };
 }
 

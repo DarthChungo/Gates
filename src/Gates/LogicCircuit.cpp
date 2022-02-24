@@ -16,25 +16,26 @@ namespace Gates {
 
       // Se iteran todas las puertas del conjunto de trabajo
       for (auto&& gate : gates_updating) {
-        // Se guarda el estado previo y se actualiza utilizando la abstracción para llamar a el método apropiado
+        // Se guarda el estado previo y se actualiza utilizando la abstracción para llamar a el
+        // método apropiado
         State previous_state = gate->state;
         gate->UpdateState();
 
-        // Si la aplicación ha indicado que la puerta debe ser acualizada si o si (p. ej. al insertar una puerta nueva
-        // en el circuito), esta se actualiza
+        // Si la aplicación ha indicado que la puerta debe ser acualizada si o si (p. ej. al
+        // insertar una puerta nueva en el circuito), esta se actualiza
         if (auto it = gates_update_forced.find(gate); it != gates_update_forced.end()) {
           gates_update_forced.erase(it);
 
-          // Se añaden todos los hijos de la puerta a las puertas pendientes por actualizar para propagar los cambios
-          // por el circuito automáticamente
+          // Se añaden todos los hijos de la puerta a las puertas pendientes por actualizar para
+          // propagar los cambios por el circuito automáticamente
           for (auto&& child : gate->outputs) {
             gates_update_pending.insert(child);
           }
 
           // Si el estado de una perta ha cambiado al actualizarla, hay que propagar sus cambios
         } else if (gate->state != previous_state) {
-          // Se añaden todos los hijos de la puerta a las puertas pendientes por actualizar para propagar los cambios
-          // por el circuito automáticamente
+          // Se añaden todos los hijos de la puerta a las puertas pendientes por actualizar para
+          // propagar los cambios por el circuito automáticamente
           for (auto&& child : gate->outputs) {
             gates_update_pending.insert(child);
           }
@@ -59,13 +60,16 @@ namespace Gates {
     for (auto&& gate : gates) {
       if (gate->pos > (app->MousePosWorld() - gate->size) && gate->pos < app->MousePosWorld()) {
         if (app->MouseButton(px::MouseButton::BUTTON_1).pressed) {
-          if (app->KeyboardKey(px::KeyboardKey::KEY_LEFT_ALT).held && !px:: instanceof <OutputGate>(gate.get())) {
+          if (app->KeyboardKey(px::KeyboardKey::KEY_LEFT_ALT).held && !px:: instanceof
+              <OutputGate>(gate.get())) {
             outputing_gate = gate;
             outputing      = true;
 
           } else if (app->KeyboardKey(px::KeyboardKey::KEY_LEFT_SHIFT).held && px:: instanceof
                      <InputGate>(gate.get())) {
-            SetInput(gate, (gate->state == State::OFF || gate->state == State::ERROR) ? State::ON : State::OFF);
+            SetInput(gate,
+                     (gate->state == State::OFF || gate->state == State::ERROR) ? State::ON
+                                                                                : State::OFF);
 
           } else {
             selected_gate = gate;
@@ -164,7 +168,8 @@ namespace Gates {
       px::Renderer::DrawLine(outputing_gate->pos + (outputing_gate->size * glm::vec2 {1.f, 0.5f}),
                              app->MousePosWorld());
       px::Renderer::OutlineQuad(outputing_gate->pos, outputing_gate->size, {1.f, 0.f, 1.f, 1.f});
-      if (hovered_gate) px::Renderer::OutlineQuad(hovered_gate->pos, hovered_gate->size, {1.f, 0.f, 1.f, 1.f});
+      if (hovered_gate)
+        px::Renderer::OutlineQuad(hovered_gate->pos, hovered_gate->size, {1.f, 0.f, 1.f, 1.f});
     }
   }
 
@@ -174,7 +179,8 @@ namespace Gates {
     gates_update_forced.insert(input);
   }
 
-  void LogicCircuit::ToggleConnection(const std::shared_ptr<LogicGate>& from, const std::shared_ptr<LogicGate>& to) {
+  void LogicCircuit::ToggleConnection(const std::shared_ptr<LogicGate>& from,
+                                      const std::shared_ptr<LogicGate>& to) {
     if (from->outputs.contains(to) || to->inputs.contains(from)) {
       from->outputs.erase(to);
       to->inputs.erase(from);
@@ -188,11 +194,15 @@ namespace Gates {
   }
 
   void LogicCircuit::MakeConnection(const px::UUID& from, const px::UUID& to) {
-    std::shared_ptr<LogicGate> from_gate = *std::find_if(
-        gates.begin(), gates.end(), [&from](const std::shared_ptr<LogicGate>& gate) { return gate->id == from; });
+    std::shared_ptr<LogicGate> from_gate =
+        *std::find_if(gates.begin(), gates.end(), [&from](const std::shared_ptr<LogicGate>& gate) {
+          return gate->id == from;
+        });
 
-    std::shared_ptr<LogicGate> to_gate = *std::find_if(
-        gates.begin(), gates.end(), [&to](const std::shared_ptr<LogicGate>& gate) { return gate->id == to; });
+    std::shared_ptr<LogicGate> to_gate =
+        *std::find_if(gates.begin(), gates.end(), [&to](const std::shared_ptr<LogicGate>& gate) {
+          return gate->id == to;
+        });
 
     from_gate->outputs.insert(to_gate);
     to_gate->inputs.insert(from_gate);
@@ -203,7 +213,8 @@ namespace Gates {
   LogicCircuit::TruthTable LogicCircuit::ComputeTruthTable() {
     const size_t   num_inputs  = gates_input.size();
     const size_t   num_outputs = gates_output.size();
-    const uint64_t num_entries = std::pow(2, num_inputs);  // El número de combinaciones binarias viene dado por 2^n
+    const uint64_t num_entries =
+        std::pow(2, num_inputs);  // El número de combinaciones binarias viene dado por 2^n
 
     // Guardar el estado previo del circuito
     std::unordered_map<px::UUID, State> previous_states;
@@ -226,7 +237,8 @@ namespace Gates {
       // Se cambian las entradas
       for (auto&& gate : gates_input) {
         const bool current_state =
-            ((n >> current_gate++) & 1ULL) == true;  // Se descompone en número actual en sus componentes binarios
+            ((n >> current_gate++) & 1ULL) ==
+            true;  // Se descompone en número actual en sus componentes binarios
 
         SetInput(gate, current_state ? State::ON : State::OFF);
         current_entry.first.push_back(current_state);

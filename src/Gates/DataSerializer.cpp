@@ -54,8 +54,10 @@ namespace Gates {
           const px::UUID     uuid      = std::stoull(line_parsed[0]);
           const std::string& gate_type = line_parsed[1];
 
-          const float pos_x = std::stof(line_parsed[2].substr(0, line_parsed[2].find_first_of(',')));
-          const float pos_y = std::stof(line_parsed[2].substr(line_parsed[2].find_first_of(',') + 1));
+          const float pos_x =
+              std::stof(line_parsed[2].substr(0, line_parsed[2].find_first_of(',')));
+          const float pos_y =
+              std::stof(line_parsed[2].substr(line_parsed[2].find_first_of(',') + 1));
 
           const glm::vec2 pos = {pos_x, pos_y};
 
@@ -90,9 +92,9 @@ namespace Gates {
 
         // El uso del try permite capturar una excepción sin cerrar el progama
         try {
-          // La función std::stoull transforma una std::string a un entero, lo que puede generar un error si se intenta
-          // convertir un texto que no es un número
-          // La indexación de un array (p. ej. line_parsed[1]) generará un error si no tiene tantos elementos
+          // La función std::stoull transforma una std::string a un entero, lo que puede generar un
+          // error si se intenta convertir un texto que no es un número La indexación de un array
+          // (p. ej. line_parsed[1]) generará un error si no tiene tantos elementos
           const px::UUID from = std::stoull(line_parsed[0]);
           const px::UUID to   = std::stoull(line_parsed[1]);
 
@@ -101,8 +103,8 @@ namespace Gates {
           // El bloque catch será llamado si ocurre una excepción
           // Se usa la elípsis (...) para capturar cualquier tipo de excepción
         } catch (...) {
-          // Se notifica a la aplicación principal a través de un valor de retorno de error, en vez de terminar la
-          // ejecución, para que muestre un mensaje a el usuario
+          // Se notifica a la aplicación principal a través de un valor de retorno de error, en vez
+          // de terminar la ejecución, para que muestre un mensaje a el usuario
           return ReadStatus::ERR_FILE_FORMAT;
         }
 
@@ -117,11 +119,14 @@ namespace Gates {
     return ifs.fail() ? ReadStatus::ERR_OTHER : ReadStatus::OK;
   }
 
-  WriteStatus DataSerializer::WriteCircuitFile(const std::string& name, const LogicCircuit& circuit, bool overwrite) {
+  WriteStatus DataSerializer::WriteCircuitFile(const std::string&  name,
+                                               const LogicCircuit& circuit,
+                                               bool                overwrite) {
     if (name.empty()) return WriteStatus::ERR_EMPTY_NAME;
     const std::string filepath = circuits_dir + name + circuits_ext;
 
-    if (std::filesystem::is_regular_file(filepath) && !overwrite) return WriteStatus::ERR_FILE_EXISTS;
+    if (std::filesystem::is_regular_file(filepath) && !overwrite)
+      return WriteStatus::ERR_FILE_EXISTS;
 
     if (!std::filesystem::is_directory(circuits_dir))
       if (!std::filesystem::create_directory(circuits_dir)) return WriteStatus::ERR_CREATE_DIR;
@@ -133,8 +138,8 @@ namespace Gates {
 
     // Se escriben todas las puertas en el mismo formato
     for (auto&& gate : circuit.gates) {
-      ofs << gate->id << file_separator << gate->getName() << file_separator << std::to_string(gate->pos)
-          << file_newline;
+      ofs << gate->id << file_separator << gate->getName() << file_separator
+          << std::to_string(gate->pos) << file_newline;
     }
 
     ofs << "CONNECTIONS" << file_newline;
@@ -155,15 +160,19 @@ namespace Gates {
     std::vector<std::string> list;
 
     if (!std::filesystem::is_directory(circuits_dir))
-      if (!std::filesystem::create_directory(circuits_dir)) px::Logger::Die("Error creando la carpeta de circuitos");
+      if (!std::filesystem::create_directory(circuits_dir))
+        px::Logger::Die("Error creando la carpeta de circuitos");
 
     for (const auto& entry : std::filesystem::directory_iterator(circuits_dir)) {
       std::string name = entry.path().filename();
 
       if (!name.ends_with(".gates")) continue;
 
-      name.erase(std::find_if(name.rbegin(), name.rend(), [](unsigned char ch) { return ch == '.'; }).base() - 1,
-                 name.end());
+      name.erase(
+          std::find_if(name.rbegin(), name.rend(), [](unsigned char ch) { return ch == '.'; })
+                  .base() -
+              1,
+          name.end());
 
       if (!name.empty()) list.push_back(name);
     }

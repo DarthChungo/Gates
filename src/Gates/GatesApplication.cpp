@@ -6,7 +6,8 @@
 namespace Gates {
   // Se ejecuta en cada actualización de la pantalla
   px::rcode GatesApplication::pOnUpdate() {
-    if (MouseButton(px::MouseButton::BUTTON_1).pressed && KeyboardKey(px::KeyboardKey::KEY_LEFT_CONTROL).held) {
+    if (MouseButton(px::MouseButton::BUTTON_1).pressed &&
+        KeyboardKey(px::KeyboardKey::KEY_LEFT_CONTROL).held) {
       dragging = true;
       offset   = MousePosWorld();
     }
@@ -47,8 +48,9 @@ namespace Gates {
 
     static const ImGuiWindowFlags win_flags =
         ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse |
-        ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBringToFrontOnFocus |
-        ImGuiWindowFlags_NoNavFocus | ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_MenuBar;
+        ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove |
+        ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus |
+        ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_MenuBar;
 
     ImGui::Begin("main_dockspace_window", nullptr, win_flags);
 
@@ -66,10 +68,12 @@ namespace Gates {
       ImGui::DockBuilderSetNodeSize(dockspace_id, viewport->Size);
 
       ImGui::DockBuilderDockWindow(
-          "Tabla de verdad", ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Right, .2f, nullptr, &dockspace_id));
+          "Tabla de verdad",
+          ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Right, .2f, nullptr, &dockspace_id));
 
       ImGui::DockBuilderDockWindow(
-          "Controles", ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Left, .2f, nullptr, &dockspace_id));
+          "Controles",
+          ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Left, .2f, nullptr, &dockspace_id));
 
       ImGui::DockBuilderFinish(dockspace_id);
     }
@@ -101,9 +105,10 @@ namespace Gates {
             }
 
           } else {
-            ImGui::TextColored(is_error(read_status) ? ImVec4(1.f, 0.f, 0.f, 1.f) : ImVec4(0.f, 1.f, 0.f, 1.f),
-                               "%s",
-                               ReadStatusReadableName[read_status]);
+            ImGui::TextColored(
+                is_error(read_status) ? ImVec4(1.f, 0.f, 0.f, 1.f) : ImVec4(0.f, 1.f, 0.f, 1.f),
+                "%s",
+                ReadStatusReadableName[read_status]);
           }
 
           ImGui::EndMenu();
@@ -132,7 +137,9 @@ namespace Gates {
           }
 
           if (write_status == WriteStatus::ERR_FILE_EXISTS) {
-            ImGui::TextColored(ImVec4(1.f, 0.f, 0.f, 1.f), "%s", WriteStatusReadableName[WriteStatus::ERR_FILE_EXISTS]);
+            ImGui::TextColored(ImVec4(1.f, 0.f, 0.f, 1.f),
+                               "%s",
+                               WriteStatusReadableName[WriteStatus::ERR_FILE_EXISTS]);
 
             ImGui::SameLine();
             if (ImGui::Button("Sobreescribir")) {
@@ -141,9 +148,10 @@ namespace Gates {
           }
 
           if (write_status != WriteStatus::UNSET && write_status != WriteStatus::ERR_FILE_EXISTS) {
-            ImGui::TextColored(is_error(write_status) ? ImVec4(1.f, 0.f, 0.f, 1.f) : ImVec4(0.f, 1.f, 0.f, 1.f),
-                               "%s",
-                               WriteStatusReadableName[write_status]);
+            ImGui::TextColored(
+                is_error(write_status) ? ImVec4(1.f, 0.f, 0.f, 1.f) : ImVec4(0.f, 1.f, 0.f, 1.f),
+                "%s",
+                WriteStatusReadableName[write_status]);
           }
 
           ImGui::EndMenu();
@@ -180,7 +188,8 @@ namespace Gates {
 
       ImGui::SetNextWindowPos(viewport->GetCenter(), ImGuiCond_Appearing, {0.5f, 0.5f});
 
-      if (ImGui::BeginPopupModal("Versión", nullptr, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove)) {
+      if (ImGui::BeginPopupModal(
+              "Versión", nullptr, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove)) {
         ImGui::TextUnformatted("Gates " GATES_APPLICATION_VERSION_TXT);
         ImGui::TextUnformatted("Programado por Antonio de Haro");
 
@@ -204,9 +213,9 @@ namespace Gates {
       if (ImGui::Begin("Tabla de verdad", nullptr, ImGuiWindowFlags_HorizontalScrollbar)) {
         truthtable_window_width = ImGui::GetWindowWidth();
 
-        if (ImGui::TreeNodeEx(
-                "Tabla de verdad",
-                ImGuiTreeNodeFlags_SpanFullWidth | ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen)) {
+        if (ImGui::TreeNodeEx("Tabla de verdad",
+                              ImGuiTreeNodeFlags_SpanFullWidth | ImGuiTreeNodeFlags_Framed |
+                                  ImGuiTreeNodeFlags_DefaultOpen)) {
           static LogicCircuit::TruthTable table;
 
           const bool disable_calc = circuit.gates.size() == 0;
@@ -224,10 +233,13 @@ namespace Gates {
             static uint32_t columns_outs = table[0].second.size();
 
             // Creación de la tabla
-            if (ImGui::BeginTable(
-                    "##ttable1", columns_ins + columns_outs, ImGuiTableFlags_RowBg | ImGuiTableFlags_BordersInnerV)) {
-              for (uint32_t i = 0; i < columns_ins; i++) ImGui::TableSetupColumn(("in" + std::to_string(i)).c_str());
-              for (uint32_t i = 0; i < columns_outs; i++) ImGui::TableSetupColumn(("out" + std::to_string(i)).c_str());
+            if (ImGui::BeginTable("##ttable1",
+                                  columns_ins + columns_outs,
+                                  ImGuiTableFlags_RowBg | ImGuiTableFlags_BordersInnerV)) {
+              for (uint32_t i = 0; i < columns_ins; i++)
+                ImGui::TableSetupColumn(("in" + std::to_string(i)).c_str());
+              for (uint32_t i = 0; i < columns_outs; i++)
+                ImGui::TableSetupColumn(("out" + std::to_string(i)).c_str());
 
               ImGui::TableHeadersRow();
 
@@ -237,13 +249,15 @@ namespace Gates {
 
                 for (const auto& in : entry.first) {
                   ImGui::TableSetColumnIndex(colum);
-                  ImGui::TextColored(in ? normal_attention_color : less_attention_color, "%s", in ? "1" : "0");
+                  ImGui::TextColored(
+                      in ? normal_attention_color : less_attention_color, "%s", in ? "1" : "0");
                   colum++;
                 }
 
                 for (const auto& out : entry.second) {
                   ImGui::TableSetColumnIndex(colum);
-                  ImGui::TextColored(out ? normal_attention_color : less_attention_color, "%s", out ? "1" : "0");
+                  ImGui::TextColored(
+                      out ? normal_attention_color : less_attention_color, "%s", out ? "1" : "0");
                   colum++;
                 }
               }
@@ -263,9 +277,9 @@ namespace Gates {
     if (show_controls) {
       ImGui::Begin("Controles", nullptr, ImGuiWindowFlags_HorizontalScrollbar);
 
-      if (ImGui::TreeNodeEx(
-              "Añadir",
-              ImGuiTreeNodeFlags_SpanFullWidth | ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen)) {
+      if (ImGui::TreeNodeEx("Añadir",
+                            ImGuiTreeNodeFlags_SpanFullWidth | ImGuiTreeNodeFlags_Framed |
+                                ImGuiTreeNodeFlags_DefaultOpen)) {
         if (ImGui::Button("Puerta input")) circuit.AddGate<InputGate>();
         if (ImGui::Button("Puerta output")) circuit.AddGate<OutputGate>();
         if (ImGui::Button("Puerta not")) circuit.AddGate<NotGate>();
@@ -275,28 +289,32 @@ namespace Gates {
         ImGui::TreePop();
       }
 
-      if (ImGui::TreeNodeEx(
-              "Puertas:",
-              ImGuiTreeNodeFlags_SpanFullWidth | ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen)) {
+      if (ImGui::TreeNodeEx("Puertas:",
+                            ImGuiTreeNodeFlags_SpanFullWidth | ImGuiTreeNodeFlags_Framed |
+                                ImGuiTreeNodeFlags_DefaultOpen)) {
         // Esta función creará un TreeNode con toda la información sobre una puerta lógica
-        const auto DisplayGate = [&](const auto& self, const std::shared_ptr<LogicGate>& gate) -> void {
+        const auto DisplayGate = [&](const auto&                       self,
+                                     const std::shared_ptr<LogicGate>& gate) -> void {
           ImGui::PushID(gate->id);
 
           // Primero se muestra su nombre
-          if (ImGui::TreeNodeEx((std::string("Puerta ") + gate->getName()).c_str(), ImGuiTreeNodeFlags_SpanFullWidth)) {
+          if (ImGui::TreeNodeEx((std::string("Puerta ") + gate->getName()).c_str(),
+                                ImGuiTreeNodeFlags_SpanFullWidth)) {
             ImGui::PushStyleColor(ImGuiCol_Text, less_attention_color);
 
             // Luego su estado
             ImGui::TreeNodeEx("##gstate",
                               ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_Bullet |
-                                  ImGuiTreeNodeFlags_NoTreePushOnOpen | ImGuiTreeNodeFlags_SpanFullWidth,
+                                  ImGuiTreeNodeFlags_NoTreePushOnOpen |
+                                  ImGuiTreeNodeFlags_SpanFullWidth,
                               "Estado %s",
                               StateReadableNames[gate->state]);
 
             // Y su ID interno
             ImGui::TreeNodeEx("##gstate",
                               ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_Bullet |
-                                  ImGuiTreeNodeFlags_NoTreePushOnOpen | ImGuiTreeNodeFlags_SpanFullWidth,
+                                  ImGuiTreeNodeFlags_NoTreePushOnOpen |
+                                  ImGuiTreeNodeFlags_SpanFullWidth,
                               "ID 0x%lx",
                               (uint64_t)gate->id);
 
@@ -304,7 +322,8 @@ namespace Gates {
             if (ImGui::TreeNodeEx("Salidas", ImGuiTreeNodeFlags_SpanFullWidth)) {
               ImGui::PopStyleColor();
 
-              // Se iteran todas sus salidas, llamando recursivamente a la función de vuelta por cada una de ellas
+              // Se iteran todas sus salidas, llamando recursivamente a la función de vuelta por
+              // cada una de ellas
               for (const std::shared_ptr<LogicGate>& output : gate->outputs) {
                 self(self, output);
               }
@@ -321,7 +340,8 @@ namespace Gates {
             if (ImGui::TreeNodeEx("Entradas", ImGuiTreeNodeFlags_SpanFullWidth)) {
               ImGui::PopStyleColor();
 
-              // Se iteran todas sus entradas, llamando recursivamente a la función de vuelta por cada una de ellas
+              // Se iteran todas sus entradas, llamando recursivamente a la función de vuelta por
+              // cada una de ellas
               for (const std::shared_ptr<LogicGate>& input : gate->inputs) {
                 self(self, input);
               }
@@ -349,15 +369,15 @@ namespace Gates {
       ImGui::End();
     }
 
-    const ImGuiWindowFlags overlay_flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoDocking |
-                                           ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings |
-                                           ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav |
-                                           ImGuiWindowFlags_NoMove;
+    const ImGuiWindowFlags overlay_flags =
+        ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoDocking |
+        ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings |
+        ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | ImGuiWindowFlags_NoMove;
 
-    ImGui::SetNextWindowPos(
-        viewport->WorkSize + viewport->WorkPos - ImVec2(10.f, 10.f) - ImVec2(truthtable_window_width, 0.f),
-        ImGuiCond_Always,
-        {1.f, 1.f});
+    ImGui::SetNextWindowPos(viewport->WorkSize + viewport->WorkPos - ImVec2(10.f, 10.f) -
+                                ImVec2(truthtable_window_width, 0.f),
+                            ImGuiCond_Always,
+                            {1.f, 1.f});
     ImGui::SetNextWindowViewport(viewport->ID);
     ImGui::SetNextWindowBgAlpha(0.35f);
 
@@ -408,5 +428,7 @@ namespace Gates {
     return px::rcode::ok;
   }
 
-  glm::vec2 GatesApplication::MousePosWorld() { return camera.ScreenToWorld(MousePos(), view_distance, AspectRatio()); }
+  glm::vec2 GatesApplication::MousePosWorld() {
+    return camera.ScreenToWorld(MousePos(), view_distance, AspectRatio());
+  }
 }

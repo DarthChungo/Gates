@@ -26,7 +26,8 @@ namespace Gates {
     ERR_OTHER       = 6
   };
 
-  // Todos los valores por encima de uno se consideran un error (utilizado para determinar el color del texto)
+  // Todos los valores por encima de uno se consideran un error (utilizado para determinar el color
+  // del texto)
   inline bool is_error(const WriteStatus& status) { return (uint8_t)status > 1; }
   inline bool is_error(const ReadStatus& status) { return (uint8_t)status > 1; }
 
@@ -54,12 +55,14 @@ namespace Gates {
 
   class DataSerializer {
    public:
-    static ReadStatus  ParseCircuitFile(const std::string& name, LogicCircuit& circuit);  // Leer un archivo de texto
+    static ReadStatus  ParseCircuitFile(const std::string& name,
+                                        LogicCircuit&      circuit);  // Leer un archivo de texto
     static WriteStatus WriteCircuitFile(const std::string&  name,
                                         const LogicCircuit& circuit,
-                                        bool                overwrite);  // Escribir el archivo de texto
+                                        bool overwrite);  // Escribir el archivo de texto
 
-    static std::vector<std::string> ListCircuitFiles();  // Listado simple de archivos que tengan la extensión ".gates"
+    static std::vector<std::string>
+    ListCircuitFiles();  // Listado simple de archivos que tengan la extensión ".gates"
 
     static constexpr const char* circuits_dir = "circuits/";
     static constexpr const char* circuits_ext = ".gates";

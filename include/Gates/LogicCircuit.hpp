@@ -18,8 +18,8 @@ namespace Gates {
 
     LogicCircuit(GatesApplication* application) : app(application) {}
 
-    // Esta función se tiene que definir en el encabezado, en vez de en el archivo cpp por limitaciones del vinculador
-    // de C++ Añade una puerta al circuito mediante el ratón del usuario
+    // Esta función se tiene que definir en el encabezado, en vez de en el archivo cpp por
+    // limitaciones del vinculador de C++ Añade una puerta al circuito mediante el ratón del usuario
     template <class GateType>
     std::shared_ptr<LogicGate> AddGate() requires std::derived_from<GateType, LogicGate> {
       auto new_gate = std::make_shared<GateType>();  // Alojamiento de menoria
@@ -39,11 +39,12 @@ namespace Gates {
       return new_gate;
     }
 
-    // Esta función se tiene que definir en el encabezado, en vez de en el archivo cpp por limitaciones del vinculador
-    // de C++ Añade una puerta al circuito dada una posición e identificador
+    // Esta función se tiene que definir en el encabezado, en vez de en el archivo cpp por
+    // limitaciones del vinculador de C++ Añade una puerta al circuito dada una posición e
+    // identificador
     template <class GateType>
-    std::shared_ptr<LogicGate> AddGateDirect(const glm::vec2 pos,
-                                             const px::UUID& uuid) requires std::derived_from<GateType, LogicGate> {
+    std::shared_ptr<LogicGate> AddGateDirect(const glm::vec2 pos, const px::UUID& uuid) requires
+        std::derived_from<GateType, LogicGate> {
       auto new_gate = std::make_shared<GateType>(uuid);  // Alojamiento de menoria
       new_gate->pos = pos;
       gates.insert(new_gate);
@@ -60,13 +61,17 @@ namespace Gates {
     }
 
     void UpdateLogicState();     // Actualizar el estado lógico
-    void UpdateGraphicsState();  // Actualizar la interfáz gráfica, las posiciones de las puertas y sus conexiones
-    void DrawGates();            // Dibujar todas las puertas y sus conexiones
+    void UpdateGraphicsState();  // Actualizar la interfáz gráfica, las posiciones de las puertas y
+                                 // sus conexiones
+    void DrawGates();  // Dibujar todas las puertas y sus conexiones
 
-    void SetInput(const std::shared_ptr<LogicGate>& input, State val);  // Alternar una entrada al circuito
-    void ToggleConnection(const std::shared_ptr<LogicGate>& from,
-                          const std::shared_ptr<LogicGate>& to);    // Alternar una conexión entre puertas
-    void MakeConnection(const px::UUID& from, const px::UUID& to);  // Hacer una conexión dados dos identificadores
+    void SetInput(const std::shared_ptr<LogicGate>& input,
+                  State                             val);  // Alternar una entrada al circuito
+    void ToggleConnection(
+        const std::shared_ptr<LogicGate>& from,
+        const std::shared_ptr<LogicGate>& to);  // Alternar una conexión entre puertas
+    void MakeConnection(const px::UUID& from,
+                        const px::UUID& to);  // Hacer una conexión dados dos identificadores
 
     TruthTable ComputeTruthTable();
 
@@ -74,9 +79,12 @@ namespace Gates {
     std::set<std::shared_ptr<LogicGate>> gates;  // Guarda referencias a todas las puertas
     std::set<std::shared_ptr<LogicGate>>
         gates_update_pending;  // Guarda referencia a todas las puertas por actualizar todavía
-    std::set<std::shared_ptr<LogicGate>> gates_update_forced;  // Guarda referencia a todas las puertas recien añadidas
-    std::set<std::shared_ptr<LogicGate>> gates_input;          // Guarda referencia a todas las puertas input
-    std::set<std::shared_ptr<LogicGate>> gates_output;         // Guarda referencia a todas las puertas output
+    std::set<std::shared_ptr<LogicGate>>
+        gates_update_forced;  // Guarda referencia a todas las puertas recien añadidas
+    std::set<std::shared_ptr<LogicGate>>
+        gates_input;  // Guarda referencia a todas las puertas input
+    std::set<std::shared_ptr<LogicGate>>
+        gates_output;  // Guarda referencia a todas las puertas output
 
     // Las siguientes variables guardan referencias a puertas especiales en el circuito
 
