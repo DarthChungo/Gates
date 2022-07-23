@@ -3,6 +3,8 @@ Gates
 
 Un simple editor de circuitos lógicos programado en C++.
 
+Actualmente solo funciona en linux.
+
 Licencia
 ========
 
